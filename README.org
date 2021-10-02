@@ -1,0 +1,82 @@
+#+title: TMR Must Reccur
+#+author: Protesilaos Stavrou
+#+email: info@protesilaos.com
+#+language: en
+#+options: ':t toc:nil author:t email:t num:t
+
+* tmr.el: a simple timer for Emacs
+
+This package provides a single command for setting a timer: ~tmr~.
+
+The command prompts for a unit of time, which is represented as a string
+that consists of a number and, optionally, a single character suffix
+which specifies the unit of time.
+
+Valid formats:
+
+| Input | Meaning   |
+|-------+-----------|
+| 5     | 5 minutes |
+| 5m    | 5 minutes |
+| 5s    | 5 seconds |
+| 5h    | 5 hours   |
+
+If ~tmr~ is called with an optional prefix argument (=C-u=), it also asks
+for a description which accompanies the given timer.  Preconfigured
+candidates are specified in the user option ~tmr-descriptions-list~,
+though any arbitrary input is acceptable at the minibuffer prompt.
+
+When the timer is set, a message is sent to the echo area recording the
+current time and the point in the future when the timer elapses.  Echo
+area messages can be reviewed with the ~view-echo-area-messages~ which is
+bound to =C-h e= by default.
+
+Once the timer runs its course, it produces a desktop notification and
+plays an alarm sound.  The notification's message is practically the
+same as that which is sent to the echo area.  The sound file for the
+alarm is defined in ~tmr-sound-file~, while the urgency of the
+notification can be set through the ~tmr-notification-urgency~ option.
+
+The ~tmr-cancel~ command cancels the last ~tmr~.  Note that for the time
+being it has no notion of multiple timers---just the last one.
+
+* Installation
+
+This package is not available in any package archive.  The best way to
+install it is manually.
+
+Assuming your Emacs files are found in =~/.emacs.d/=:
+
+#+begin_src sh
+cd ~/.emacs.d
+# Create a directory for manually-installed packages
+mkdir manual-packages
+# Go to the new directory
+cd manual-packages
+# Clone this repo and name it "tmr"
+git clone git@gitlab.com:protesilaos/tmr.el.git tmr
+#+end_src
+
+Finally, in your =init.el= (or equivalent) evaluate these:
+
+#+begin_src emacs-lisp
+;; Make Elisp files in that directory available to the user.
+(add-to-list 'load-path "~/.emacs.d/manual-packages/")
+
+;; Load the `tmr' library
+(require 'tmr)
+
+;; OPTIONALLY set global key bindings:
+(let ((map global-map))
+  (define-key map (kbd "C-c t t") #'tmr)
+  (define-key map (kbd "C-c t c") #'tmr-cancel))
+#+end_src
+
+* TODO Expand tmr functionality [0/2]
+** TODO Make ~tmr-cancel~ select from a list of timers, if more than one
+** TODO Use a bespoke buffer to list timers (~tmr-list~)
+
+* COPYING
+
+=tmr.el= is distributed under the terms of GNU General Public License,
+Version 3.
