@@ -54,7 +54,7 @@ mkdir manual-packages
 # Go to the new directory
 cd manual-packages
 # Clone this repo and name it "tmr"
-git clone git@gitlab.com:protesilaos/tmr.el.git tmr
+git clone https://gitlab.com/protesilaos/tmr.el.git tmr
 #+end_src
 
 Finally, in your =init.el= (or equivalent) evaluate these:
