@@ -61,7 +61,7 @@ Finally, in your =init.el= (or equivalent) evaluate these:
 
 #+begin_src emacs-lisp
 ;; Make Elisp files in that directory available to the user.
-(add-to-list 'load-path "~/.emacs.d/manual-packages/")
+(add-to-list 'load-path "~/.emacs.d/manual-packages/tmr")
 
 ;; Load the `tmr' library
 (require 'tmr)
