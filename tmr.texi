@@ -1,0 +1,187 @@
+\input texinfo    @c -*- texinfo -*-
+@c %**start of header
+@setfilename tmr.info
+@settitle TMR Must Reccur
+@documentencoding UTF-8
+@documentlanguage en
+@set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
+@set MAINTAINER Protesilaos Stavrou
+@set MAINTAINEREMAIL @email{info@protesilaos.com}
+@set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
+@c %**end of header
+
+@dircategory Emacs misc features
+@direntry
+* TMR Must Recur: (tmr). A simple timer package.
+@end direntry
+
+@finalout
+@titlepage
+@title TMR Must Reccur
+@author Protesilaos Stavrou (@email{info@@protesilaos.com})
+@end titlepage
+
+@ifnottex
+@node Top
+@top TMR Must Reccur
+
+This manual, written by Protesilaos Stavrou, describes the customization
+options for @samp{tmr.el}, and provides every other piece of information
+pertinent to it.
+
+The documentation furnished herein corresponds to stable version
+0.1.0, released on 2021-10-23.  Any reference to a newer
+feature which does not yet form part of the latest tagged commit, is
+explicitly marked as such.
+
+Current development target is 0.2.0-dev.
+
+@end ifnottex
+
+@menu
+* COPYING::
+* tmr.el a simple timer for Emacs: tmrel a simple timer for Emacs. 
+* Installation::
+* GNU Free Documentation License::
+* Indices::
+
+@detailmenu
+--- The Detailed Node Listing ---
+
+Indices
+
+* Function index::
+* Variable index::
+* Concept index::
+
+@end detailmenu
+@end menu
+
+@node COPYING
+@chapter COPYING
+
+Copyright (C) 2021  Free Software Foundation, Inc.
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover Texts being “A GNU Manual,” and
+with the Back-Cover Texts as in (a) below.  A copy of the license is
+included in the section entitled “GNU Free Documentation License.”
+
+(a) The FSF’s Back-Cover Text is: “You have the freedom to copy and
+modify this GNU manual.”
+
+@end quotation
+
+@node tmrel a simple timer for Emacs
+@chapter tmr.el: a simple timer for Emacs
+
+@cindex Overview of features
+@vindex tmr-descriptions-list
+@vindex tmr-sound-file
+@vindex tmr-notification-urgency
+@findex tmr
+@findex tmr-cancel
+
+This package provides a single command for setting a timer: @code{tmr}.
+
+The command prompts for a unit of time, which is represented as a string
+that consists of a number and, optionally, a single character suffix
+which specifies the unit of time.
+
+Valid formats:
+
+@multitable {aaaaa} {aaaaaaaaa}
+@headitem Input
+@tab Meaning
+@item 5
+@tab 5 minutes
+@item 5m
+@tab 5 minutes
+@item 5s
+@tab 5 seconds
+@item 5h
+@tab 5 hours
+@end multitable
+
+If @code{tmr} is called with an optional prefix argument (@samp{C-u}), it also asks
+for a description which accompanies the given timer.  Preconfigured
+candidates are specified in the user option @code{tmr-descriptions-list},
+though any arbitrary input is acceptable at the minibuffer prompt.
+
+When the timer is set, a message is sent to the echo area recording the
+current time and the point in the future when the timer elapses.  Echo
+area messages can be reviewed with the @code{view-echo-area-messages} which is
+bound to @samp{C-h e} by default.
+
+Once the timer runs its course, it produces a desktop notification and
+plays an alarm sound.  The notification's message is practically the
+same as that which is sent to the echo area.  The sound file for the
+alarm is defined in @code{tmr-sound-file}, while the urgency of the
+notification can be set through the @code{tmr-notification-urgency} option.
+
+The @code{tmr-cancel} command cancels the last @code{tmr}.  Note that for the time
+being it has no notion of multiple timers---just the last one.
+
+@node Installation
+@chapter Installation
+
+@cindex Install the package
+
+For the time being, this package is not available in any package
+archive.  The best way to install it is manually, unless you use
+@samp{straight.el}, @samp{quelpa}, or equivalent.
+
+Assuming your Emacs files are found in @samp{~/.emacs.d/}:
+
+@example
+cd ~/.emacs.d
+# Create a directory for manually-installed packages
+mkdir manual-packages
+# Go to the new directory
+cd manual-packages
+# Clone this repo and name it "tmr"
+git clone https://gitlab.com/protesilaos/tmr.el.git tmr
+@end example
+
+Finally, in your @samp{init.el} (or equivalent) evaluate these:
+
+@lisp
+;; Make Elisp files in that directory available to the user.
+(add-to-list 'load-path "~/.emacs.d/manual-packages/tmr")
+
+;; Load the `tmr' library
+(require 'tmr)
+
+;; OPTIONALLY set global key bindings:
+(let ((map global-map))
+  (define-key map (kbd "C-c t t") #'tmr)
+  (define-key map (kbd "C-c t c") #'tmr-cancel))
+@end lisp
+
+@node GNU Free Documentation License
+@chapter GNU Free Documentation License
+
+@include doclicense.texi
+
+@node Indices
+@chapter Indices
+
+@menu
+* Function index::
+* Variable index::
+* Concept index::
+@end menu
+
+@node Function index
+@section Function index
+
+@node Variable index
+@section Variable index
+
+@node Concept index
+@section Concept index
+
+@bye
