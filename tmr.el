@@ -171,7 +171,7 @@ Optionally include DESCRIPTION."
     (message
      "TMR %s %s ; %s %s%s"
      (propertize "Start:" 'face 'success) start
-     (propertize "End:" 'face 'warning) end
+     (propertize "End:" 'face 'error) end
      desc-propertized)
     (unless (plist-get (notifications-get-capabilities) :sound)
       (tmr--play-sound))))
