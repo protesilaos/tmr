@@ -1,6 +1,6 @@
 ;;; tmr.el --- TMR Must Recur -*- lexical-binding: t -*-
 
-;; Copyright (C) 2020-2022  Protesilaos Stavrou
+;; Copyright (C) 2020-2022  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://protesilaos.com/dotemacs
