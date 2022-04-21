@@ -148,12 +148,11 @@ Optionally include DESCRIPTION."
 Populated by `tmr' and then operated on by `tmr-cancel'.")
 
 ;;;###autoload
-(defun tmr-cancel (&optional select)
-  "Cancel last timer object set with `tmr' command.
-With optional SELECT as a prefix (\\[universal-argument])
-argument, prompt for selection among available timers."
-  (declare (interactive-only t))
-  (interactive "P")
+(defun tmr-cancel ()
+  "Cancel timer object set with `tmr' command.
+If there is a single timer, cancel it outright.  If there are
+multiple timers, prompt for one with completion."
+  (interactive)
   (if-let ((timers tmr--timers))
       (cond
        ((= (length timers) 1)
@@ -161,7 +160,7 @@ argument, prompt for selection among available timers."
           (cancel-timer (cdr cell))
           (tmr--log-in-buffer (format "CANCELLED <<%s>>" (car cell)))
           (setq tmr--timers nil)))
-       ((or select (> (length timers) 1))
+       ((> (length timers) 1)
         (let* ((selection (completing-read "Cancel timer: " (mapc #'car timers) nil t))
                (cell (assoc selection timers #'string-match-p))
                (key (car cell))
