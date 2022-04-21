@@ -96,6 +96,28 @@ such notifications."
       (call-process-shell-command
        (format "ffplay -nodisp -autoexit %s >/dev/null 2>&1" sound) nil 0))))
 
+(defun tmr--log-in-buffer (log)
+  "Insert LOG message in tmr buffer."
+  (when-let ((buf (get-buffer-create "*tmr-messages*")))
+    (with-current-buffer buf
+      (messages-buffer-mode)
+      (goto-char (point-max))
+      (let ((inhibit-read-only t))
+        (insert (concat log "\n"))))))
+
+(defun tmr-view-echo-area-messages ()
+  "View the '*tmr-messages*' buffer if present."
+  (interactive)
+  (if-let ((buf (get-buffer "*tmr-messages*")))
+      (with-current-buffer buf
+        (goto-char (point-max))
+        (let ((win (display-buffer (current-buffer))))
+          ;; If the buffer is already displayed, we need to forcibly set
+          ;; the window point to scroll to the end of the buffer.
+          (set-window-point win (point))
+          win))
+    (user-error "No *tmr-messages* buffer; have you used `tmr'?")))
+
 (defun tmr--notify-send (start &optional description)
   "Send system notification for timer with START time.
 Optionally include DESCRIPTION."
@@ -115,7 +137,6 @@ Optionally include DESCRIPTION."
      :app-name "GNU Emacs"
      :urgency tmr-notification-urgency
      :sound-file tmr-sound-file)
-    ;; TODO 2021-10-01: Maybe add those messages to a tmr buffer?
     (message
      "TMR %s %s ; %s %s%s"
      (propertize "Start:" 'face 'success) start
@@ -138,14 +159,17 @@ argument, prompt for selection among available timers."
   (if-let ((timers tmr--timers))
       (cond
        ((= (length timers) 1)
-        (let ((object (cdr (car timers))))
-          (cancel-timer object)
+        (let ((cell (car timers)))
+          (cancel-timer (cdr cell))
+          (tmr--log-in-buffer (format "CANCELLED <<%s>>" (car cell)))
           (setq tmr--timers nil)))
        ((or select (> (length timers) 1))
         (let* ((selection (completing-read "Cancel timer: " (mapc #'car timers) nil t))
                (cell (assoc selection timers #'string-match-p))
+               (key (car cell))
                (object (cdr cell)))
           (cancel-timer object)
+          (tmr--log-in-buffer (format "CANCELLED <<%s>>" key))
           (setq tmr--timers (delete cell tmr--timers)))))
     (user-error "No `tmr' to cancel")))
 
@@ -202,15 +226,16 @@ To cancel the timer, use the `tmr-cancel' command."
   (let* ((start (format-time-string "%T"))
          (unit (tmr--unit time))
          (object-desc (if description
-                          (format "Started at %s with unit %s and description '%s'" start unit description)
-                        (format "Started at %s with unit %s" start unit))))
+                          (format "Started at %s with input '%s' and description '%s'" start time description)
+                        (format "Started at %s with input '%s'" start time))))
     (tmr--echo-area time description)
     (push (cons
            object-desc
            (run-with-timer
             unit nil
             'tmr--notify-send start description))
-          tmr--timers)))
+          tmr--timers)
+    (tmr--log-in-buffer object-desc)))
 
 (provide 'tmr)
 ;;; tmr.el ends here
