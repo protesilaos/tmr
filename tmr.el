@@ -90,7 +90,7 @@ such notifications."
 (defun tmr--play-sound ()
   "Play `tmr-sound-file' using the 'ffplay' executable (ffmpeg)."
   (let ((sound tmr-sound-file))
-    (when (file-exists-p tmr-sound-file)
+    (when (file-exists-p sound)
       (unless (executable-find "ffplay")
         (user-error "Cannot play %s without `ffplay'" sound))
       (call-process-shell-command
