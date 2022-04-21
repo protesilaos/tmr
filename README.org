@@ -5,9 +5,9 @@
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
 
-#+macro: stable-version 0.1.0
-#+macro: release-date 2021-10-23
-#+macro: development-version 0.2.0-dev
+#+macro: stable-version 0.2.0
+#+macro: release-date 2022-04-21
+#+macro: development-version 0.3.0-dev
 #+macro: file @@texinfo:@file{@@$1@@texinfo:}@@
 #+macro: space @@texinfo:@: @@
 #+macro: kbd @@texinfo:@kbd{@@$1@@texinfo:}@@
@@ -17,22 +17,26 @@
 #+texinfo_filename: tmr.info
 #+texinfo_dir_category: Emacs misc features
 #+texinfo_dir_title: TMR Must Recur: (tmr)
-#+texinfo_dir_desc: A simple timer package
+#+texinfo_dir_desc: Set timers using a convenient notation
 #+texinfo_header: @set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
 #+texinfo_header: @set MAINTAINER Protesilaos Stavrou
 #+texinfo_header: @set MAINTAINEREMAIL @email{info@protesilaos.com}
 #+texinfo_header: @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
 
 This manual, written by Protesilaos Stavrou, describes the customization
-options for =tmr.el=, and provides every other piece of information
-pertinent to it.
+options for =tmr= (or =tmr.el=, tmr, TMR, ...), and provides every other
+piece of information pertinent to it.
 
 The documentation furnished herein corresponds to stable version
-{{{stable-version}}}, released on {{{release-date}}}.  Any reference to a newer
-feature which does not yet form part of the latest tagged commit, is
-explicitly marked as such.
+{{{stable-version}}}, released on {{{release-date}}}.  Any reference to
+a newer feature which does not yet form part of the latest tagged
+commit, is explicitly marked as such.
 
 Current development target is {{{development-version}}}.
+
++ Homepage: https://protesilaos.com/emacs/tmr
++ Git repository: https://git.sr.ht/~protesilaos/tmr.
++ Mailing list: https://lists.sr.ht/~protesilaos/tmr.
 
 #+toc: headlines 8 insert TOC here, with eight headline levels
 
@@ -41,7 +45,7 @@ Current development target is {{{development-version}}}.
 :CUSTOM_ID: h:c002f811-ea06-4123-988b-a73183581fb9
 :END:
 
-Copyright (C) 2021  Free Software Foundation, Inc.
+Copyright (C) 2021-2022  Free Software Foundation, Inc.
 
 #+begin_quote
 Permission is granted to copy, distribute and/or modify this document
@@ -55,24 +59,18 @@ included in the section entitled “GNU Free Documentation License.”
 modify this GNU manual.”
 #+end_quote
 
-* tmr.el: a simple timer for Emacs
+* Overview
 :PROPERTIES:
 :CUSTOM_ID: h:7b3966d3-43c6-47f1-816a-8104f634bbd1
 :END:
 #+cindex: Overview of features
-#+vindex: tmr-descriptions-list
-#+vindex: tmr-sound-file
-#+vindex: tmr-notification-urgency
+
 #+findex: tmr
-#+findex: tmr-cancel
-
-This package provides a single command for setting a timer: ~tmr~.
-
-The command prompts for a unit of time, which is represented as a string
-that consists of a number and, optionally, a single character suffix
-which specifies the unit of time.
-
-Valid formats:
+TMR is an Emacs package that provides facilities for setting timers
+using a convenient notation.  The point of entry is the ~tmr~ command.
+It prompts for a unit of time, which is represented as a string that
+consists of a number and, optionally, a single character suffix which
+specifies the unit of time.  Valid input formats:
 
 | Input | Meaning   |
 |-------+-----------|
@@ -81,60 +79,104 @@ Valid formats:
 | 5s    | 5 seconds |
 | 5h    | 5 hours   |
 
-If ~tmr~ is called with an optional prefix argument (=C-u=), it also asks
-for a description which accompanies the given timer.  Preconfigured
+#+vindex: tmr-descriptions-list
+If ~tmr~ is called with an optional prefix argument (=C-u=), it also
+asks for a description which accompanies the given timer.  Preconfigured
 candidates are specified in the user option ~tmr-descriptions-list~,
 though any arbitrary input is acceptable at the minibuffer prompt.
 
+#+findex: tmr-view-echo-area-messages
 When the timer is set, a message is sent to the echo area recording the
 current time and the point in the future when the timer elapses.  Echo
 area messages can be reviewed with the ~view-echo-area-messages~ which is
-bound to =C-h e= by default.
+bound to =C-h e= by default.  Though TMR provides its own buffer for
+reviewing its log: it is named =*tmr-messages*= and can be accessed with
+the command ~tmr-view-echo-area-messages~.
 
+#+vindex: tmr-sound-file
+#+vindex: tmr-notification-urgency
 Once the timer runs its course, it produces a desktop notification and
 plays an alarm sound.  The notification's message is practically the
 same as that which is sent to the echo area.  The sound file for the
 alarm is defined in ~tmr-sound-file~, while the urgency of the
 notification can be set through the ~tmr-notification-urgency~ option.
+Note that it is up to the desktop environment or notification daemon to
+decide how to handle the urgency value.
 
-The ~tmr-cancel~ command cancels the last ~tmr~.  Note that for the time
-being it has no notion of multiple timers---just the last one.
+#+findex: tmr-cancel
+The ~tmr-cancel~ command is used to cancel running timers (as set by the
+~tmr~ command).  If there is only one timer, it cancels it outright.  If
+there are multiple timers, it produces a minibuffer completion prompt
+which asks for one among them.  Timers at the completion prompt are
+described by the exact time they were set and the input that was used to
+create them, including the optional description that ~tmr~ accepts.
 
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: h:46378bdf-f6cc-469e-b0b0-1b90dd9aa595
 :END:
-#+cindex: Install the package
+#+cindex: Installation instructions
 
-For the time being, this package is not available in any package
-archive.  The best way to install it is manually, unless you use
-=straight.el=, =quelpa=, or equivalent.
+** COMMENT GNU ELPA package
+:PROPERTIES:
+:CUSTOM_ID: h:807c2a8c-3d49-4fb3-bfb9-84d10675c95b
+:END:
 
-Assuming your Emacs files are found in =~/.emacs.d/=:
+The package is available as =tmr=.  Simply do:
+
+: M-x package-refresh-contents
+: M-x package-install
+
+And search for it.
+
+** Manual installation
+:PROPERTIES:
+:CUSTOM_ID: h:39fae83f-a49a-4887-8132-eb42e61919ea
+:END:
+
+Assuming your Emacs files are found in =~/.emacs.d/=, execute the
+following commands in a shell prompt:
 
 #+begin_src sh
 cd ~/.emacs.d
+
 # Create a directory for manually-installed packages
 mkdir manual-packages
+
 # Go to the new directory
 cd manual-packages
-# Clone this repo and name it "tmr"
-git clone https://gitlab.com/protesilaos/tmr.el.git tmr
+
+# Clone this repo, naming it "tmr"
+git clone https://git.sr.ht/~protesilaos/tmr tmr
 #+end_src
 
-Finally, in your =init.el= (or equivalent) evaluate these:
+Finally, in your =init.el= (or equivalent) evaluate this:
 
 #+begin_src emacs-lisp
 ;; Make Elisp files in that directory available to the user.
 (add-to-list 'load-path "~/.emacs.d/manual-packages/tmr")
+#+end_src
 
+Everything is in place to set up the package.
+
+* Sample configuration
+:PROPERTIES:
+:CUSTOM_ID: h:69eeb3fb-f11d-431e-ae16-2d9b322871cc
+:END:
+#+cindex: Package configuration
+
+#+begin_src emacs-lisp
 ;; Load the `tmr' library
 (require 'tmr)
 
 ;; OPTIONALLY set global key bindings:
 (let ((map global-map))
   (define-key map (kbd "C-c t t") #'tmr)
+  (define-key map (kbd "C-c t e") #'tmr-view-echo-area-messages) ; "e" to remind of C-h e
   (define-key map (kbd "C-c t c") #'tmr-cancel))
+
+;; Also check the user options `tmr-sound-file',
+;; `tmr-notification-urgency' `tmr-descriptions-list'.
 #+end_src
 
 * GNU Free Documentation License

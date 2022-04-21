@@ -3,8 +3,9 @@
 ;; Copyright (C) 2020-2022  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
-;; URL: https://protesilaos.com/dotemacs
-;; Version: 0.1.0
+;; URL: https://git.sr.ht/~protesilaos/tmr
+;; Mailing list: https://lists.sr.ht/~protesilaos/tmr
+;; Version: 0.2.0
 ;; Package-Requires: ((emacs "27.1"))
 
 ;; This file is NOT part of GNU Emacs.
@@ -24,13 +25,45 @@
 
 ;;; Commentary:
 ;;
-;; TMR Must Recur.  Else a timer for my Emacs setup:
-;; <https://protesilaos.com/dotemacs>.
+;; TMR is an Emacs package that provides facilities for setting timers
+;; using a convenient notation.  The point of entry is the `tmr' command.
+;; It prompts for a unit of time, which is represented as a string that
+;; consists of a number and, optionally, a single character suffix which
+;; specifies the unit of time.  Valid input formats:
 ;;
-;; Remember that every piece of Elisp that I write is for my own
-;; educational and recreational purposes.  I am not a programmer and I
-;; do not recommend that you copy any of this if you are not certain of
-;; what it does.
+;; | Input | Meaning   |
+;; |-------+-----------|
+;; | 5     | 5 minutes |
+;; | 5m    | 5 minutes |
+;; | 5s    | 5 seconds |
+;; | 5h    | 5 hours   |
+;;
+;; If `tmr' is called with an optional prefix argument (`C-u'), it also
+;; asks for a description which accompanies the given timer.  Preconfigured
+;; candidates are specified in the user option `tmr-descriptions-list',
+;; though any arbitrary input is acceptable at the minibuffer prompt.
+;;
+;; When the timer is set, a message is sent to the echo area recording the
+;; current time and the point in the future when the timer elapses.  Echo
+;; area messages can be reviewed with the `view-echo-area-messages' which is
+;; bound to =C-h e= by default.  Though TMR provides its own buffer for
+;; reviewing its log: it is named =*tmr-messages*= and can be accessed with
+;; the command `tmr-view-echo-area-messages'.
+;;
+;; Once the timer runs its course, it produces a desktop notification and
+;; plays an alarm sound.  The notification's message is practically the
+;; same as that which is sent to the echo area.  The sound file for the
+;; alarm is defined in `tmr-sound-file', while the urgency of the
+;; notification can be set through the `tmr-notification-urgency' option.
+;; Note that it is up to the desktop environment or notification daemon to
+;; decide how to handle the urgency value.
+;;
+;; The `tmr-cancel' command is used to cancel running timers (as set by the
+;; `tmr' command).  If there is only one timer, it cancels it outright.  If
+;; there are multiple timers, it produces a minibuffer completion prompt
+;; which asks for one among them.  Timers at the completion prompt are
+;; described by the exact time they were set and the input that was used to
+;; create them, including the optional description that `tmr' accepts.
 
 ;;; Code:
 
