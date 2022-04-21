@@ -124,18 +124,30 @@ Optionally include DESCRIPTION."
     (unless (plist-get (notifications-get-capabilities) :sound)
       (tmr--play-sound))))
 
-;; TODO 2021-09-21: Maybe we should use a list instead of storing just
-;; the last one?
-(defvar tmr--last-timer nil
-  "Last timer object, used by `tmr-cancel'.")
+(defvar tmr--timers nil
+  "List of timer objects.
+Populated by `tmr' and then operated on by `tmr-cancel'.")
 
 ;;;###autoload
-(defun tmr-cancel ()
-  "Cancel last timer object set with `tmr' command."
-  (interactive)
-  (if tmr--last-timer
-      (cancel-timer tmr--last-timer)
-    (message "No `tmr' to cancel")))
+(defun tmr-cancel (&optional select)
+  "Cancel last timer object set with `tmr' command.
+With optional SELECT as a prefix (\\[universal-argument])
+argument, prompt for selection among available timers."
+  (declare (interactive-only t))
+  (interactive "P")
+  (if-let ((timers tmr--timers))
+      (cond
+       ((= (length timers) 1)
+        (let ((object (cdr (car timers))))
+          (cancel-timer object)
+          (setq tmr--timers nil)))
+       ((or select (> (length timers) 1))
+        (let* ((selection (completing-read "Cancel timer: " (mapc #'car timers) nil t))
+               (cell (assoc selection timers #'string-match-p))
+               (object (cdr cell)))
+          (cancel-timer object)
+          (setq tmr--timers (delete cell tmr--timers)))))
+    (user-error "No `tmr' to cancel")))
 
 (defun tmr--echo-area (time &optional description)
   "Produce `message' for current `tmr' TIME.
@@ -187,13 +199,18 @@ To cancel the timer, use the `tmr-cancel' command."
    (list
     (read-string "N minutes for timer (append `h' or `s' for other units): ")
     (when current-prefix-arg (tmr--description-prompt))))
-  (let ((start (format-time-string "%T"))
-        (unit (tmr--unit time)))
+  (let* ((start (format-time-string "%T"))
+         (unit (tmr--unit time))
+         (object-desc (if description
+                          (format "Started at %s with unit %s and description '%s'" start unit description)
+                        (format "Started at %s with unit %s" start unit))))
     (tmr--echo-area time description)
-    (setq tmr--last-timer
-          (run-with-timer
-           unit nil
-           'tmr--notify-send start description))))
+    (push (cons
+           object-desc
+           (run-with-timer
+            unit nil
+            'tmr--notify-send start description))
+          tmr--timers)))
 
 (provide 'tmr)
 ;;; tmr.el ends here
