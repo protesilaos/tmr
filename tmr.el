@@ -122,13 +122,11 @@ such notifications."
   "Send system notification for timer with START time.
 Optionally include DESCRIPTION."
   (let ((end (format-time-string "%T"))
-        (desc-plain)
-        (desc-propertized))
-    (if description
-        (setq desc-plain (concat "\n" description)
-              desc-propertized (concat " [" (propertize description 'face 'bold) "]"))
-      (setq desc-plain ""
-            desc-propertized ""))
+        (desc-plain "")
+        (desc-propertized ""))
+    (when description
+      (setq desc-plain (concat "\n" description)
+            desc-propertized (concat " [" (propertize description 'face 'bold) "]")))
     ;; Read: (info "(elisp) Desktop Notifications")
     (notifications-notify
      :title "TMR Must Recur"
