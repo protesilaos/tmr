@@ -165,7 +165,7 @@ Optionally include DESCRIPTION."
              (propertize start 'face 'success)
              (propertize unit 'face 'error)
              (if description
-                 (concat " [" (propertize description 'face 'bold) "]")
+                 (format " [%s]" (propertize description 'face 'bold))
                ""))))
 
 (defvar tmr--description-hist '()
