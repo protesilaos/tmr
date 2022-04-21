@@ -84,6 +84,9 @@ such notifications."
         ("w" (user-error "TMR Made Ridiculous; append character for [m]inutes, [h]ours, [s]econds"))
         (_ (* num 60)))))))
 
+;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
+;; supports .wav and .au formats.  Also, it does not work on all
+;; platforms and Emacs needs to be compiled --with-sound capabilities.
 (defun tmr--play-sound ()
   "Play `tmr-sound-file' using the 'ffplay' executable (ffmpeg)."
   (let ((sound tmr-sound-file))
