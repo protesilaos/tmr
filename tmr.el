@@ -48,7 +48,10 @@
 
 (defcustom tmr-notification-urgency 'normal
   "The urgency level of the desktop notification.
-Values can be `low', `normal' (default), or `critical'."
+Values can be `low', `normal' (default), or `critical'.
+
+The desktop environment or notification daemon is responsible for
+such notifications."
   :type '(choice
           (const :tag "Low" low)
           (const :tag "Normal" normal)
