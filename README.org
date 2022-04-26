@@ -179,6 +179,18 @@ Everything is in place to set up the package.
 ;; `tmr-notification-urgency' `tmr-descriptions-list'.
 #+end_src
 
+* Acknowledgements
+:PROPERTIES:
+:CUSTOM_ID: h:047ecc52-ca02-4424-a037-c5b6a02383de
+:END:
+#+cindex: Contributors
+
+TMR is meant to be a collective effort.  Every bit of help matters.
+
++ Author/maintainer :: Protesilaos Stavrou.
+
++ Contributions to the code or manual :: Christian Tietze.
+
 * GNU Free Documentation License
 :PROPERTIES:
 :CUSTOM_ID: h:b8b7def2-5ab0-4623-b3ef-2a1bd17bb42a
