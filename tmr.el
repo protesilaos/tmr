@@ -191,6 +191,7 @@ Optionally include DESCRIPTION."
      (propertize "Start:" 'face 'success) start
      (propertize "End:" 'face 'error) end
      desc-propertized)
+    (tmr--log-in-buffer (format "Completed at %s what started at %s" end start))
     (unless (plist-get (notifications-get-capabilities) :sound)
       (tmr--play-sound))))
 
