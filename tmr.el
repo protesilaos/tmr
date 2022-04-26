@@ -97,6 +97,12 @@ such notifications."
   :type '(repeat string)
   :group 'tmr)
 
+(defcustom tmr-notify-function #'tmr-notifications-notify
+  "Function called to send notification.
+It should take two string arguments: the title and the message."
+  :type 'function
+  :group 'tmr)
+
 (defun tmr--unit (time)
   "Determine common time unit for TIME."
   (cond
@@ -151,6 +157,17 @@ such notifications."
           (set-window-point win (point))
           win))
     (user-error "No *tmr-messages* buffer; have you used `tmr'?")))
+
+(defun tmr-notifications-notify (title message)
+  "Dispatch notification titled TITLE with MESSAGE via D-Bus.
+
+Read: (info \"(elisp) Desktop Notifications\") for details."
+  (notifications-notify
+   :title title
+   :body message
+   :app-name "GNU Emacs"
+   :urgency tmr-notification-urgency
+   :sound-file tmr-sound-file))
 
 (defun tmr--notify-send (start &optional description)
   "Send system notification for timer with START time.
