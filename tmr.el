@@ -169,8 +169,12 @@ Read: (info \"(elisp) Desktop Notifications\") for details."
    :urgency tmr-notification-urgency
    :sound-file tmr-sound-file))
 
-  "Send system notification for timer with START time.
+(defun tmr--notify-send-notification (title message)
+  "Send notification with TITLE and MESSAGE using `tmr-notify-function'."
+  (funcall tmr-notify-function title message))
+
 (defun tmr--notify (start &optional description)
+  "Send notification for timer with START time.
 Optionally include DESCRIPTION."
   (let ((end (format-time-string "%T"))
         (desc-plain "")
@@ -178,14 +182,10 @@ Optionally include DESCRIPTION."
     (when description
       (setq desc-plain (concat "\n" description)
             desc-propertized (concat " [" (propertize description 'face 'bold) "]")))
-    ;; Read: (info "(elisp) Desktop Notifications")
-    (notifications-notify
-     :title "TMR Must Recur"
-     :body (format "Time is up!\nStarted: %s\nEnded: %s%s"
-                   start end desc-plain)
-     :app-name "GNU Emacs"
-     :urgency tmr-notification-urgency
-     :sound-file tmr-sound-file)
+    (tmr--notify-send-notification
+     "TMR Must Recur"
+     (format "Time is up!\nStarted: %s\nEnded: %s%s"
+             start end desc-plain))
     (message
      "TMR %s %s ; %s %s%s"
      (propertize "Start:" 'face 'success) start
