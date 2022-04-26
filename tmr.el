@@ -169,8 +169,8 @@ Read: (info \"(elisp) Desktop Notifications\") for details."
    :urgency tmr-notification-urgency
    :sound-file tmr-sound-file))
 
-(defun tmr--notify-send (start &optional description)
   "Send system notification for timer with START time.
+(defun tmr--notify (start &optional description)
 Optionally include DESCRIPTION."
   (let ((end (format-time-string "%T"))
         (desc-plain "")
@@ -281,7 +281,7 @@ To cancel the timer, use the `tmr-cancel' command."
            object-desc
            (run-with-timer
             unit nil
-            'tmr--notify-send start description))
+            'tmr--notify start description))
           tmr--timers)
     (tmr--log-in-buffer object-desc)))
 
