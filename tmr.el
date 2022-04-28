@@ -5,7 +5,7 @@
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://git.sr.ht/~protesilaos/tmr
 ;; Mailing list: https://lists.sr.ht/~protesilaos/tmr
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: convenience, timer
 
@@ -78,7 +78,7 @@
 (require 'notifications)
 
 (defgroup tmr ()
-  "TMR Must Recur (super simple timer for my private use)."
+  "TMR May Ring: set timers using a simple notation."
   :group 'data)
 
 (defcustom tmr-sound-file
@@ -195,7 +195,7 @@ Optionally include DESCRIPTION."
       (setq desc-plain (concat "\n" description)
             desc-propertized (concat " [" (propertize description 'face 'bold) "]")))
     (tmr--notify-send-notification
-     "TMR Must Recur"
+     "TMR May Ring (Emacs tmr package)"
      (format "Time is up!\nStarted: %s\nEnded: %s%s"
              start end desc-plain))
     (message

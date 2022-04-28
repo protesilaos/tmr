@@ -1,4 +1,4 @@
-#+title: TMR Must Reccur
+#+title: TMR May Ring
 #+author: Protesilaos Stavrou
 #+email: info@protesilaos.com
 #+language: en
@@ -16,7 +16,7 @@
 
 #+texinfo_filename: tmr.info
 #+texinfo_dir_category: Emacs misc features
-#+texinfo_dir_title: TMR Must Recur: (tmr)
+#+texinfo_dir_title: TMR May Ring: (tmr)
 #+texinfo_dir_desc: Set timers using a convenient notation
 #+texinfo_header: @set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
 #+texinfo_header: @set MAINTAINER Protesilaos Stavrou
@@ -125,7 +125,7 @@ create them, including the optional description that ~tmr~ accepts.
 :END:
 #+cindex: Installation instructions
 
-** COMMENT GNU ELPA package
+** GNU ELPA package
 :PROPERTIES:
 :CUSTOM_ID: h:807c2a8c-3d49-4fb3-bfb9-84d10675c95b
 :END:
