@@ -76,8 +76,10 @@
 
 (defcustom tmr-sound-file
   "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
-  "Path to sound file used by `tmr--play-sound'."
-  :type 'file
+  "Path to sound file used by `tmr--play-sound'.
+If nil, don't play any sound."
+  :type '(choice file
+                 (const :tag "Off" nil))
   :group 'tmr)
 
 (defcustom tmr-notification-urgency 'normal
@@ -129,7 +131,7 @@ It should take two string arguments: the title and the message."
 ;; platforms and Emacs needs to be compiled --with-sound capabilities.
 (defun tmr--play-sound ()
   "Play `tmr-sound-file' using the 'ffplay' executable (ffmpeg)."
-  (let ((sound tmr-sound-file))
+  (when-let* ((sound tmr-sound-file))
     (when (file-exists-p sound)
       (unless (executable-find "ffplay")
         (user-error "Cannot play %s without `ffplay'" sound))
