@@ -288,5 +288,19 @@ To cancel the timer, use the `tmr-cancel' command."
           tmr--timers)
     (tmr--log-in-buffer object-desc)))
 
+;;;###autoload
+(defun tmr-with-description (time description)
+  "Set timer to TIME duration and notify with DESCRIPTION after it elapses.
+
+See `tmr' for a description of the arguments. The difference
+between the two commands is that `tmr-with-description' always
+asks for a description whereas `tmr' only asks for it when the
+user uses a prefix argument (\\[universal-argument])."
+  (interactive
+   (list
+    (read-string "N minutes for timer (append `h' or `s' for other units): ")
+    (tmr--description-prompt)))
+  (tmr time description))
+
 (provide 'tmr)
 ;;; tmr.el ends here
