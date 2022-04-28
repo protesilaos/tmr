@@ -44,6 +44,10 @@
 ;; candidates are specified in the user option `tmr-descriptions-list',
 ;; though any arbitrary input is acceptable at the minibuffer prompt.
 ;;
+;; An alternative to the `tmr' command is `tmr-with-description'.  The
+;; difference between the two is that the latter always prompts for a
+;; description.
+;;
 ;; When the timer is set, a message is sent to the echo area recording the
 ;; current time and the point in the future when the timer elapses.  Echo
 ;; area messages can be reviewed with the `view-echo-area-messages' which is
@@ -58,6 +62,9 @@
 ;; notification can be set through the `tmr-notification-urgency' option.
 ;; Note that it is up to the desktop environment or notification daemon to
 ;; decide how to handle the urgency value.
+;;
+;; If the `tmr-sound-file' is nil, or the file is not found, no sound will
+;; be played.
 ;;
 ;; The `tmr-cancel' command is used to cancel running timers (as set by the
 ;; `tmr' command).  If there is only one timer, it cancels it outright.  If
@@ -95,7 +102,10 @@ such notifications."
   :group 'tmr)
 
 (defcustom tmr-descriptions-list (list "Boil water" "Prepare tea" "Bake bread")
-  "Optional description candidates for the current `tmr'."
+  "Optional description candidates for the current `tmr'.
+These are provided as completion candidates when `tmr' is called
+with a DESCRIPTION argument or when `tmr-with-description' is
+used."
   :type '(repeat string)
   :group 'tmr)
 
@@ -267,9 +277,12 @@ With optional DESCRIPTION as a prefix (\\[universal-argument]),
 prompt for a description among `tmr-descriptions-list', though
 allow for any string to serve as valid input.
 
-This command also plays back `tmr-sound-file'.
+This command also plays back `tmr-sound-file' if it is available.
 
-To cancel the timer, use the `tmr-cancel' command."
+To cancel the timer, use the `tmr-cancel' command.
+
+To always prompt for a DESCRIPTION when setting a timer, use the
+command `tmr-with-description' instead of this one."
   (interactive
    (list
     (read-string "N minutes for timer (append `h' or `s' for other units): ")
@@ -292,7 +305,7 @@ To cancel the timer, use the `tmr-cancel' command."
 (defun tmr-with-description (time description)
   "Set timer to TIME duration and notify with DESCRIPTION after it elapses.
 
-See `tmr' for a description of the arguments. The difference
+See `tmr' for a description of the arguments.  The difference
 between the two commands is that `tmr-with-description' always
 asks for a description whereas `tmr' only asks for it when the
 user uses a prefix argument (\\[universal-argument])."
