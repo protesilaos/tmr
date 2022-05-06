@@ -273,7 +273,9 @@ Optionally include DESCRIPTION."
   "Helper prompt for descriptions in `tmr'."
   (let ((def (nth 0 tmr--description-hist)))
     (completing-read
-     (format "Description for this tmr [%s]: " def)
+     (if def
+         (format "Description for this tmr [%s]: " def)
+       "Description for this tmr: ")
      tmr-descriptions-list nil nil nil
      'tmr--description-hist def)))
 
