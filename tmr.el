@@ -253,9 +253,18 @@ Optionally include DESCRIPTION."
                  (format " [%s]" (propertize description 'face 'bold))
                ""))))
 
+(defvar tmr--duration-hist '()
+  "Minibuffer history of `tmr' durations.")
+
 (defun tmr--read-duration ()
   "Ask the user to type a duration."
-  (read-string "N minutes for timer (append `h' or `s' for other units): "))
+  (let ((def (nth 0 tmr--duration-hist)))
+    (read-string
+     (if def
+         (format "N minutes for timer (append `h' or `s' for other units) [%s]: " def)
+       "N minutes for timer (append `h' or `s' for other units): ")
+     nil
+     'tmr--duration-hist def)))
 
 (defvar tmr--description-hist '()
   "Minibuffer history of `tmr' descriptions.")
