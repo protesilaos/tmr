@@ -115,6 +115,52 @@ It should take two string arguments: the title and the message."
   :type 'function
   :group 'tmr)
 
+(cl-defstruct (tmr-timer
+               (:constructor tmr--timer-create)
+               (:conc-name tmr--timer-))
+  (creation-date
+   nil
+   :read-only t
+   :documentation "Time at which the timer was created.")
+  (duration
+   nil
+   :read-only t
+   :documentation "Number of seconds after `start' indicating when the timer finishes.")
+  (donep
+   nil
+   :read-only nil
+   :documentation "Non-nil if the timer is finished.")
+  (timer-object
+   nil
+   :read-only nil
+   :documentation "The object returned by `run-with-timer'.")
+  (description
+   nil
+   :read-only t
+   :documentation "Optional string describing the purpose of the timer, e.g., \"Stop the oven\"."))
+
+(defun tmr--long-description (timer)
+  "Return a human-readable description for TIMER."
+  (let ((start (tmr--format-creation-date timer))
+        (duration (tmr--timer-duration timer))
+        (description (tmr--timer-description timer)))
+    (if description
+        (format "Started at %s with input '%s' and description '%s'" start duration description)
+      (format "Started at %s with input '%s'" start duration))))
+
+(defun tmr--format-creation-date (timer)
+  "Return a string representing when TIMER was created."
+  (tmr--format-time (tmr--timer-creation-date timer)))
+
+(defun tmr--format-end-date (timer)
+  "Return a string representing when TIMER should finish."
+  (format-time-string "%T" (time-add (tmr--timer-creation-date timer)
+                                     (tmr--timer-duration timer))))
+
+(defun tmr--format-time (time)
+  "Return a human-readable string representing TIME."
+  (format-time-string "%T" time))
+
 (defun tmr--unit (time)
   "Determine common time unit for TIME."
   (cond
@@ -185,19 +231,21 @@ Read: (info \"(elisp) Desktop Notifications\") for details."
   "Send notification with TITLE and MESSAGE using `tmr-notify-function'."
   (funcall tmr-notify-function title message))
 
-(defun tmr--notify (start &optional description)
-  "Send notification for timer with START time.
-Optionally include DESCRIPTION."
-  (let ((end (format-time-string "%T"))
-        (desc-plain "")
-        (desc-propertized ""))
-    (when description
-      (setq desc-plain (concat "\n" description)
-            desc-propertized (concat " [" (propertize description 'face 'bold) "]")))
+(defun tmr--notify (timer)
+  "Send notification for TIMER."
+  (let* ((description (tmr--timer-description timer))
+         (desc-plain (if description
+                         (concat "\n" description)
+                       ""))
+         (desc-propertized (if description
+                               (concat " [" (propertize description 'face 'bold) "]")
+                             ""))
+         (start (tmr--format-creation-date timer))
+         (end (tmr--format-end-date timer)))
+    (setf (tmr--timer-donep timer) t)
     (tmr--notify-send-notification
      "TMR May Ring (Emacs tmr package)"
-     (format "Time is up!\nStarted: %s\nEnded: %s%s"
-             start end desc-plain))
+     (format "Time is up!\nStarted: %s\nEnded: %s%s" start end desc-plain))
     (message
      "TMR %s %s ; %s %s%s"
      (propertize "Start:" 'face 'success) start
@@ -239,7 +287,7 @@ multiple timers, prompt for one with completion."
 Optionally include DESCRIPTION."
   (let* ((specifier (substring time -1))
          (amount (substring time 0 -1))
-         (start (format-time-string "%T"))
+         (start (tmr--format-time (current-time)))
          (unit (pcase specifier
                  ("s" (format "%ss (s == second)" amount))
                  ("h" (format "%sh (h == hour)" amount))
@@ -302,19 +350,19 @@ command `tmr-with-description' instead of this one."
    (list
     (tmr--read-duration)
     (when current-prefix-arg (tmr--description-prompt))))
-  (let* ((start (format-time-string "%T"))
-         (unit (tmr--unit time))
-         (object-desc (if description
-                          (format "Started at %s with input '%s' and description '%s'" start time description)
-                        (format "Started at %s with input '%s'" start time))))
+  (let* ((creation-date (current-time))
+         (duration (tmr--unit time))
+         (timer (tmr--timer-create
+                 :description description
+                 :creation-date creation-date
+                 :duration duration))
+         (timer-object (run-with-timer
+                        duration nil
+                        #'tmr--notify timer)))
+    (setf (tmr--timer-timer-object timer) timer-object)
     (tmr--echo-area time description)
-    (push (cons
-           object-desc
-           (run-with-timer
-            unit nil
-            'tmr--notify start description))
-          tmr--timers)
-    (tmr--log-in-buffer object-desc)))
+    (push timer tmr--timers)
+    (tmr--log-in-buffer (tmr--long-description timer))))
 
 ;;;###autoload
 (defun tmr-with-description (time description)
