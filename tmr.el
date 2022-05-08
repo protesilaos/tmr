@@ -259,6 +259,7 @@ Read: (info \"(elisp) Desktop Notifications\") for details."
   "List of timer objects.
 Populated by `tmr' and then operated on by `tmr-cancel'.")
 
+;; FIXME 2022-05-08: Need to be refactored per commit 2fc61f9.
 ;;;###autoload
 (defun tmr-cancel ()
   "Cancel timer object set with `tmr' command.
