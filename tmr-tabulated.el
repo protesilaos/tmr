@@ -4,6 +4,9 @@
 
 ;; Author: Damien Cassou <damien@cassou.me>,
 ;;         Protesilaos Stavrou <info@protesilaos.com>
+;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
+;; URL: https://git.sr.ht/~protesilaos/tmr
+;; Mailing list: https://lists.sr.ht/~protesilaos/tmr
 
 ;; This file is NOT part of GNU Emacs.
 
