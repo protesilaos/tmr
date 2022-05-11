@@ -3,6 +3,7 @@
 ;; Copyright (C) 2020-2022  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
+;;         Damien Cassou <damien@cassou.me>,
 ;; URL: https://git.sr.ht/~protesilaos/tmr
 ;; Mailing list: https://lists.sr.ht/~protesilaos/tmr
 ;; Version: 0.2.3
