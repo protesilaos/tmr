@@ -38,9 +38,6 @@ Current development target is {{{development-version}}}.
 + Git repository: https://git.sr.ht/~protesilaos/tmr.
 + Mailing list: https://lists.sr.ht/~protesilaos/tmr.
 
-TMR has benefited from major contributions by Damien Cassou, to whom I
-am most thankful.
-
 #+toc: headlines 8 insert TOC here, with eight headline levels
 
 * COPYING
@@ -128,8 +125,8 @@ description that ~tmr~ and ~tmr-with-description~ accept.
 
 #+findex: tmr-tabulated-view
 Active timers can be viewed in a grid with ~tmr-tabulated-view~ (part of
-the =tmr-tabulated.el= file, whose main author is Damien Cassou).  The
-grid is placed in the =*tmr-tabulated-view*= buffer and looks like this:
+the =tmr-tabulated.el= file).  The grid is placed in the
+=*tmr-tabulated-view*= buffer and looks like this:
 
 #+begin_example
 Start      End        Finished?  Description
@@ -233,12 +230,10 @@ Everything is in place to set up the package.
 
 TMR is meant to be a collective effort.  Every bit of help matters.
 
-+ Authors :: Damien Cassou, Protesilaos Stavrou.
++ Authors :: Protesilaos Stavrou (maintainer), Damien Cassou.
 
 + Contributions to the code or manual :: Christian Tietze, Damien
   Cassou.
-
-+ Maintainer :: Protesilaos Stavrou.
 
 * GNU Free Documentation License
 :PROPERTIES:

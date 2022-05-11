@@ -76,8 +76,8 @@
 ;; description that `tmr' and `tmr-with-description' accept.
 ;;
 ;; Active timers can be viewed in a grid with `tmr-tabulated-view' (part of
-;; the `tmr-tabulated.el' file, whose main author is Damien Cassou).  The
-;; grid is placed in the `*tmr-tabulated-view*' buffer and looks like this:
+;; the `tmr-tabulated.el' file).  The grid is placed in the
+;; `*tmr-tabulated-view*' buffer and looks like this:
 ;;
 ;; Start      End        Finished?  Description
 ;; 12:26:50   12:51:50   ✔         Update tmr manual
