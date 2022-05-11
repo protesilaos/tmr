@@ -277,17 +277,18 @@ completion."
     (setq tmr--timers (cl-delete timer tmr--timers))))
 
 (defun tmr--read-timer ()
-  "Let the user choose a timer among all timers. Return the selected timer.
-If there is a single timer, use that.  If there are multiple
-timers, prompt for one with completion. If there are no timers,
-return nil."
-  (cond
-   ((= (length tmr--timers) 1)
-    (car timers))
-   ((> (length tmr--timers) 1)
-    (let* ((timer-descriptions (mapcar #'tmr--long-description tmr--timers))
-           (selection (completing-read "Timer: " timer-descriptions nil t)))
-      (cl-find selection tmr--timers :test #'string= :key #'tmr--long-description)))))
+  "Let the user choose a timer among all timers.
+Return the selected timer.  If there is a single timer, use that.
+If there are multiple timers, prompt for one with completion.  If
+there are no timers, return nil."
+  (let ((timers tmr--timers))
+    (cond
+     ((= (length timers) 1)
+      (car timers))
+     ((> (length timers) 1)
+      (let* ((timer-descriptions (mapcar #'tmr--long-description timers))
+             (selection (completing-read "Timer: " timer-descriptions nil t)))
+        (cl-find selection timers :test #'string= :key #'tmr--long-description))))))
 
 (defun tmr--echo-area (time &optional description)
   "Produce `message' for current `tmr' TIME.
