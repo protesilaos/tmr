@@ -55,6 +55,7 @@
 
 (defvar tmr-tabulated-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map "k" #'tmr-tabulated-cancel)
     map)
   "Keybindings for `tmr-tabulated-mode-map'.")
 
@@ -67,6 +68,43 @@
                ("Description" 0 t)])
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries)
   (tabulated-list-init-header))
+
+(defun tmr-tabulated-cancel (timer)
+  "Stop TIMER and remove it from the list.
+Interactively, use the timer at point."
+  (interactive (list (tmr-tabulated--get-timer-at-point)))
+  (tmr-cancel timer)
+  ;; avoid point moving back to the beginning of the buffer:
+  (tmr-tabulated--move-point-to-closest-entry)
+  (revert-buffer))
+
+(defun tmr-tabulated--move-point-to-closest-entry ()
+  "Move the point to the next entry if there is one or to the previous one.
+Point isn't moved if point is on the only entry."
+  (if (tmr-tabulated--next-entry)
+      (next-line)
+    (when (tmr-tabulated--previous-entry)
+      (previous-line))))
+
+(defun tmr-tabulated--previous-entry ()
+  "Return the entry on the line before point, nil if none."
+  (save-excursion
+    (setf (point) (line-beginning-position))
+    (unless (bobp)
+      (previous-line)
+      (tabulated-list-get-id))))
+
+(defun tmr-tabulated--next-entry ()
+  "Return the entry on the line after point, nil if none."
+  (save-excursion
+    (setf (point) (line-end-position))
+    (unless (eobp)
+      (next-line)
+      (tabulated-list-get-id))))
+
+(defun tmr-tabulated--get-timer-at-point ()
+  "Return the timer on the current line or nil."
+  (tmr--get-timer-by-creation-date (tabulated-list-get-id)))
 
 (provide 'tmr-tabulated)
 ;;; tmr-tabulated.el ends here
