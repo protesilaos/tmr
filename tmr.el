@@ -53,9 +53,7 @@
 ;; When the timer is set, a message is sent to the echo area recording the
 ;; current time and the point in the future when the timer elapses.  Echo
 ;; area messages can be reviewed with the `view-echo-area-messages' which is
-;; bound to `C-h e' by default.  Though TMR provides its own buffer for
-;; reviewing its log: it is named `*tmr-messages*' and can be accessed with
-;; the command `tmr-view-echo-area-messages'.
+;; bound to `C-h e' by default.
 ;;
 ;; Once the timer runs its course, it produces a desktop notification and
 ;; plays an alarm sound.  The notification's message is practically the
@@ -231,28 +229,6 @@ It should take two string arguments: the title and the message."
       (call-process-shell-command
        (format "ffplay -nodisp -autoexit %s >/dev/null 2>&1" sound) nil 0))))
 
-(defun tmr--log-in-buffer (log)
-  "Insert LOG message in tmr buffer."
-  (when-let ((buf (get-buffer-create "*tmr-messages*")))
-    (with-current-buffer buf
-      (messages-buffer-mode)
-      (goto-char (point-max))
-      (let ((inhibit-read-only t))
-        (insert (concat log "\n"))))))
-
-(defun tmr-view-echo-area-messages ()
-  "View the '*tmr-messages*' buffer if present."
-  (interactive)
-  (if-let ((buf (get-buffer "*tmr-messages*")))
-      (with-current-buffer buf
-        (goto-char (point-max))
-        (let ((win (display-buffer (current-buffer))))
-          ;; If the buffer is already displayed, we need to forcibly set
-          ;; the window point to scroll to the end of the buffer.
-          (set-window-point win (point))
-          win))
-    (user-error "No *tmr-messages* buffer; have you used `tmr'?")))
-
 (defun tmr-notifications-notify (title message)
   "Dispatch notification titled TITLE with MESSAGE via D-Bus.
 
@@ -288,7 +264,6 @@ Read: (info \"(elisp) Desktop Notifications\") for details."
      (propertize "Start:" 'face 'success) start
      (propertize "End:" 'face 'error) end
      desc-propertized)
-    (tmr--log-in-buffer (format "Completed at %s what started at %s" end start))
     (unless (plist-get (notifications-get-capabilities) :sound)
       (tmr--play-sound))))
 
@@ -309,7 +284,6 @@ completion."
   (if (not timer)
       (user-error "No `tmr' to cancel")
     (cancel-timer (tmr--timer-timer-object timer))
-    (tmr--log-in-buffer (format "CANCELLED <<%s>>" (tmr--long-description timer)))
     (setq tmr--timers (cl-delete timer tmr--timers))))
 
 (defun tmr--read-timer ()
@@ -406,8 +380,7 @@ command `tmr-with-description' instead of this one."
                         #'tmr--notify timer)))
     (setf (tmr--timer-timer-object timer) timer-object)
     (tmr--echo-area time description)
-    (push timer tmr--timers)
-    (tmr--log-in-buffer (tmr--long-description timer))))
+    (push timer tmr--timers)))
 
 ;;;###autoload
 (defun tmr-with-description (time description)
