@@ -66,7 +66,7 @@
                ("End" 10 t)
                ("Finished?" 10 t)
                ("Description" 0 t)])
-  (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries)
+  (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)
   (tabulated-list-init-header))
 
 (defun tmr-tabulated-cancel (timer)
