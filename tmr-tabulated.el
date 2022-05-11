@@ -82,16 +82,16 @@ Interactively, use the timer at point."
   "Move the point to the next entry if there is one or to the previous one.
 Point isn't moved if point is on the only entry."
   (if (tmr-tabulated--next-entry)
-      (next-line)
+      (forward-line 1)
     (when (tmr-tabulated--previous-entry)
-      (previous-line))))
+      (forward-line -1))))
 
 (defun tmr-tabulated--previous-entry ()
   "Return the entry on the line before point, nil if none."
   (save-excursion
     (setf (point) (line-beginning-position))
     (unless (bobp)
-      (previous-line)
+      (forward-line -1)
       (tabulated-list-get-id))))
 
 (defun tmr-tabulated--next-entry ()
@@ -99,7 +99,7 @@ Point isn't moved if point is on the only entry."
   (save-excursion
     (setf (point) (line-end-position))
     (unless (eobp)
-      (next-line)
+      (forward-line 1)
       (tabulated-list-get-id))))
 
 (defun tmr-tabulated--get-timer-at-point ()
