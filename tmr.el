@@ -259,29 +259,34 @@ Read: (info \"(elisp) Desktop Notifications\") for details."
   "List of timer objects.
 Populated by `tmr' and then operated on by `tmr-cancel'.")
 
-;; FIXME 2022-05-08: Need to be refactored per commit 2fc61f9.
+(defun tmr--get-timer-by-creation-date (creation-date)
+  "Return the timer which was started at CREATION-DATE."
+  (cl-find creation-date tmr--timers :key #'tmr--timer-creation-date))
+
 ;;;###autoload
-(defun tmr-cancel ()
-  "Cancel timer object set with `tmr' command.
-If there is a single timer, cancel it outright.  If there are
-multiple timers, prompt for one with completion."
-  (interactive)
-  (if-let ((timers tmr--timers))
-      (cond
-       ((= (length timers) 1)
-        (let ((cell (car timers)))
-          (cancel-timer (cdr cell))
-          (tmr--log-in-buffer (format "CANCELLED <<%s>>" (car cell)))
-          (setq tmr--timers nil)))
-       ((> (length timers) 1)
-        (let* ((selection (completing-read "Cancel timer: " (mapc #'car timers) nil t))
-               (cell (assoc selection timers #'string-match-p))
-               (key (car cell))
-               (object (cdr cell)))
-          (cancel-timer object)
-          (tmr--log-in-buffer (format "CANCELLED <<%s>>" key))
-          (setq tmr--timers (delete cell tmr--timers)))))
-    (user-error "No `tmr' to cancel")))
+(defun tmr-cancel (timer)
+  "Cancel TIMER object set with `tmr' command.
+Interactively, let the user choose which timer to cancel with
+completion."
+  (interactive (list (tmr--read-timer)))
+  (if (not timer)
+      (user-error "No `tmr' to cancel")
+    (cancel-timer (tmr--timer-timer-object timer))
+    (tmr--log-in-buffer (format "CANCELLED <<%s>>" (tmr--long-description timer)))
+    (setq tmr--timers (cl-delete timer tmr--timers))))
+
+(defun tmr--read-timer ()
+  "Let the user choose a timer among all timers. Return the selected timer.
+If there is a single timer, use that.  If there are multiple
+timers, prompt for one with completion. If there are no timers,
+return nil."
+  (cond
+   ((= (length tmr--timers) 1)
+    (car timers))
+   ((> (length tmr--timers) 1)
+    (let* ((timer-descriptions (mapcar #'tmr--long-description tmr--timers))
+           (selection (completing-read "Timer: " timer-descriptions nil t)))
+      (cl-find selection tmr--timers :test #'string= :key #'tmr--long-description)))))
 
 (defun tmr--echo-area (time &optional description)
   "Produce `message' for current `tmr' TIME.
