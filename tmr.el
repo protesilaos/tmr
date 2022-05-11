@@ -28,10 +28,10 @@
 ;;; Commentary:
 ;;
 ;; TMR is an Emacs package that provides facilities for setting timers
-;; using a convenient notation.  The point of entry is the `tmr' command.
-;; It prompts for a unit of time, which is represented as a string that
-;; consists of a number and, optionally, a single character suffix which
-;; specifies the unit of time.  Valid input formats:
+;; using a convenient notation.  The first point of entry is the `tmr'
+;; command.  It prompts for a unit of time, which is represented as a
+;; string that consists of a number and, optionally, a single character
+;; suffix which specifies the unit of time.  Valid input formats:
 ;;
 ;; | Input | Meaning   |
 ;; |-------+-----------|
@@ -52,8 +52,8 @@
 ;; When the timer is set, a message is sent to the echo area recording the
 ;; current time and the point in the future when the timer elapses.  Echo
 ;; area messages can be reviewed with the `view-echo-area-messages' which is
-;; bound to =C-h e= by default.  Though TMR provides its own buffer for
-;; reviewing its log: it is named =*tmr-messages*= and can be accessed with
+;; bound to `C-h e' by default.  Though TMR provides its own buffer for
+;; reviewing its log: it is named `*tmr-messages*' and can be accessed with
 ;; the command `tmr-view-echo-area-messages'.
 ;;
 ;; Once the timer runs its course, it produces a desktop notification and
@@ -68,11 +68,33 @@
 ;; be played.
 ;;
 ;; The `tmr-cancel' command is used to cancel running timers (as set by the
-;; `tmr' command).  If there is only one timer, it cancels it outright.  If
-;; there are multiple timers, it produces a minibuffer completion prompt
-;; which asks for one among them.  Timers at the completion prompt are
-;; described by the exact time they were set and the input that was used to
-;; create them, including the optional description that `tmr' accepts.
+;; `tmr' or `tmr-with-description' commands).  If there is only one timer,
+;; it cancels it outright.  If there are multiple timers, it produces a
+;; minibuffer completion prompt which asks for one among them.  Timers at
+;; the completion prompt are described by the exact time they were set and
+;; the input that was used to create them, including the optional
+;; description that `tmr' and `tmr-with-description' accept.
+;;
+;; Active timers can be viewed in a grid with `tmr-tabulated-view' (part of
+;; the `tmr-tabulated.el' file, whose main author is Damien Cassou).  The
+;; grid is placed in the `*tmr-tabulated-view*' buffer and looks like this:
+;;
+;; Start      End        Finished?  Description
+;; 12:26:50   12:51:50   ✔         Update tmr manual
+;; 12:26:35   12:56:35              Bake bread
+;; 12:26:26   12:36:26              Prepare tea
+;;
+;; If a timer has elapsed, it has a check mark, otherwise the `Finished?'
+;; column is empty.  A `Description' is shown only if it is provided while
+;; setting the timer, otherwise the field is left blank.
+;;
+;; The `tmr-tabulated-view' command relies on Emacs' `tabulated-list-mode'.
+;; From the `*tmr-tabulated-view*' buffer, invoke the command
+;; `describe-mode' to learn about the applicable key bindings, such as how
+;; to expand/contract columns and toggle their sort.
+;;
+;; While in this grid view, the `k' key runs the `tmr-tabulated-cancel'
+;; command.  It immediately cancels the timer at point.
 
 ;;; Code:
 

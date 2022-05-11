@@ -24,8 +24,8 @@
 #+texinfo_header: @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
 
 This manual, written by Protesilaos Stavrou, describes the customization
-options for =tmr= (or =tmr.el=, tmr, TMR, ...), and provides every other
-piece of information pertinent to it.
+options for =tmr= (or =tmr.el=, tmr, TMR, TMR May Ring, ...), and
+provides every other piece of information pertinent to it.
 
 The documentation furnished herein corresponds to stable version
 {{{stable-version}}}, released on {{{release-date}}}.  Any reference to
@@ -37,6 +37,9 @@ Current development target is {{{development-version}}}.
 + Homepage: https://protesilaos.com/emacs/tmr.
 + Git repository: https://git.sr.ht/~protesilaos/tmr.
 + Mailing list: https://lists.sr.ht/~protesilaos/tmr.
+
+TMR has benefited from major contributions by Damien Cassou, to whom I
+am most thankful.
 
 #+toc: headlines 8 insert TOC here, with eight headline levels
 
@@ -67,10 +70,10 @@ modify this GNU manual.”
 
 #+findex: tmr
 TMR is an Emacs package that provides facilities for setting timers
-using a convenient notation.  The point of entry is the ~tmr~ command.
-It prompts for a unit of time, which is represented as a string that
-consists of a number and, optionally, a single character suffix which
-specifies the unit of time.  Valid input formats:
+using a convenient notation.  The first point of entry is the ~tmr~
+command.  It prompts for a unit of time, which is represented as a
+string that consists of a number and, optionally, a single character
+suffix which specifies the unit of time.  Valid input formats:
 
 | Input | Meaning   |
 |-------+-----------|
@@ -113,11 +116,40 @@ be played.
 
 #+findex: tmr-cancel
 The ~tmr-cancel~ command is used to cancel running timers (as set by the
-~tmr~ command).  If there is only one timer, it cancels it outright.  If
-there are multiple timers, it produces a minibuffer completion prompt
-which asks for one among them.  Timers at the completion prompt are
-described by the exact time they were set and the input that was used to
-create them, including the optional description that ~tmr~ accepts.
+~tmr~ or ~tmr-with-description~ commands).  If there is only one timer,
+it cancels it outright.  If there are multiple timers, it produces a
+minibuffer completion prompt which asks for one among them.  Timers at
+the completion prompt are described by the exact time they were set and
+the input that was used to create them, including the optional
+description that ~tmr~ and ~tmr-with-description~ accept.
+
+[ The following information about the grid view is part of
+  {{{development-version}}} ]
+
+#+findex: tmr-tabulated-view
+Active timers can be viewed in a grid with ~tmr-tabulated-view~ (part of
+the =tmr-tabulated.el= file, whose main author is Damien Cassou).  The
+grid is placed in the =*tmr-tabulated-view*= buffer and looks like this:
+
+#+begin_example
+Start      End        Finished?  Description
+12:26:50   12:51:50   ✔         Update tmr manual
+12:26:35   12:56:35              Bake bread
+12:26:26   12:36:26              Prepare tea
+#+end_example
+
+If a timer has elapsed, it has a check mark, otherwise the =Finished?=
+column is empty.  A =Description= is shown only if it is provided while
+setting the timer, otherwise the field is left blank.
+
+The ~tmr-tabulated-view~ command relies on Emacs' ~tabulated-list-mode~.
+From the =*tmr-tabulated-view*= buffer, invoke the command
+~describe-mode~ to learn about the applicable key bindings, such as how
+to expand/contract columns and toggle their sort.
+
+#+findex: tmr-tabulated-cancel
+While in this grid view, the =k= key runs the ~tmr-tabulated-cancel~
+command.  It immediately cancels the timer at point.
 
 * Installation
 :PROPERTIES:
@@ -181,14 +213,16 @@ Everything is in place to set up the package.
 (setq tmr-sound-file
       "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga")
 
+(setq tmr-notification-urgency 'normal)
+(setq tmr-descriptions-list (list "Boil water" "Prepare tea" "Bake bread"))
+
 ;; OPTIONALLY set global key bindings:
 (let ((map global-map))
-  (define-key map (kbd "C-c t t") #'tmr) ; or use the command `tmr-with-description'
+  (define-key map (kbd "C-c t t") #'tmr)
+  (define-key map (kbd "C-c t T") #'tmr-with-description)
   (define-key map (kbd "C-c t e") #'tmr-view-echo-area-messages) ; "e" to remind of C-h e
+  (define-key map (kbd "C-c t l") #'tmr-tabulated-view) ; "list timers" mnemonic
   (define-key map (kbd "C-c t c") #'tmr-cancel))
-
-;; Also check the user options `tmr-notification-urgency'
-;; `tmr-descriptions-list'.
 #+end_src
 
 * Acknowledgements
