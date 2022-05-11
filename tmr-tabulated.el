@@ -22,7 +22,10 @@
 
 ;;; Commentary:
 ;;
-;; TODO
+;; Call `M-x tmr-tabulated-view' to display all tmr timers in a grid,
+;; one by line with sortable columns.  Columns show the creation date,
+;; the end date, a check mark if the timer is finished and the timer's
+;; optional description.
 
 ;;; Code:
 
