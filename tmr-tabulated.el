@@ -60,6 +60,7 @@
   (let ((map (make-sparse-keymap)))
     (define-key map "k" #'tmr-tabulated-cancel)
     (define-key map "+" #'tmr)
+    (define-key map "c" #'tmr-tabulated-clone)
     map)
   "Keybindings for `tmr-tabulated-mode-map'.")
 
@@ -80,6 +81,13 @@ Interactively, use the timer at point."
   (tmr-cancel timer)
   ;; avoid point moving back to the beginning of the buffer:
   (tmr-tabulated--move-point-to-closest-entry)
+  (revert-buffer))
+
+(defun tmr-tabulated-clone (timer)
+  "Create a new timer by cloning TIMER.
+Interactively, use the timer at point."
+  (interactive (list (tmr-tabulated--get-timer-at-point)))
+  (tmr-clone timer)
   (revert-buffer))
 
 (defun tmr-tabulated--move-point-to-closest-entry ()
