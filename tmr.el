@@ -76,6 +76,10 @@
 ;; the input that was used to create them, including the optional
 ;; description that `tmr' and `tmr-with-description' accept.
 ;;
+;; An existing timer can be cloned with the `tmr-clone' command.  It copies
+;; the duration and optional description of an existing timer into a new
+;; one.
+;;
 ;; Active timers can be viewed in a grid with `tmr-tabulated-view' (part of
 ;; the `tmr-tabulated.el' file).  The grid is placed in the
 ;; `*tmr-tabulated-view*' buffer and looks like this:
@@ -94,8 +98,17 @@
 ;; `describe-mode' to learn about the applicable key bindings, such as how
 ;; to expand/contract columns and toggle their sort.
 ;;
-;; While in this grid view, the `k' key runs the `tmr-tabulated-cancel'
-;; command.  It immediately cancels the timer at point.
+;; While in this grid view:
+;;
+;; + The `+' key creates a new timer by calling the standard `tmr' command.
+;;   As always, use a prefix argument to also prompt for a description.
+;;
+;; + The `c' key invokes the `tmr-tabulated-cancel' command.  It is the
+;;   same as the aforementioned `tmr-cancel' plus some tweaks for the grid
+;;   view.
+;;
+;; + The `k' key runs the `tmr-tabulated-cancel' command.  It immediately
+;;   cancels the timer at point.
 
 ;;; Code:
 

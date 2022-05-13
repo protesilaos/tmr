@@ -120,8 +120,13 @@ the completion prompt are described by the exact time they were set and
 the input that was used to create them, including the optional
 description that ~tmr~ and ~tmr-with-description~ accept.
 
-[ The following information about the grid view is part of
-  {{{development-version}}} ]
+[ The following information is part of {{{development-version}}}.  Some
+  things may still change. ]
+
+#+findex: tmr-clone
+An existing timer can be cloned with the ~tmr-clone~ command.  It copies
+the duration and optional description of an existing timer into a new
+one.
 
 #+findex: tmr-tabulated-view
 Active timers can be viewed in a grid with ~tmr-tabulated-view~ (part of
@@ -144,9 +149,19 @@ From the =*tmr-tabulated-view*= buffer, invoke the command
 ~describe-mode~ to learn about the applicable key bindings, such as how
 to expand/contract columns and toggle their sort.
 
+While in this grid view:
+
++ The =+= key creates a new timer by calling the standard ~tmr~ command.
+  As always, use a prefix argument to also prompt for a description.
+
 #+findex: tmr-tabulated-cancel
-While in this grid view, the =k= key runs the ~tmr-tabulated-cancel~
-command.  It immediately cancels the timer at point.
++ The =c= key invokes the ~tmr-tabulated-cancel~ command.  It is the
+  same as the aforementioned ~tmr-cancel~ plus some tweaks for the grid
+  view.
+
+#+findex: tmr-tabulated-cancel
++ The =k= key runs the ~tmr-tabulated-cancel~ command.  It immediately
+  cancels the timer at point.
 
 * Installation
 :PROPERTIES:
