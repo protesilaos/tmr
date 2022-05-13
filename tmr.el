@@ -335,9 +335,10 @@ Optionally include DESCRIPTION."
 (defvar tmr--duration-hist '()
   "Minibuffer history of `tmr' durations.")
 
-(defun tmr--read-duration ()
-  "Ask the user to type a duration."
-  (let ((def (nth 0 tmr--duration-hist)))
+(defun tmr--read-duration (&optional default)
+  "Ask the user to type a duration.
+If DEFAULT is provided, use that as a default."
+  (let ((def (or default (nth 0 tmr--duration-hist))))
     (read-string
      (if def
          (format "N minutes for timer (append `h' or `s' for other units) [%s]: " def)
@@ -408,6 +409,14 @@ user uses a prefix argument (\\[universal-argument])."
     (tmr--read-duration)
     (tmr--description-prompt)))
   (tmr time description))
+
+;;;###autoload
+(defun tmr-clone (timer)
+  "Create a new timer by cloning TIMER."
+  (interactive (list (tmr--read-timer)))
+  (tmr (tmr--read-duration
+        (format "%ss" (tmr--timer-duration timer)))
+       (tmr--timer-description timer)))
 
 (provide 'tmr)
 ;;; tmr.el ends here
