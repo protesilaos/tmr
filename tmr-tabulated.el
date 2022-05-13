@@ -59,6 +59,7 @@
 (defvar tmr-tabulated-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "k" #'tmr-tabulated-cancel)
+    (define-key map "+" #'tmr)
     map)
   "Keybindings for `tmr-tabulated-mode-map'.")
 
