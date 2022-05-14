@@ -111,31 +111,9 @@
 
 ;;; Code:
 
-(require 'notifications)
-
 (defgroup tmr ()
   "TMR May Ring: set timers using a simple notation."
   :group 'data)
-
-(defcustom tmr-sound-file
-  "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
-  "Path to sound file used by `tmr--play-sound'.
-If nil, don't play any sound."
-  :type '(choice file
-                 (const :tag "Off" nil))
-  :group 'tmr)
-
-(defcustom tmr-notification-urgency 'normal
-  "The urgency level of the desktop notification.
-Values can be `low', `normal' (default), or `critical'.
-
-The desktop environment or notification daemon is responsible for
-such notifications."
-  :type '(choice
-          (const :tag "Low" low)
-          (const :tag "Normal" normal)
-          (const :tag "Critical" critical))
-  :group 'tmr)
 
 (defcustom tmr-descriptions-list (list "Boil water" "Prepare tea" "Bake bread")
   "Optional description candidates for the current `tmr'.
@@ -145,11 +123,31 @@ used."
   :type '(repeat string)
   :group 'tmr)
 
-(defcustom tmr-notify-function #'tmr-notifications-notify
-  "Function called to send notification.
-It should take two string arguments: the title and the message."
-  :type 'function
-  :group 'tmr)
+(defcustom tmr-timer-created-functions
+  (list #'tmr-print-message-for-created-timer)
+  "Functions to execute when a timer is created.
+Each function must accept a timer as argument."
+  :type 'hook
+  :options '(tmr-print-message-for-created-timer))
+
+(declare-function tmr-sound-play "ext:tmr-sound.el")
+(declare-function tmr-notification-notify "ext:tmr-notification.el")
+
+(defcustom tmr-timer-completed-functions
+  (list #'tmr-print-message-for-completed-timer
+        #'tmr-sound-play
+        #'tmr-notification-notify)
+  "Functions to execute when a timer is completed.
+Each function must accept a timer as argument."
+  :type 'hook
+  :options (list #'tmr-print-message-for-completed-timer
+                 #'tmr-sound-play
+                 #'tmr-notification-notify))
+
+(defcustom tmr-timer-cancelled-functions nil
+  "Functions to execute when a timer is created.
+Each function must accept a timer as argument."
+  :type 'hook)
 
 (cl-defstruct (tmr-timer
                (:constructor tmr--timer-create)
@@ -187,6 +185,20 @@ It should take two string arguments: the title and the message."
                 (format " [%s]" (propertize description 'face 'bold))
               ""))))
 
+(defun tmr--long-description-for-completed-timer (timer)
+  "Return a human-readable description of completed TIMER.
+This includes the creation and completion dates as well as the
+optional `tmr--timer-description'."
+  (let ((start (tmr--format-creation-date timer))
+        (end (tmr--format-end-date timer))
+        (description (tmr--timer-description timer)))
+    (format "Time is up!\n%s%s %s\n%s %s"
+            (if description (format "%s\n" description) "")
+            (propertize "Started" 'face 'success)
+            start
+            (propertize "Ended" 'face 'success)
+            end)))
+
 (defun tmr--format-creation-date (timer)
   "Return a string representing when TIMER was created."
   (tmr--format-time (tmr--timer-creation-date timer)))
@@ -221,56 +233,6 @@ It should take two string arguments: the title and the message."
         ("w" (user-error "TMR Made Ridiculous; append character for [m]inutes, [h]ours, [s]econds"))
         (_ (* num 60)))))))
 
-;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
-;; supports .wav and .au formats.  Also, it does not work on all
-;; platforms and Emacs needs to be compiled --with-sound capabilities.
-(defun tmr--play-sound ()
-  "Play `tmr-sound-file' using the 'ffplay' executable (ffmpeg)."
-  (when-let* ((sound tmr-sound-file))
-    (when (file-exists-p sound)
-      (unless (executable-find "ffplay")
-        (user-error "Cannot play %s without `ffplay'" sound))
-      (call-process-shell-command
-       (format "ffplay -nodisp -autoexit %s >/dev/null 2>&1" sound) nil 0))))
-
-(defun tmr-notifications-notify (title message)
-  "Dispatch notification titled TITLE with MESSAGE via D-Bus.
-
-Read: (info \"(elisp) Desktop Notifications\") for details."
-  (notifications-notify
-   :title title
-   :body message
-   :app-name "GNU Emacs"
-   :urgency tmr-notification-urgency
-   :sound-file tmr-sound-file))
-
-(defun tmr--notify-send-notification (title message)
-  "Send notification with TITLE and MESSAGE using `tmr-notify-function'."
-  (funcall tmr-notify-function title message))
-
-(defun tmr--notify (timer)
-  "Send notification for TIMER."
-  (let* ((description (tmr--timer-description timer))
-         (desc-plain (if description
-                         (concat "\n" description)
-                       ""))
-         (desc-propertized (if description
-                               (concat " [" (propertize description 'face 'bold) "]")
-                             ""))
-         (start (tmr--format-creation-date timer))
-         (end (tmr--format-end-date timer)))
-    (setf (tmr--timer-donep timer) t)
-    (tmr--notify-send-notification
-     "TMR May Ring (Emacs tmr package)"
-     (format "Time is up!\nStarted: %s\nEnded: %s%s" start end desc-plain))
-    (message
-     "TMR %s %s ; %s %s%s"
-     (propertize "Start:" 'face 'success) start
-     (propertize "End:" 'face 'error) end
-     desc-propertized)
-    (unless (plist-get (notifications-get-capabilities) :sound)
-      (tmr--play-sound))))
-
 (defvar tmr--timers nil
   "List of timer objects.
 Populated by `tmr' and then operated on by `tmr-cancel'.")
@@ -288,7 +250,8 @@ completion."
   (if (not timer)
       (user-error "No `tmr' to cancel")
     (cancel-timer (tmr--timer-timer-object timer))
-    (setq tmr--timers (cl-delete timer tmr--timers))))
+    (setq tmr--timers (cl-delete timer tmr--timers))
+    (run-hook-with-args 'tmr-timer-cancelled-functions timer)))
 
 (defun tmr--read-timer ()
   "Let the user choose a timer among all timers.
@@ -304,24 +267,13 @@ there are no timers, return nil."
              (selection (completing-read "Timer: " timer-descriptions nil t)))
         (cl-find selection timers :test #'string= :key #'tmr--long-description))))))
 
-(defun tmr--echo-area (time &optional description)
-  "Produce `message' for current `tmr' TIME.
-Optionally include DESCRIPTION."
-  (let* ((specifier (substring time -1))
-         (amount (substring time 0 -1))
-         (start (tmr--format-time (current-time)))
-         (unit (pcase specifier
-                 ("s" (format "%ss (s == second)" amount))
-                 ("h" (format "%sh (h == hour)" amount))
-                 (_   (concat time "m (m == minute)")))))
-    (message "`tmr' started at %s for %s%s"
-             ;; Remember: these are just faces.  Don't get caught in the
-             ;; semantics.
-             (propertize start 'face 'success)
-             (propertize unit 'face 'error)
-             (if description
-                 (format " [%s]" (propertize description 'face 'bold))
-               ""))))
+(defun tmr-print-message-for-created-timer (timer)
+  "Show a `message' informing the user that TIMER was created."
+  (message "%s" (tmr--long-description timer)))
+
+(defun tmr-print-message-for-completed-timer (timer)
+  "Show a `message' informing the user that TIMER has completed."
+  (message "%s" (tmr--long-description-for-completed-timer timer)))
 
 (defvar tmr--duration-hist '()
   "Minibuffer history of `tmr' durations.")
@@ -349,6 +301,11 @@ If DEFAULT is provided, use that as a default."
        "Description for this tmr: ")
      tmr-descriptions-list nil nil nil
      'tmr--description-hist def)))
+
+(defun tmr--complete (timer)
+  "Mark TIMER as completed and execute `tmr-timer-completed-functions'."
+  (setf (tmr--timer-donep timer) t)
+  (run-hook-with-args 'tmr-timer-completed-functions timer))
 
 ;;;###autoload
 (defun tmr (time &optional description)
@@ -381,10 +338,10 @@ command `tmr-with-description' instead of this one."
                  :duration duration))
          (timer-object (run-with-timer
                         duration nil
-                        #'tmr--notify timer)))
+                        #'tmr--complete timer)))
     (setf (tmr--timer-timer-object timer) timer-object)
-    (tmr--echo-area time description)
-    (push timer tmr--timers)))
+    (push timer tmr--timers)
+    (run-hook-with-args 'tmr-timer-created-functions timer)))
 
 ;;;###autoload
 (defun tmr-with-description (time description)
