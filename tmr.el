@@ -178,11 +178,14 @@ It should take two string arguments: the title and the message."
 (defun tmr--long-description (timer)
   "Return a human-readable description for TIMER."
   (let ((start (tmr--format-creation-date timer))
-        (duration (tmr--timer-duration timer))
+        (end (tmr--format-end-date timer))
         (description (tmr--timer-description timer)))
-    (if description
-        (format "Started at %s with input '%s' and description '%s'" start duration description)
-      (format "Started at %s with input '%s'" start duration))))
+    (format "Started at %s and will end at %s%s"
+            (propertize start 'face 'success)
+            (propertize end 'face 'error)
+            (if description
+                (format " [%s]" (propertize description 'face 'bold))
+              ""))))
 
 (defun tmr--format-creation-date (timer)
   "Return a string representing when TIMER was created."
