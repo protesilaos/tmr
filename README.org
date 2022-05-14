@@ -93,8 +93,9 @@ description.
 #+findex: tmr-view-echo-area-messages
 When the timer is set, a message is sent to the echo area recording the
 current time and the point in the future when the timer elapses.  Echo
-area messages can be reviewed with the ~view-echo-area-messages~ which is
-bound to =C-h e= by default.
+area messages can be reviewed with the ~view-echo-area-messages~ which
+is bound to =C-h e= by default.  To check all timers, use the command
+~tmr-tabulated-view~, which is described further below.
 
 #+vindex: tmr-sound-file
 #+vindex: tmr-notification-urgency
@@ -230,9 +231,9 @@ Everything is in place to set up the package.
 (let ((map global-map))
   (define-key map (kbd "C-c t t") #'tmr)
   (define-key map (kbd "C-c t T") #'tmr-with-description)
-  (define-key map (kbd "C-c t e") #'tmr-view-echo-area-messages) ; "e" to remind of C-h e
   (define-key map (kbd "C-c t l") #'tmr-tabulated-view) ; "list timers" mnemonic
-  (define-key map (kbd "C-c t c") #'tmr-cancel))
+  (define-key map (kbd "C-c t c") #'tmr-clone)
+  (define-key map (kbd "C-c t k") #'tmr-cancel))
 #+end_src
 
 * Acknowledgements

@@ -52,8 +52,9 @@
 ;;
 ;; When the timer is set, a message is sent to the echo area recording the
 ;; current time and the point in the future when the timer elapses.  Echo
-;; area messages can be reviewed with the `view-echo-area-messages' which is
-;; bound to `C-h e' by default.
+;; area messages can be reviewed with the `view-echo-area-messages' which
+;; is bound to `C-h e' by default.  To check all timers, use the command
+;; `tmr-tabulated-view', which is described further below.
 ;;
 ;; Once the timer runs its course, it produces a desktop notification and
 ;; plays an alarm sound.  The notification's message is practically the
