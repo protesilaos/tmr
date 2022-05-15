@@ -323,9 +323,12 @@ If DEFAULT is provided, use that as a default."
 (defvar tmr--description-hist '()
   "Minibuffer history of `tmr' descriptions.")
 
-(defun tmr--description-prompt ()
-  "Helper prompt for descriptions in `tmr'."
-  (let ((def (nth 0 tmr--description-hist)))
+(defun tmr--description-prompt (&optional default)
+  "Helper prompt for descriptions in `tmr'.
+If optional DEFAULT is provided use it as a default.  Otherwise
+use the latest input from the `tmr--description-hist', if
+present."
+  (let ((def (or default (nth 0 tmr--description-hist))))
     (completing-read
      (if def
          (format "Description for this tmr [%s]: " def)
