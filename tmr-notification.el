@@ -29,7 +29,7 @@
 ;;
 ;; Provides a function to display a desktop notification.  This is
 ;; useful to get a passive popup when a timer completes.  Read
-;; (info \"(elisp) Desktop Notifications\") for details.
+;; (info "(elisp) Desktop Notifications") for details.
 
 ;;; Code:
 (require 'tmr)
