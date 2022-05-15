@@ -85,7 +85,7 @@ The input can be a floating point:
 | Input | Meaning                  |
 |-------+--------------------------|
 | 1.5   | 1.5 minutes (90 seconds) |
-| 1.5h  | 1.5 hours (90 minuts)    |
+| 1.5h  | 1.5 hours (90 minutes)   |
 
 #+vindex: tmr-descriptions-list
 If ~tmr~ is called with an optional prefix argument (=C-u=), it asks for
