@@ -64,7 +64,7 @@
     (define-key map "+" #'tmr)
     (define-key map "c" #'tmr-tabulated-clone)
     (define-key map "w" #'tmr-tabulated-rewrite-description)
-    (define-key map "r" #'tmr-tabulated-reschedule)
+    (define-key map "s" #'tmr-tabulated-reschedule)
     map)
   "Keybindings for `tmr-tabulated-mode-map'.")
 
