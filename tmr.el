@@ -111,6 +111,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'cl-lib))
+
 (defgroup tmr ()
   "TMR May Ring: set timers using a simple notation."
   :group 'data)
@@ -236,6 +238,9 @@ optional `tmr--timer-description'."
 (defvar tmr--timers nil
   "List of timer objects.
 Populated by `tmr' and then operated on by `tmr-cancel'.")
+
+(declare-function cl-find "cl-seq" (cl-item cl-seq &rest cl-keys))
+(declare-function cl-delete "cl-seq" (cl-item cl-seq &rest cl-keys))
 
 (defun tmr--get-timer-by-creation-date (creation-date)
   "Return the timer which was started at CREATION-DATE."
