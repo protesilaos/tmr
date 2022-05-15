@@ -393,12 +393,24 @@ user uses a prefix argument (\\[universal-argument])."
   (tmr time description))
 
 ;;;###autoload
-(defun tmr-clone (timer)
-  "Create a new timer by cloning TIMER."
-  (interactive (list (tmr--read-timer)))
-  (tmr (tmr--read-duration
-        (format "%ss" (tmr--timer-duration timer)))
-       (tmr--timer-description timer)))
+(defun tmr-clone (timer &optional prompt)
+  "Create a new timer by cloning TIMER.
+With optional PROMPT, such as a prefix argument, ask for
+confirmation about the duration and the description.  The
+description is asked only if TIMER had one.
+
+Without a PROMPT, clone TIMER outright."
+  (interactive (list (tmr--read-timer) current-prefix-arg))
+  (let ((description (tmr--timer-description timer)))
+    (cond
+     (prompt
+      (tmr
+       (tmr--read-duration (format "%s" (tmr--timer-input timer)))
+       (when description (tmr--description-prompt description))))
+     (t
+      (tmr
+       (format "%s" (tmr--timer-input timer))
+       (tmr--timer-description timer))))))
 
 (provide 'tmr)
 ;;; tmr.el ends here
