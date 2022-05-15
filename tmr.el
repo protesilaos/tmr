@@ -248,6 +248,14 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
 
 (declare-function cl-find "cl-seq" (cl-item cl-seq &rest cl-keys))
 (declare-function cl-delete "cl-seq" (cl-item cl-seq &rest cl-keys))
+(declare-function cl-remove-if "cl-seq" (cl-pred cl-list &rest cl-keys))
+
+(defun tmr--active-timers ()
+  "Retun list of active timers."
+  (cl-remove-if
+   (lambda (timer)
+     (tmr--timer-donep timer))
+   tmr--timers))
 
 (defun tmr--get-timer-by-creation-date (creation-date)
   "Return the timer which was started at CREATION-DATE."
@@ -258,19 +266,22 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
   "Cancel TIMER object set with `tmr' command.
 Interactively, let the user choose which timer to cancel with
 completion."
-  (interactive (list (tmr--read-timer)))
+  (interactive (list (tmr--read-timer :active)))
   (if (not timer)
       (user-error "No `tmr' to cancel")
     (cancel-timer (tmr--timer-timer-object timer))
     (setq tmr--timers (cl-delete timer tmr--timers))
     (run-hook-with-args 'tmr-timer-cancelled-functions timer)))
 
-(defun tmr--read-timer ()
+(defun tmr--read-timer (&optional active)
   "Let the user choose a timer among all timers.
 Return the selected timer.  If there is a single timer, use that.
 If there are multiple timers, prompt for one with completion.  If
-there are no timers, return nil."
-  (let ((timers tmr--timers))
+there are no timers, return nil.
+
+If optional ACTIVE is non-nil, limit the list of timers to those
+that are still running."
+  (let ((timers (if active (tmr--active-timers) tmr--timers)))
     (cond
      ((= (length timers) 1)
       (car timers))
