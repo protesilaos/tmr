@@ -171,6 +171,10 @@ Each function must accept a timer as argument."
    nil
    :read-only nil
    :documentation "The object returned by `run-with-timer'.")
+  (input
+   nil
+   :read-only t
+   :documentation "The original input which is internally interpreted as a duration.")
   (description
    nil
    :read-only t
@@ -362,7 +366,8 @@ command `tmr-with-description' instead of this one."
          (timer (tmr--timer-create
                  :description description
                  :creation-date creation-date
-                 :duration duration))
+                 :duration duration
+                 :input time))
          (timer-object (run-with-timer
                         duration nil
                         #'tmr--complete timer)))
