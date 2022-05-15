@@ -146,7 +146,8 @@ Each function must accept a timer as argument."
                  #'tmr-sound-play
                  #'tmr-notification-notify))
 
-(defcustom tmr-timer-cancelled-functions nil
+(defcustom tmr-timer-cancelled-functions
+  (list #'tmr-print-message-for-cancelled-timer)
   "Functions to execute when a timer is created.
 Each function must accept a timer as argument."
   :type 'hook)
@@ -180,7 +181,12 @@ Each function must accept a timer as argument."
   (let ((start (tmr--format-creation-date timer))
         (end (tmr--format-end-date timer))
         (description (tmr--timer-description timer)))
-    (format "Started at %s and will end at %s%s"
+    ;; We prefix it with TMR just so it is easier to find in
+    ;; `view-echo-area-messages'.  The concise wording makes it flexible
+    ;; enough to be used when starting a timer but also when cancelling
+    ;; one: check `tmr-print-message-for-created-timer' and
+    ;; `tmr-print-message-for-cancelled-timer'.
+    (format "TMR start at %s; end at %s%s"
             (propertize start 'face 'success)
             (propertize end 'face 'error)
             (if description
@@ -279,6 +285,10 @@ there are no timers, return nil."
 (defun tmr-print-message-for-completed-timer (timer)
   "Show a `message' informing the user that TIMER has completed."
   (message "%s" (tmr--long-description-for-completed-timer timer)))
+
+(defun tmr-print-message-for-cancelled-timer (timer)
+  "Show a `message' informing the user that TIMER is cancelled."
+  (message "Cancelled: <<%s>>" (tmr--long-description timer)))
 
 (defvar tmr--duration-hist '()
   "Minibuffer history of `tmr' durations.")
