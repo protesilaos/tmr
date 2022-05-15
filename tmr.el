@@ -177,7 +177,7 @@ Each function must accept a timer as argument."
    :documentation "The original input which is internally interpreted as a duration.")
   (description
    nil
-   :read-only t
+   :read-only nil
    :documentation "Optional string describing the purpose of the timer, e.g., \"Stop the oven\"."))
 
 (defun tmr--long-description (timer)

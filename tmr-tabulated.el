@@ -63,6 +63,8 @@
     (define-key map "k" #'tmr-tabulated-cancel)
     (define-key map "+" #'tmr)
     (define-key map "c" #'tmr-tabulated-clone)
+    (define-key map "w" #'tmr-tabulated-rewrite-description)
+    (define-key map "r" #'tmr-tabulated-reschedule)
     map)
   "Keybindings for `tmr-tabulated-mode-map'.")
 
@@ -76,11 +78,13 @@
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)
   (tabulated-list-init-header))
 
-(defun tmr-tabulated-cancel (timer)
+(defun tmr-tabulated-cancel (timer &optional no-hooks)
   "Stop TIMER and remove it from the list.
-Interactively, use the timer at point."
-  (interactive (list (tmr-tabulated--get-timer-at-point)))
-  (tmr-cancel timer)
+Interactively, use the timer at point.
+
+Optional NO-HOOKS has the same meaning as in `tmr-cancel'."
+  (interactive (list (tmr-tabulated--get-timer-at-point) current-prefix-arg))
+  (tmr-cancel timer no-hooks)
   ;; avoid point moving back to the beginning of the buffer:
   (tmr-tabulated--move-point-to-closest-entry)
   (revert-buffer))
@@ -90,6 +94,26 @@ Interactively, use the timer at point."
 Interactively, use the timer at point."
   (interactive (list (tmr-tabulated--get-timer-at-point)))
   (tmr-clone timer)
+  (revert-buffer))
+
+(defun tmr-tabulated-reschedule (timer)
+  "Reschedule TIMER.
+This is the same as cloning it and cancelling the original one.
+
+If TIMER has a description, prompt for one.  Otherwise only
+prompt for a duration."
+  (interactive (list (tmr-tabulated--get-timer-at-point)))
+  (tmr-clone timer :prompt)
+  ;; Cancel the old timer
+  (tmr-tabulated-cancel timer :no-hooks))
+
+(defun tmr-tabulated-rewrite-description (timer description)
+  "Change TIMER description with that of DESCRIPTION."
+  (interactive
+   (list
+    (tmr-tabulated--get-timer-at-point)
+    (tmr--description-prompt)))
+  (setf (tmr--timer-description timer) description)
   (revert-buffer))
 
 (defun tmr-tabulated--move-point-to-closest-entry ()
