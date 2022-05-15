@@ -29,85 +29,10 @@
 ;;; Commentary:
 ;;
 ;; TMR is an Emacs package that provides facilities for setting timers
-;; using a convenient notation.  The first point of entry is the `tmr'
-;; command.  It prompts for a unit of time, which is represented as a
-;; string that consists of a number and, optionally, a single character
-;; suffix which specifies the unit of time.  Valid input formats:
+;; using a convenient notation.
 ;;
-;; | Input | Meaning   |
-;; |-------+-----------|
-;; | 5     | 5 minutes |
-;; | 5m    | 5 minutes |
-;; | 5s    | 5 seconds |
-;; | 5h    | 5 hours   |
-;;
-;; If `tmr' is called with an optional prefix argument (`C-u'), it also
-;; asks for a description which accompanies the given timer.  Preconfigured
-;; candidates are specified in the user option `tmr-descriptions-list',
-;; though any arbitrary input is acceptable at the minibuffer prompt.
-;;
-;; An alternative to the `tmr' command is `tmr-with-description'.  The
-;; difference between the two is that the latter always prompts for a
-;; description.
-;;
-;; When the timer is set, a message is sent to the echo area recording the
-;; current time and the point in the future when the timer elapses.  Echo
-;; area messages can be reviewed with the `view-echo-area-messages' which
-;; is bound to `C-h e' by default.  To check all timers, use the command
-;; `tmr-tabulated-view', which is described further below.
-;;
-;; Once the timer runs its course, it produces a desktop notification and
-;; plays an alarm sound.  The notification's message is practically the
-;; same as that which is sent to the echo area.  The sound file for the
-;; alarm is defined in `tmr-sound-file', while the urgency of the
-;; notification can be set through the `tmr-notification-urgency' option.
-;; Note that it is up to the desktop environment or notification daemon to
-;; decide how to handle the urgency value.
-;;
-;; If the `tmr-sound-file' is nil, or the file is not found, no sound will
-;; be played.
-;;
-;; The `tmr-cancel' command is used to cancel running timers (as set by the
-;; `tmr' or `tmr-with-description' commands).  If there is only one timer,
-;; it cancels it outright.  If there are multiple timers, it produces a
-;; minibuffer completion prompt which asks for one among them.  Timers at
-;; the completion prompt are described by the exact time they were set and
-;; the input that was used to create them, including the optional
-;; description that `tmr' and `tmr-with-description' accept.
-;;
-;; An existing timer can be cloned with the `tmr-clone' command.  It copies
-;; the duration and optional description of an existing timer into a new
-;; one.
-;;
-;; Active timers can be viewed in a grid with `tmr-tabulated-view' (part of
-;; the `tmr-tabulated.el' file).  The grid is placed in the
-;; `*tmr-tabulated-view*' buffer and looks like this:
-;;
-;; Start      End        Finished?  Description
-;; 12:26:50   12:51:50   ✔         Update tmr manual
-;; 12:26:35   12:56:35              Bake bread
-;; 12:26:26   12:36:26              Prepare tea
-;;
-;; If a timer has elapsed, it has a check mark, otherwise the `Finished?'
-;; column is empty.  A `Description' is shown only if it is provided while
-;; setting the timer, otherwise the field is left blank.
-;;
-;; The `tmr-tabulated-view' command relies on Emacs' `tabulated-list-mode'.
-;; From the `*tmr-tabulated-view*' buffer, invoke the command
-;; `describe-mode' to learn about the applicable key bindings, such as how
-;; to expand/contract columns and toggle their sort.
-;;
-;; While in this grid view:
-;;
-;; + The `+' key creates a new timer by calling the standard `tmr' command.
-;;   As always, use a prefix argument to also prompt for a description.
-;;
-;; + The `c' key invokes the `tmr-tabulated-cancel' command.  It is the
-;;   same as the aforementioned `tmr-cancel' plus some tweaks for the grid
-;;   view.
-;;
-;; + The `k' key runs the `tmr-tabulated-cancel' command.  It immediately
-;;   cancels the timer at point.
+;; Please read the manual for all the technicalities.  Either evaluate
+;; (info "(tmr) Top") or visit <https://protesilaos.com/emacs/tmr>.
 
 ;;; Code:
 

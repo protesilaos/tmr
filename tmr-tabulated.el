@@ -31,6 +31,9 @@
 ;; one by line with sortable columns.  Columns show the creation date,
 ;; the end date, a check mark if the timer is finished and the timer's
 ;; optional description.
+;;
+;; Please read the manual for all the technicalities.  Either evaluate
+;; (info "(tmr) Top") or visit <https://protesilaos.com/emacs/tmr>.
 
 ;;; Code:
 

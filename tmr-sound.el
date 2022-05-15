@@ -30,9 +30,12 @@
 ;; Provides a function to play a configurable sound file.  This is
 ;; useful to get an audio notification when a timer completes.  This
 ;; feature requires "ffplay" (part of ffmpeg) to be in the path.
-
+;;
 ;; Choose the sound file through the `tmr-sound-file' option: if its
 ;; value is nil or if the file is not found, no sound will be played.
+;;
+;; Please read the manual for all the technicalities.  Either evaluate
+;; (info "(tmr) Top") or visit <https://protesilaos.com/emacs/tmr>.
 
 ;;; Code:
 (require 'tmr)
