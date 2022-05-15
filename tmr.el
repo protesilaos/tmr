@@ -200,11 +200,12 @@ optional `tmr--timer-description'."
   (let ((start (tmr--format-creation-date timer))
         (end (tmr--format-end-date timer))
         (description (tmr--timer-description timer)))
-    (format "Time is up!\n%s%s %s\n%s %s"
+    ;; For the TMR prefix, see comment in `tmr--long-description'.
+    (format "TMR Time is up!\n%s%s %s\n%s %s"
             (if description (format "%s\n" description) "")
             (propertize "Started" 'face 'success)
             start
-            (propertize "Ended" 'face 'success)
+            (propertize "Ended" 'face 'error)
             end)))
 
 (defun tmr--format-creation-date (timer)
