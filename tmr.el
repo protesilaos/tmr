@@ -266,16 +266,20 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
   (cl-find creation-date tmr--timers :key #'tmr--timer-creation-date))
 
 ;;;###autoload
-(defun tmr-cancel (timer)
+(defun tmr-cancel (timer &optional no-hooks)
   "Cancel TIMER object set with `tmr' command.
 Interactively, let the user choose which timer to cancel with
-completion."
-  (interactive (list (tmr--read-timer :active)))
+completion.
+
+With optional NO-HOOKS refrain from calling
+`tmr-timer-cancelled-functions'."
+  (interactive (list (tmr--read-timer :active) current-prefix-arg))
   (if (not timer)
       (user-error "No `tmr' to cancel")
     (cancel-timer (tmr--timer-timer-object timer))
     (setq tmr--timers (cl-delete timer tmr--timers))
-    (run-hook-with-args 'tmr-timer-cancelled-functions timer)))
+    (unless no-hooks
+      (run-hook-with-args 'tmr-timer-cancelled-functions timer))))
 
 (defun tmr--read-timer (&optional active)
   "Let the user choose a timer among all timers.
