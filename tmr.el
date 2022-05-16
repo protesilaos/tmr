@@ -243,7 +243,7 @@ completion candidates."
       (let* ((formatter (or description #'tmr--long-description))
              (timer-descriptions (mapcar formatter timers))
              (selection (completing-read "Timer: " timer-descriptions nil t)))
-        (cl-find selection timers :test #'string= :key #'tmr--long-description))))))
+        (cl-find selection timers :test #'string= :key formatter))))))
 
 (defun tmr-print-message-for-created-timer (timer)
   "Show a `message' informing the user that TIMER was created."
