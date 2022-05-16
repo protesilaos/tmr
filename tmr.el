@@ -137,6 +137,22 @@ optional `tmr--timer-description'."
             (propertize "Ended" 'face 'error)
             end)))
 
+(defun tmr--long-description-for-clonable-timer (timer)
+  "Return a human-readable description for clonable TIMER.
+This is like `tmr--long-description' with the inclusion of the
+original input for TIMER's duration."
+  (let ((start (tmr--format-creation-date timer))
+        (end (tmr--format-end-date timer))
+        (description (tmr--timer-description timer))
+        (input (tmr--timer-input timer)))
+    (format "TMR start at %s; end at %s%s (input was '%s')"
+            (propertize start 'face 'success)
+            (propertize end 'face 'error)
+            (if description
+                (format " [%s]" (propertize description 'face 'bold))
+              "")
+            (propertize input 'face 'warning))))
+
 (defun tmr--format-creation-date (timer)
   "Return a string representing when TIMER was created."
   (tmr--format-time (tmr--timer-creation-date timer)))
@@ -206,20 +222,24 @@ With optional NO-HOOKS refrain from calling
     (unless no-hooks
       (run-hook-with-args 'tmr-timer-cancelled-functions timer))))
 
-(defun tmr--read-timer (&optional active)
+(defun tmr--read-timer (&optional active description)
   "Let the user choose a timer among all timers.
 Return the selected timer.  If there is a single timer, use that.
 If there are multiple timers, prompt for one with completion.  If
 there are no timers, return nil.
 
 If optional ACTIVE is non-nil, limit the list of timers to those
-that are still running."
+that are still running.
+
+If optional DESCRIPTION is provided use it to format the
+completion candidates."
   (let ((timers (if active (tmr--active-timers) tmr--timers)))
     (cond
      ((= (length timers) 1)
       (car timers))
      ((> (length timers) 1)
-      (let* ((timer-descriptions (mapcar #'tmr--long-description timers))
+      (let* ((formatter (or description #'tmr--long-description))
+             (timer-descriptions (mapcar formatter timers))
              (selection (completing-read "Timer: " timer-descriptions nil t)))
         (cl-find selection timers :test #'string= :key #'tmr--long-description))))))
 
@@ -329,7 +349,10 @@ confirmation about the duration and the description.  The
 description is asked only if TIMER had one.
 
 Without a PROMPT, clone TIMER outright."
-  (interactive (list (tmr--read-timer) current-prefix-arg))
+  (interactive
+   (list
+    (tmr--read-timer nil #'tmr--long-description-for-clonable-timer)
+    current-prefix-arg))
   (let ((description (tmr--timer-description timer)))
     (cond
      (prompt
