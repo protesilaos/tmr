@@ -285,13 +285,12 @@ If DEFAULT is provided, use that as a default."
 If optional DEFAULT is provided use it as a default.  Otherwise
 use the latest input from the `tmr--description-hist', if
 present."
-  (let ((def (or default (nth 0 tmr--description-hist))))
-    (completing-read
-     (if def
-         (format "Description for this tmr [%s]: " def)
-       "Description for this tmr: ")
-     tmr-descriptions-list nil nil nil
-     'tmr--description-hist def)))
+  (completing-read
+   (if default
+       (format "Description for this tmr [%s]: " default)
+     "Description for this tmr: ")
+   tmr-descriptions-list nil nil nil
+   'tmr--description-hist default))
 
 (defun tmr--complete (timer)
   "Mark TIMER as completed and execute `tmr-timer-completed-functions'."
