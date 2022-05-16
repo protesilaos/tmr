@@ -235,6 +235,8 @@ If optional DESCRIPTION is provided use it to format the
 completion candidates."
   (let ((timers (if active (tmr--active-timers) tmr--timers)))
     (cond
+     ((null timers)
+      (user-error "No timers available"))
      ((= (length timers) 1)
       (car timers))
      ((> (length timers) 1)
