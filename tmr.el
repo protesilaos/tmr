@@ -57,8 +57,8 @@ Each function must accept a timer as argument."
   :type 'hook
   :options '(tmr-print-message-for-created-timer))
 
-(declare-function tmr-sound-play "ext:tmr-sound.el")
-(declare-function tmr-notification-notify "ext:tmr-notification.el")
+(declare-function tmr-sound-play "ext:tmr-sound.el" (&optional timer))
+(declare-function tmr-notification-notify "ext:tmr-notification.el" (title message))
 
 (defcustom tmr-timer-completed-functions
   (list #'tmr-print-message-for-completed-timer
