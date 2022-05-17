@@ -260,6 +260,11 @@ The package is available as =tmr=.  Simply do:
 
 And search for it.
 
+GNU ELPA provides the latest stable release.  Those who prefer to follow
+the development process in order to report bugs or suggest changes, can
+use the version of the package from the =elpa-devel= archive.  Read:
+https://protesilaos.com/codelog/2022-05-13-emacs-elpa-devel/.
+
 ** Manual installation
 :PROPERTIES:
 :CUSTOM_ID: h:39fae83f-a49a-4887-8132-eb42e61919ea
