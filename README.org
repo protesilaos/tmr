@@ -24,8 +24,9 @@
 #+texinfo_header: @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
 
 This manual, written by Protesilaos Stavrou, describes the customization
-options for =tmr= (or =tmr.el=, tmr, TMR, TMR May Ring, ...), and
-provides every other piece of information pertinent to it.
+options for =tmr= (or TMR, TMR May Ring, ...), and provides every other
+piece of information pertinent to it.  The name of the package is
+pronounced as "timer" or "T-M-R".
 
 The documentation furnished herein corresponds to stable version
 {{{stable-version}}}, released on {{{release-date}}}.  Any reference to
@@ -88,10 +89,11 @@ The input can be a floating point:
 | 1.5h  | 1.5 hours (90 minutes)   |
 
 #+vindex: tmr-descriptions-list
-If ~tmr~ is called with an optional prefix argument (=C-u=), it asks for
-a description to accompany the given timer.  Preconfigured candidates
-are specified in the user option ~tmr-descriptions-list~, though any
-arbitrary input is acceptable at the minibuffer prompt.
+If ~tmr~ is called with an optional prefix argument (=C-u= with default
+key bindings), it asks for a description to be associated with the given
+timer.  Preconfigured candidates, as a list of strings, are specified in
+the user option ~tmr-descriptions-list~, though any arbitrary input is
+acceptable at the minibuffer prompt.
 
 #+findex: tmr-with-description
 An alternative to the ~tmr~ command is ~tmr-with-description~.  The
@@ -102,52 +104,51 @@ When the timer is set, a message is sent to the echo area recording the
 current time and the point in the future when the timer elapses.  Echo
 area messages can be reviewed with the ~view-echo-area-messages~ which
 is bound to =C-h e= by default.  To check all timers, use the command
-~tmr-tabulated-view~ ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][About tmr-tabulated]]).
-
-[ The following are part of {{{development-version}}}. ]
+~tmr-tabulated-view~, which has more features than the generic
+=*Messages*= buffer ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid view]]).
 
 #+findex: tmr-cancel
-The ~tmr-cancel~ command is used to cancel running timers (as set by the
-~tmr~ or ~tmr-with-description~ commands).  If there is only one timer,
-it cancels it outright.  If there are multiple running timers, it
-produces a minibuffer completion prompt which asks for one among them.
-Timers at the completion prompt are described by the exact time they
-were set and the input that was used to create them, including the
-optional description that ~tmr~ and ~tmr-with-description~ accept.
+The ~tmr-cancel~ command cancels running timers and erases them from the
+list of created timer objects.  If there is only one timer, it cancels
+it outright.  If there are multiple running timers, it produces a
+minibuffer completion prompt, asking for one among them.  Timers at the
+completion prompt are described by the exact time they were set and the
+input that was used to create them, including the optional description
+that ~tmr~ and ~tmr-with-description~ accept.
 
 #+findex: tmr-clone
-A timer can be cloned with the ~tmr-clone~ command.  It directly copies
-the duration and optional description of a timer into a new one.  With
-an optional prefix argument, this command prompts for a duration and, if
-the underlying timer had a description, for a description as well.  The
-default values of such prompts as those of the original timer.
+The ~tmr-clone~ command directly copies the duration and optional
+description of a timer into a new one.  With an optional prefix
+argument, this command prompts for a duration and, if the underlying
+timer had a description, for a description as well.  The default values
+of such prompts as those of the original timer.
 
 #+findex: tmr-remove-finished
 The ~tmr-remove-finished~ command deletes all elapsed timers from the
 list of timers.  This means that they can no longer be cloned.
 
-Timers have hooks associated with their creation, cancellation, or
+Timers have hooks associated with their creation, cancellation, and
 completion ([[#h:c908f440-da08-462e-be4e-a61fb274ecbc][Hooks]]).  TMR can also integrate with the desktop environment
 to send notifications ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]).
 
-** About tmr-tabulated
+TMR does not specify any global key bindings.  The user must configure
+their own ([[#h:69eeb3fb-f11d-431e-ae16-2d9b322871cc][Sample configuration]]).
+
+** Grid view
 :PROPERTIES:
 :CUSTOM_ID: h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a
 :END:
 #+cindex: About tmr-tabulated and relevant commands
 
-[ Part of {{{development-version}}}. ]
-
 #+findex: tmr-tabulated-view
-Active timers can be viewed in a grid with ~tmr-tabulated-view~ (part of
-the =tmr-tabulated.el= file).  The grid is placed in the
-=*tmr-tabulated-view*= buffer and looks like this:
+Timers can be viewed in a grid with ~tmr-tabulated-view~.  The data is
+placed in the =*tmr-tabulated-view*= buffer and looks like this:
 
 #+begin_example
 Start      End        Finished?  Description
-12:26:50   12:51:50   ✔         Update tmr manual
-12:26:35   12:56:35              Bake bread
-12:26:26   12:36:26              Prepare tea
+09:22:43   09:32:43   ✔         Prepare tea
+09:17:14   09:37:14              Boil water
+09:07:03   09:57:03              Bake bread
 #+end_example
 
 If a timer has elapsed, it has a check mark associated with it,
@@ -157,8 +158,9 @@ left blank.
 
 The ~tmr-tabulated-view~ command relies on Emacs' ~tabulated-list-mode~.
 From the =*tmr-tabulated-view*= buffer, invoke the command
-~describe-mode~ to learn about the generic applicable key bindings, such
-as how to expand/contract columns and toggle their sort.
+~describe-mode~ (=C-h m= with standard key bindings) to learn about the
+applicable functionality, such as how to expand/contract columns and
+toggle their sort.
 
 While in this grid view, one can perform several operations on timers:
 
@@ -208,7 +210,7 @@ TMR provides the following hooks:
 #+vindex: tmr-timer-completed-functions
 + ~tmr-timer-completed-functions~ :: This runs when a timer elapses.  By
   default, it will (i) produce a desktop notification which describes
-  the timers start/end time and optional description (if available),
+  the timer's start/end time and optional description (if available),
   (ii) play an alarm sound ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]), and (iii)
   print a message in the echo area which is basically the same as the
   desktop notification.
