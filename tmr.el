@@ -282,9 +282,7 @@ If DEFAULT is provided, use that as a default."
 
 (defun tmr--description-prompt (&optional default)
   "Helper prompt for descriptions in `tmr'.
-If optional DEFAULT is provided use it as a default.  Otherwise
-use the latest input from the `tmr--description-hist', if
-present."
+If optional DEFAULT is provided use it as a default candidate."
   (completing-read
    (if default
        (format "Description for this tmr [%s]: " default)
