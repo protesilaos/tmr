@@ -193,6 +193,7 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
 
 (declare-function cl-find "cl-seq" (cl-item cl-seq &rest cl-keys))
 (declare-function cl-delete "cl-seq" (cl-item cl-seq &rest cl-keys))
+(declare-function cl-delete-if "cl-seq" (cl-pred cl-list &rest cl-keys))
 (declare-function cl-remove-if "cl-seq" (cl-pred cl-list &rest cl-keys))
 
 (defun tmr--active-timers ()
@@ -221,6 +222,11 @@ With optional NO-HOOKS refrain from calling
     (setq tmr--timers (cl-delete timer tmr--timers))
     (unless no-hooks
       (run-hook-with-args 'tmr-timer-cancelled-functions timer))))
+
+(defun tmr-remove-finished ()
+  "Remove all finished timers."
+  (interactive)
+  (setq tmr--timers (cl-delete-if #'tmr--timer-donep tmr--timers)))
 
 (defun tmr--read-timer (&optional active description)
   "Let the user choose a timer among all timers.
