@@ -289,7 +289,13 @@ present."
    (if default
        (format "Description for this tmr [%s]: " default)
      "Description for this tmr: ")
-   tmr-descriptions-list nil nil nil
+   (lambda (string predicate action)
+     (if (eq action 'metadata)
+         `(metadata (display-sort-function . ,#'identity)
+                    (cycle-sort-function . ,#'identity))
+       (complete-with-action
+        action tmr-descriptions-list string predicate)))
+   nil nil nil
    'tmr--description-hist default))
 
 (defun tmr--complete (timer)
