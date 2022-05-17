@@ -122,6 +122,10 @@ an optional prefix argument, this command prompts for a duration and, if
 the underlying timer had a description, for a description as well.  The
 default values of such prompts as those of the original timer.
 
+#+findex: tmr-remove-finished
+The ~tmr-remove-finished~ command deletes all elapsed timers from the
+list of timers.  This means that they can no longer be cloned.
+
 Timers have hooks associated with their creation, cancellation, or
 completion ([[#h:c908f440-da08-462e-be4e-a61fb274ecbc][Hooks]]).  TMR can also integrate with the desktop environment
 to send notifications ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]).
@@ -168,6 +172,11 @@ While in this grid view, one can perform several operations on timers:
 #+findex: tmr-tabulated-cancel
 + The =k= key runs the ~tmr-tabulated-cancel~ command.  It immediately
   cancels the timer at point.
+
+#+findex: tmr-tabulated-remove-finished
++ The =K= key uses ~tmr-tabulated-remove-finished~ to delete all elapsed
+  timers.  This means that they no longer show up in the grid and cannot
+  be cloned.
 
 #+findex: tmr-tabulated-reschedule
 + The =s= key runs the ~tmr-tabulated-reschedule~ command.  It
@@ -304,7 +313,8 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c t T") #'tmr-with-description)
   (define-key map (kbd "C-c t l") #'tmr-tabulated-view) ; "list timers" mnemonic
   (define-key map (kbd "C-c t c") #'tmr-clone)
-  (define-key map (kbd "C-c t k") #'tmr-cancel))
+  (define-key map (kbd "C-c t k") #'tmr-cancel)
+  (define-key map (kbd "C-c t K") #'tmr-remove-finished))
 #+end_src
 
 * Acknowledgements
