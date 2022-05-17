@@ -1,0 +1,64 @@
+* Version 0.3.0 on 2022-05-17
+
+The gist of TMR's May Release is that TMR is Maintained Rigorously---but
+enough with The Mostly Recursive acronyms!
+
++ This is the first version for which we produce a change log.  The
+  short story of previous releases: I (Protesilaos) was using and
+  developing TMR (pronounced as "timer" or "T-M-R") as part of my
+  personal setup for more than a year until I eventually contributed it
+  to GNU ELPA.
+
++ What was once =tmr.el= is now split up into purpose-specific files:
+  =tmr.el= (core functionality), =tmr-tabulated.el= (grid view),
+  =tmr-sound.el= (audible notifications), and =tmr-notification.el=
+  (desktop notifications).
+
++ The ~tmr-with-description~ command creates a new timer while always
+  asking for a description.  Whereas the standard ~tmr~ command prompts
+  for a description only when invoked with a prefix argument.
+
++ The ~tmr-clone~ command copies the duration and optional description
+  of an existing timer object into a new one.  The operation is
+  performed without further questions, except if a prefix argument is
+  supplied: in that case the command will prompt for a duration and, if
+  the original timer had a description, for one as well.  The default
+  values of these prompts are those of the original timer.
+
++ The ~tmr-remove-finished~ deletes all elapsed timers.  This means that
+  they are removed from the list of available timers and, thus, cannot
+  be cloned.
+
++ The ~tmr-timer-created-functions~, ~tmr-timer-completed-functions~,
+  and ~tmr-timer-cancelled-functions~ are hooks which can be used to
+  control what happens once a timer is (i) created, (ii) elapses, or
+  (iii) is cancelled.
+
++ Elapsed and running timers are displayed in a grid view with the
+  command ~tmr-tabulated-view~.  The buffer looks like this:
+
+  #+begin_example
+  Start      End        Finished?  Description
+  09:22:43   09:32:43   ✔         Prepare tea
+  09:17:14   09:37:14              Boil water
+  09:07:03   09:57:03              Bake bread
+  #+end_example
+
++ In that grid view, it is possible to create a new timer, or operate on
+  the one at point to cancel, clone, redescribe, and reschedule it.
+
++ Thanks to Christian Tietze for implementing changes to how desktop
+  notifications are handled.  The overall effect should still be the
+  same for existing users, though the implementation has been redesigned.
+
++ Thanks to Damien Cassou who is now is my co-author due to multiple
+  contributions for =tmr.el=, the addition of the grid view, and the
+  splitting of TMR into numerous files.  Please consult the Git commit
+  log for the details.  (I still am the maintainer.)
+
++ Christian and Damien have assigned copyright to the Free Software
+  Foundation.  It is required for all packages distributed via GNU ELPA.
+
+The manual documents the technicalities and provides a sample
+configuration.  Either evaluate the form =(info "(tmr) Top")= if you
+have the package installed or visit https://protesilaos.com/emacs/tmr.
