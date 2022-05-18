@@ -264,7 +264,7 @@ And search for it.
 
 GNU ELPA provides the latest stable release.  Those who prefer to follow
 the development process in order to report bugs or suggest changes, can
-use the version of the package from the =elpa-devel= archive.  Read:
+use the version of the package from the GNU-devel ELPA archive.  Read:
 https://protesilaos.com/codelog/2022-05-13-emacs-elpa-devel/.
 
 ** Manual installation
