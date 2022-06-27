@@ -104,5 +104,9 @@
 (add-hook 'tmr--update-hook #'tmr-tabulated--refresh)
 (add-hook 'tmr--read-timer-hook #'tmr-tabulated--timer-at-point)
 
+(make-obsolete 'tmr-tabulated-clone #'tmr-clone "0.4.0")
+(make-obsolete 'tmr-tabulated-edit-description #'tmr-edit-description "0.4.0")
+(make-obsolete 'tmr-tabulated-reschedule #'tmr-reschedule "0.4.0")
+
 (provide 'tmr-tabulated)
 ;;; tmr-tabulated.el ends here
