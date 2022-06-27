@@ -82,14 +82,12 @@
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)
   (tabulated-list-init-header))
 
-(defun tmr-tabulated-cancel (timer &optional no-hooks)
+(defun tmr-tabulated-cancel (timer)
   "Stop TIMER and remove it from the list.
-Interactively, use the timer at point.
-
-Optional NO-HOOKS has the same meaning as in `tmr-cancel'."
-  (interactive (list (tmr-tabulated--get-timer-at-point) current-prefix-arg))
+Interactively, use the timer at point."
+  (interactive (list (tmr-tabulated--get-timer-at-point)))
   (tmr-tabulated--move-point-to-closest-entry)
-  (tmr-cancel timer no-hooks))
+  (tmr-cancel timer))
 
 (defun tmr-tabulated-clone (timer)
   "Create a new timer by cloning TIMER.
@@ -105,8 +103,8 @@ If TIMER has a description, prompt for one.  Otherwise only
 prompt for a duration."
   (interactive (list (tmr-tabulated--get-timer-at-point)))
   (tmr-clone timer :prompt)
-  ;; Cancel the old timer
-  (tmr-tabulated-cancel timer :no-hooks))
+  (let (tmr-timer-cancelled-functions)
+    (tmr-tabulated-cancel timer)))
 
 (defun tmr-tabulated-rewrite-description (timer description)
   "Change TIMER description with that of DESCRIPTION."
