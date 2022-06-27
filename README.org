@@ -164,34 +164,20 @@ toggle their sort.
 
 While in this grid view, one can perform several operations on timers:
 
-+ The =+= key creates a new timer by calling the standard ~tmr~ command.
-  As always, use a prefix argument to also prompt for a description.
-
-#+findex: tmr-tabulated-clone
-+ The =c= key invokes the ~tmr-tabulated-clone~ command.  It is the same
-  as ~tmr-clone~ plus some tweaks for the grid view.
-
-#+findex: tmr-tabulated-cancel
-+ The =k= key runs the ~tmr-tabulated-cancel~ command.  It immediately
-  cancels the timer at point.
-
-#+findex: tmr-tabulated-remove-finished
-+ The =K= key uses ~tmr-tabulated-remove-finished~ to delete all elapsed
-  timers.  This means that they no longer show up in the grid and cannot
-  be cloned.
-
-#+findex: tmr-tabulated-reschedule
-+ The =s= key runs the ~tmr-tabulated-reschedule~ command.  It
-  effectively replaces the timer at point with a new one, using the
-  aforementioned "cancel" and "clone" operations.  If the timer being
-  rescheduled has a description, this command will also prompt for a
-  description while creating the new timer, otherwise it will just ask
-  for a duration.
-
-#+findex: tmr-tabulated-rewrite-description
-+ The =w= key invokes the ~tmr-tabulated-rewrite-description~ command.
-  It prompts for user input and uses it to rewrite the description of
-  the timer at point.
+# If you are reading the Org source, the `tmr-with-description' is bound
+# to *.  The comma escapes the asterisk as it has a special meaning in
+# tables.
+| Key | Command              |
+|-----+----------------------|
+| t   | tmr                  |
+| T   | tmr-with-description |
+| +   | tmr                  |
+| ,*  | tmr-with-description |
+| c   | tmr-clone            |
+| e   | tmr-edit-description |
+| s   | tmr-reschedule       |
+| k   | tmr-cancel           |
+| K   | tmr-remove-finished  |
 
 ** Hooks
 :PROPERTIES:
