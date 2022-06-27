@@ -255,7 +255,7 @@ completion candidates."
          tmr--timers)
      ('nil (user-error "No timers available"))
      (`(,timer) timer)
-     (_
+     (timers
       (let* ((formatter (or description #'tmr--long-description))
              (timer-descriptions (mapcar formatter timers))
              (selection (completing-read "Timer: " timer-descriptions nil t)))
