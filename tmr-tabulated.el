@@ -44,9 +44,7 @@
   "Open a tabulated list buffer listing tmr timers."
   (interactive)
   (switch-to-buffer (get-buffer-create "*tmr-tabulated-view*"))
-  (tmr-tabulated--set-entries)
-  (tmr-tabulated-mode)
-  (tabulated-list-print))
+  (tmr-tabulated-mode))
 
 (defun tmr-tabulated--set-entries ()
   "Set the value of `tabulated-list-entries' with timers."
@@ -58,7 +56,7 @@
   (list (tmr--timer-creation-date timer)
         (vector (tmr--format-creation-date timer)
                 (tmr--format-end-date timer)
-                (if (tmr--timer-donep timer) "✔" "")
+                (tmr--format-remaining timer)
                 (or (tmr--timer-description timer) ""))))
 
 (defvar tmr-tabulated-mode-map
@@ -75,15 +73,50 @@
     map)
   "Keybindings for `tmr-tabulated-mode-map'.")
 
+(defvar-local tmr-tabulated--refresh-timer nil
+  "Timer used to refresh tabulated view.")
+
+(defun tmr-tabulated--window-hook ()
+  "Setup timer to refresh tabulated view."
+  (if (get-buffer-window)
+      (unless tmr-tabulated--refresh-timer
+        (let* ((timer nil)
+               (buf (current-buffer))
+               (refresh
+                (lambda ()
+                  (if (buffer-live-p buf)
+                      (with-current-buffer buf
+                        (if (get-buffer-window)
+                            (progn
+                              (revert-buffer)
+                              ;; HACK: For some reason the hl-line highlighting gets lost here
+                              (when (and (bound-and-true-p global-hl-line-mode)
+                                         (fboundp 'global-hl-line-highlight))
+                                (global-hl-line-highlight))
+                              (when (and (bound-and-true-p hl-line-mode)
+                                         (fboundp 'hl-line-highlight))
+                                (hl-line-highlight)))
+                          (cancel-timer timer)
+                          (setq tmr-tabulated--refresh-timer nil)))
+                    (cancel-timer timer)))))
+          (setq timer (run-at-time 1 1 refresh)
+                tmr-tabulated--refresh-timer timer)))
+    (when tmr-tabulated--refresh-timer
+      (cancel-timer tmr-tabulated--refresh-timer)
+      (setq tmr-tabulated--refresh-timer nil))))
+
 (define-derived-mode tmr-tabulated-mode tabulated-list-mode "TMR"
   "Major mode to display tmr timers."
   (setq-local tabulated-list-format
               [("Start" 10 t)
                ("End" 10 t)
-               ("Finished?" 10 t)
+               ("Remaining" 10 t)
                ("Description" 0 t)])
+  (add-hook 'window-configuration-change-hook #'tmr-tabulated--window-hook nil t)
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)
-  (tabulated-list-init-header))
+  (tmr-tabulated--set-entries)
+  (tabulated-list-init-header)
+  (tabulated-list-print))
 
 (defun tmr-tabulated--timer-at-point ()
   "Return the timer on the current line or nil."

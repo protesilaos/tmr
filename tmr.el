@@ -167,6 +167,20 @@ original input for TIMER's duration."
   (tmr--format-time (time-add (tmr--timer-creation-date timer)
                               (tmr--timer-duration timer))))
 
+(defun tmr--format-remaining (timer)
+  "Format remaining time of TIMER."
+  (if (tmr--timer-donep timer)
+      "✔"
+    (let ((secs (round (- (float-time
+                           (time-add (tmr--timer-creation-date timer)
+                                     (tmr--timer-duration timer)))
+                          (float-time)))))
+      (if (> secs 3600)
+          (format "%sh %sm" (/ secs 3600) (/ (% secs 3600) 60))
+        (if (> secs 60)
+            (format "%sm %ss" (/ secs 60) (% secs 60))
+          (format "%ss" secs))))))
+
 (defun tmr--format-time (time)
   "Return a human-readable string representing TIME."
   (format-time-string "%T" time))
