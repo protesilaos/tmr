@@ -36,7 +36,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl-lib))
+(require 'cl-lib)
 
 (defgroup tmr ()
   "TMR May Ring: set timers using a simple notation."
@@ -183,11 +183,6 @@ original input for TIMER's duration."
   "List of timer objects.
 Populated by `tmr' and then operated on by `tmr-cancel'.")
 
-(declare-function cl-find "cl-seq" (cl-item cl-seq &rest cl-keys))
-(declare-function cl-delete "cl-seq" (cl-item cl-seq &rest cl-keys))
-(declare-function cl-delete-if "cl-seq" (cl-pred cl-list &rest cl-keys))
-(declare-function cl-remove-if "cl-seq" (cl-pred cl-list &rest cl-keys))
-
 (defun tmr--active-timers ()
   "Retun list of active timers."
   (cl-remove-if
@@ -211,7 +206,7 @@ With optional NO-HOOKS refrain from calling
   (if (not timer)
       (user-error "No `tmr' to cancel")
     (cancel-timer (tmr--timer-timer-object timer))
-    (setq tmr--timers (cl-delete timer tmr--timers))
+    (setq tmr--timers (delete timer tmr--timers))
     (unless no-hooks
       (run-hook-with-args 'tmr-timer-cancelled-functions timer))))
 
