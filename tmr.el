@@ -264,7 +264,6 @@ completion candidates."
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
 ;; platforms and Emacs needs to be compiled --with-sound capabilities.
-;;;###autoload
 (defun tmr-sound-play (&optional _timer)
   "Play `tmr-sound-file' using the 'ffplay' executable (ffmpeg).
 TIMER is unused."
