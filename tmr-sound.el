@@ -42,7 +42,7 @@
 
 (defcustom tmr-sound-file
   "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
-  "Path to sound file used by `tmr--play-sound'.
+  "Path to sound file used by `tmr-sound-play'.
 If nil, don't play any sound."
   :type '(choice
           file
