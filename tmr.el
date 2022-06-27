@@ -77,9 +77,9 @@ Each function must accept a timer as argument."
 Each function must accept a timer as argument."
   :type 'hook)
 
-(cl-defstruct (tmr-timer
+(cl-defstruct (tmr--timer
                (:constructor tmr--timer-create)
-               (:conc-name tmr--timer-))
+               (:copier tmr--timer-copy))
   (creation-date
    nil
    :read-only t
