@@ -218,6 +218,26 @@ completion."
     (run-hook-with-args 'tmr-timer-cancelled-functions timer)))
 
 ;;;###autoload
+(defun tmr-reschedule (timer)
+  "Reschedule TIMER.
+This is the same as cloning it, prompting for duration and
+cancelling the original one."
+  (interactive (list (tmr--read-timer)))
+  (tmr-clone timer :prompt)
+  (let (tmr-timer-cancelled-functions)
+    (tmr-cancel timer)))
+
+;;;###autoload
+(defun tmr-edit-description (timer description)
+  "Change TIMER description with that of DESCRIPTION."
+  (interactive
+   (list
+    (tmr--read-timer)
+    (tmr--description-prompt)))
+  (setf (tmr--timer-description timer) description)
+  (run-hooks 'tmr--update-hook))
+
+;;;###autoload
 (defun tmr-remove-finished ()
   "Remove all finished timers."
   (interactive)

@@ -66,8 +66,11 @@
     (define-key map "k" #'tmr-tabulated-cancel)
     (define-key map "K" #'tmr-remove-finished)
     (define-key map "+" #'tmr)
+    (define-key map "t" #'tmr)
+    (define-key map "*" #'tmr-with-description)
+    (define-key map "T" #'tmr-with-description)
     (define-key map "c" #'tmr-tabulated-clone)
-    (define-key map "w" #'tmr-tabulated-rewrite-description)
+    (define-key map "e" #'tmr-tabulated-edit-description)
     (define-key map "s" #'tmr-tabulated-reschedule)
     map)
   "Keybindings for `tmr-tabulated-mode-map'.")
@@ -97,23 +100,17 @@ Interactively, use the timer at point."
 
 (defun tmr-tabulated-reschedule (timer)
   "Reschedule TIMER.
-This is the same as cloning it and cancelling the original one.
-
-If TIMER has a description, prompt for one.  Otherwise only
-prompt for a duration."
+This is the same as cloning it and cancelling the original one."
   (interactive (list (tmr-tabulated--get-timer-at-point)))
-  (tmr-clone timer :prompt)
-  (let (tmr-timer-cancelled-functions)
-    (tmr-tabulated-cancel timer)))
+  (tmr-reschedule timer))
 
-(defun tmr-tabulated-rewrite-description (timer description)
+(defun tmr-tabulated-edit-description (timer description)
   "Change TIMER description with that of DESCRIPTION."
   (interactive
    (list
     (tmr-tabulated--get-timer-at-point)
     (tmr--description-prompt)))
-  (setf (tmr--timer-description timer) description)
-  (run-hooks 'tmr--update-hook))
+  (tmr-edit-description timer description))
 
 (defun tmr-tabulated--move-point-to-closest-entry ()
   "Move the point to the next entry if there is one or to the previous one.

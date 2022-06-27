@@ -321,6 +321,8 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c t l") #'tmr-tabulated-view) ; "list timers" mnemonic
   (define-key map (kbd "C-c t c") #'tmr-clone)
   (define-key map (kbd "C-c t k") #'tmr-cancel)
+  (define-key map (kbd "C-c t s") #'tmr-reschedule)
+  (define-key map (kbd "C-c t e") #'tmr-edit-description)
   (define-key map (kbd "C-c t K") #'tmr-remove-finished))
 #+end_src
 
