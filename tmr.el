@@ -190,6 +190,9 @@ original input for TIMER's duration."
   "List of timer objects.
 Populated by `tmr' and then operated on by `tmr-cancel'.")
 
+(defvar tmr--update-hook nil
+  "Hooks to execute when timers are changed.")
+
 (defun tmr--active-timers ()
   "Retun list of active timers."
   (cl-remove-if
@@ -215,13 +218,14 @@ With optional NO-HOOKS refrain from calling
     (cancel-timer (tmr--timer-timer-object timer))
     (setq tmr--timers (delete timer tmr--timers))
     (unless no-hooks
+      (run-hooks 'tmr--update-hook)
       (run-hook-with-args 'tmr-timer-cancelled-functions timer))))
 
 (defun tmr-remove-finished ()
   "Remove all finished timers."
   (interactive)
-  ;; TODO call tabulated refresh
-  (setq tmr--timers (cl-delete-if #'tmr--timer-donep tmr--timers)))
+  (setq tmr--timers (cl-delete-if #'tmr--timer-donep tmr--timers))
+  (run-hooks 'tmr--update-hook))
 
 (defun tmr--read-timer (&optional active description)
   "Let the user choose a timer among all timers.
@@ -308,6 +312,7 @@ If optional DEFAULT is provided use it as a default candidate."
 (defun tmr--complete (timer)
   "Mark TIMER as completed and execute `tmr-timer-completed-functions'."
   (setf (tmr--timer-donep timer) t)
+  (run-hooks 'tmr--update-hook)
   (run-hook-with-args 'tmr-timer-completed-functions timer))
 
 ;;;###autoload
@@ -345,6 +350,7 @@ command `tmr-with-description' instead of this one."
                         #'tmr--complete timer)))
     (setf (tmr--timer-timer-object timer) timer-object)
     (push timer tmr--timers)
+    (run-hooks 'tmr--update-hook)
     (run-hook-with-args 'tmr-timer-created-functions timer)))
 
 ;;;###autoload

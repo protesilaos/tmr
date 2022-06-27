@@ -115,7 +115,7 @@ prompt for a duration."
     (tmr-tabulated--get-timer-at-point)
     (tmr--description-prompt)))
   (setf (tmr--timer-description timer) description)
-  (revert-buffer))
+  (run-hooks 'tmr--update-hook))
 
 (defun tmr-tabulated--move-point-to-closest-entry ()
   "Move the point to the next entry if there is one or to the previous one.
@@ -145,15 +145,13 @@ Point isn't moved if point is on the only entry."
   "Return the timer on the current line or nil."
   (tmr--get-timer-by-creation-date (tabulated-list-get-id)))
 
-(defun tmr-tabulated--refresh (_timer)
+(defun tmr-tabulated--refresh ()
   "Refresh *tmr-tabulated-view* buffer if it exists."
   (when-let (buf (get-buffer "*tmr-tabulated-view*"))
     (with-current-buffer buf
       (revert-buffer))))
 
-(add-hook 'tmr-timer-completed-functions #'tmr-tabulated--refresh)
-(add-hook 'tmr-timer-created-functions #'tmr-tabulated--refresh)
-(add-hook 'tmr-timer-cancelled-functions #'tmr-tabulated--refresh)
+(add-hook 'tmr--update-hook #'tmr-tabulated--refresh)
 
 (provide 'tmr-tabulated)
 ;;; tmr-tabulated.el ends here
