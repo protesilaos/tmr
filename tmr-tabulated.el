@@ -138,7 +138,7 @@ Point isn't moved if point is on the only entry."
 
 (defun tmr-tabulated--get-timer-at-point ()
   "Return the timer on the current line or nil."
-  (tmr--get-timer-by-creation-date (tabulated-list-get-id)))
+  (cl-find (tabulated-list-get-id) tmr--timers :key #'tmr--timer-creation-date))
 
 (defun tmr-tabulated--refresh ()
   "Refresh *tmr-tabulated-view* buffer if it exists."

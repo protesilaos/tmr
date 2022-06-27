@@ -193,17 +193,6 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
 (defvar tmr--update-hook nil
   "Hooks to execute when timers are changed.")
 
-(defun tmr--active-timers ()
-  "Retun list of active timers."
-  (cl-remove-if
-   (lambda (timer)
-     (tmr--timer-donep timer))
-   tmr--timers))
-
-(defun tmr--get-timer-by-creation-date (creation-date)
-  "Return the timer which was started at CREATION-DATE."
-  (cl-find creation-date tmr--timers :key #'tmr--timer-creation-date))
-
 ;;;###autoload
 (defun tmr-cancel (timer)
   "Cancel TIMER object set with `tmr' command.
@@ -255,17 +244,16 @@ that are still running.
 
 If optional DESCRIPTION is provided use it to format the
 completion candidates."
-  (let ((timers (if active (tmr--active-timers) tmr--timers)))
-    (cond
-     ((null timers)
-      (user-error "No timers available"))
-     ((= (length timers) 1)
-      (car timers))
-     ((> (length timers) 1)
-      (let* ((formatter (or description #'tmr--long-description))
-             (timer-descriptions (mapcar formatter timers))
-             (selection (completing-read "Timer: " timer-descriptions nil t)))
-        (cl-find selection timers :test #'string= :key formatter))))))
+  (pcase (if active
+             (cl-remove-if #'tmr--timer-donep tmr--timers)
+           tmr--timers)
+    ('nil (user-error "No timers available"))
+    (`(,timer) timer)
+    (_
+     (let* ((formatter (or description #'tmr--long-description))
+            (timer-descriptions (mapcar formatter timers))
+            (selection (completing-read "Timer: " timer-descriptions nil t)))
+       (cl-find selection timers :test #'string= :key formatter)))))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
