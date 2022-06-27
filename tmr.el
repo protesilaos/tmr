@@ -42,6 +42,14 @@
   "TMR May Ring: set timers using a simple notation."
   :group 'data)
 
+(defcustom tmr-sound-file
+  "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+  "Path to sound file used by `tmr-sound-play'.
+If nil, don't play any sound."
+  :type '(choice
+          file
+          (const :tag "Off" nil)))
+
 (defcustom tmr-timer-created-functions
   (list #'tmr-print-message-for-created-timer)
   "Functions to execute when a timer is created.
@@ -49,7 +57,6 @@ Each function must accept a timer as argument."
   :type 'hook
   :options '(tmr-print-message-for-created-timer))
 
-(declare-function tmr-sound-play "ext:tmr-sound.el" (&optional timer))
 (declare-function tmr-notification-notify "ext:tmr-notification.el" (title message))
 
 (defcustom tmr-timer-completed-functions
@@ -238,6 +245,20 @@ completion candidates."
              (timer-descriptions (mapcar formatter timers))
              (selection (completing-read "Timer: " timer-descriptions nil t)))
         (cl-find selection timers :test #'string= :key formatter))))))
+
+;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
+;; supports .wav and .au formats.  Also, it does not work on all
+;; platforms and Emacs needs to be compiled --with-sound capabilities.
+;;;###autoload
+(defun tmr-sound-play (&optional _timer)
+  "Play `tmr-sound-file' using the 'ffplay' executable (ffmpeg).
+TIMER is unused."
+  (when-let ((sound tmr-sound-file)
+             ((file-exists-p sound)))
+    (unless (executable-find "ffplay")
+      (user-error "Cannot play %s without `ffplay'" sound))
+    (call-process-shell-command
+     (format "ffplay -nodisp -autoexit %s >/dev/null 2>&1" sound) nil 0)))
 
 (defun tmr-print-message-for-created-timer (timer)
   "Show a `message' informing the user that TIMER was created."
