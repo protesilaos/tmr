@@ -218,6 +218,7 @@ With optional NO-HOOKS refrain from calling
 (defun tmr-remove-finished ()
   "Remove all finished timers."
   (interactive)
+  ;; TODO call tabulated refresh
   (setq tmr--timers (cl-delete-if #'tmr--timer-donep tmr--timers)))
 
 (defun tmr--read-timer (&optional active description)

@@ -64,7 +64,7 @@
 (defvar tmr-tabulated-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "k" #'tmr-tabulated-cancel)
-    (define-key map "K" #'tmr-tabulated-remove-finished)
+    (define-key map "K" #'tmr-remove-finished)
     (define-key map "+" #'tmr)
     (define-key map "c" #'tmr-tabulated-clone)
     (define-key map "w" #'tmr-tabulated-rewrite-description)
@@ -88,23 +88,14 @@ Interactively, use the timer at point.
 
 Optional NO-HOOKS has the same meaning as in `tmr-cancel'."
   (interactive (list (tmr-tabulated--get-timer-at-point) current-prefix-arg))
-  (tmr-cancel timer no-hooks)
-  ;; avoid point moving back to the beginning of the buffer:
   (tmr-tabulated--move-point-to-closest-entry)
-  (revert-buffer))
-
-(defun tmr-tabulated-remove-finished ()
-  "Remove all finished timers."
-  (interactive)
-  (tmr-remove-finished)
-  (revert-buffer))
+  (tmr-cancel timer no-hooks))
 
 (defun tmr-tabulated-clone (timer)
   "Create a new timer by cloning TIMER.
 Interactively, use the timer at point."
   (interactive (list (tmr-tabulated--get-timer-at-point)))
-  (tmr-clone timer)
-  (revert-buffer))
+  (tmr-clone timer))
 
 (defun tmr-tabulated-reschedule (timer)
   "Reschedule TIMER.
@@ -153,6 +144,16 @@ Point isn't moved if point is on the only entry."
 (defun tmr-tabulated--get-timer-at-point ()
   "Return the timer on the current line or nil."
   (tmr--get-timer-by-creation-date (tabulated-list-get-id)))
+
+(defun tmr-tabulated--refresh (_timer)
+  "Refresh *tmr-tabulated-view* buffer if it exists."
+  (when-let (buf (get-buffer "*tmr-tabulated-view*"))
+    (with-current-buffer buf
+      (revert-buffer))))
+
+(add-hook 'tmr-timer-completed-functions #'tmr-tabulated--refresh)
+(add-hook 'tmr-timer-created-functions #'tmr-tabulated--refresh)
+(add-hook 'tmr-timer-cancelled-functions #'tmr-tabulated--refresh)
 
 (provide 'tmr-tabulated)
 ;;; tmr-tabulated.el ends here
