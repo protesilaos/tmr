@@ -164,8 +164,8 @@ original input for TIMER's duration."
 
 (defun tmr--format-end-date (timer)
   "Return a string representing when TIMER should finish."
-  (format-time-string "%T" (time-add (tmr--timer-creation-date timer)
-                                     (tmr--timer-duration timer))))
+  (tmr--format-time (time-add (tmr--timer-creation-date timer)
+                              (tmr--timer-duration timer))))
 
 (defun tmr--format-time (time)
   "Return a human-readable string representing TIME."
