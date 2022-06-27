@@ -42,6 +42,12 @@
   "TMR May Ring: set timers using a simple notation."
   :group 'data)
 
+(defcustom tmr-description-list 'tmr--description-hist
+  "List of timer description presets.
+The variable can either be a variable symbol or
+a list of strings."
+  :type '(choice symbol (repeat string)))
+
 (defcustom tmr-sound-file
   "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
   "Path to sound file used by `tmr-sound-play'.
@@ -314,8 +320,11 @@ If optional DEFAULT is provided use it as a default candidate."
      (if (eq action 'metadata)
          `(metadata (display-sort-function . ,#'identity)
                     (cycle-sort-function . ,#'identity))
-       (complete-with-action
-        action tmr--description-hist string predicate)))
+       (complete-with-action action
+                             (if (listp tmr-description-list)
+                                 tmr-description-list
+                               (symbol-value tmr-description-list))
+                             string predicate)))
    nil nil nil
    'tmr--description-hist default))
 
@@ -335,7 +344,7 @@ special final character denoting a unit of time: 'h' for 'hours',
 's' for 'seconds'.
 
 With optional DESCRIPTION as a prefix (\\[universal-argument]),
-prompt for a description among `tmr-descriptions-list', though
+prompt for a description among `tmr-description-list', though
 allow for any string to serve as valid input.
 
 This command also plays back `tmr-sound-file' if it is available.
