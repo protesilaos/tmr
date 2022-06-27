@@ -42,14 +42,6 @@
   "TMR May Ring: set timers using a simple notation."
   :group 'data)
 
-(defcustom tmr-descriptions-list (list "Boil water" "Prepare tea" "Bake bread")
-  "Optional description candidates for the current `tmr'.
-These are provided as completion candidates when `tmr' is called
-with a DESCRIPTION argument or when `tmr-with-description' is
-used."
-  :type '(repeat string)
-  :group 'tmr)
-
 (defcustom tmr-timer-created-functions
   (list #'tmr-print-message-for-created-timer)
   "Functions to execute when a timer is created.
@@ -292,7 +284,7 @@ If optional DEFAULT is provided use it as a default candidate."
          `(metadata (display-sort-function . ,#'identity)
                     (cycle-sort-function . ,#'identity))
        (complete-with-action
-        action tmr-descriptions-list string predicate)))
+        action tmr--description-hist string predicate)))
    nil nil nil
    'tmr--description-hist default))
 
