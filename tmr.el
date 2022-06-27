@@ -221,6 +221,7 @@ With optional NO-HOOKS refrain from calling
       (run-hooks 'tmr--update-hook)
       (run-hook-with-args 'tmr-timer-cancelled-functions timer))))
 
+;;;###autoload
 (defun tmr-remove-finished ()
   "Remove all finished timers."
   (interactive)
