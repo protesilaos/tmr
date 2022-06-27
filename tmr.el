@@ -233,6 +233,9 @@ cancelling the original one."
   (setq tmr--timers (cl-delete-if #'tmr--timer-donep tmr--timers))
   (run-hooks 'tmr--update-hook))
 
+(defvar tmr--read-timer-hook nil
+  "Hooks to execute to find current timer.")
+
 (defun tmr--read-timer (&optional active description)
   "Let the user choose a timer among all timers.
 Return the selected timer.  If there is a single timer, use that.
@@ -244,16 +247,19 @@ that are still running.
 
 If optional DESCRIPTION is provided use it to format the
 completion candidates."
-  (pcase (if active
-             (cl-remove-if #'tmr--timer-donep tmr--timers)
-           tmr--timers)
-    ('nil (user-error "No timers available"))
-    (`(,timer) timer)
-    (_
-     (let* ((formatter (or description #'tmr--long-description))
-            (timer-descriptions (mapcar formatter timers))
-            (selection (completing-read "Timer: " timer-descriptions nil t)))
-       (cl-find selection timers :test #'string= :key formatter)))))
+  (or
+   (run-hook-with-args-until-success 'tmr--read-timer-hook)
+   (pcase
+       (if active
+           (cl-remove-if #'tmr--timer-donep tmr--timers)
+         tmr--timers)
+     ('nil (user-error "No timers available"))
+     (`(,timer) timer)
+     (_
+      (let* ((formatter (or description #'tmr--long-description))
+             (timer-descriptions (mapcar formatter timers))
+             (selection (completing-read "Timer: " timer-descriptions nil t)))
+        (cl-find selection timers :test #'string= :key formatter))))))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
