@@ -244,6 +244,10 @@ be played.
 Sound playback depends on the =ffplay= executable which is part of
 =ffmpeg=.
 
+Desktop notifications work only if Emacs is built with DBus
+functionality.  This is the norm.  If such functionality is not
+available, TMR will issue warning informing the user accordingly.
+
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: h:46378bdf-f6cc-469e-b0b0-1b90dd9aa595
