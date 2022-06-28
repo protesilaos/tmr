@@ -269,7 +269,7 @@ there are no timers, return nil.
 If optional ACTIVE is non-nil, limit the list of timers to those
 that are still running.
 
-If optional DESCRIPTION is provided use it to format the
+If optional DESCRIPTION function is provided use it to format the
 completion candidates."
   (or
    (run-hook-with-args-until-success 'tmr--read-timer-hook)
@@ -281,9 +281,11 @@ completion candidates."
      (`(,timer) timer)
      (timers
       (let* ((formatter (or description #'tmr--long-description))
-             (timer-descriptions (mapcar formatter timers))
-             (selection (completing-read "Timer: " timer-descriptions nil t)))
-        (cl-find selection timers :test #'string= :key formatter))))))
+             (timer-alist (mapcar
+                           (lambda (x)
+                             (cons (funcall formatter x) x))
+                           timers)))
+        (cdr (assoc (completing-read "Timer: " timer-alist nil t) timer-alist)))))))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
