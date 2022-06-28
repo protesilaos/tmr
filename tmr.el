@@ -44,8 +44,7 @@
 
 (defcustom tmr-description-list 'tmr--description-hist
   "List of timer description presets.
-The variable can either be a variable symbol or
-a list of strings."
+The value can either be a variable symbol or a list of strings."
   :type '(choice symbol (repeat string)))
 
 (defcustom tmr-sound-file
