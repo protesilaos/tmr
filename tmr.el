@@ -310,19 +310,19 @@ TIMER is unused."
   "Show a `message' informing the user that TIMER is cancelled."
   (message "Cancelled: <<%s>>" (tmr--long-description timer)))
 
-(defvar tmr--duration-hist '()
+(defvar tmr-duration-history '()
   "Minibuffer history of `tmr' durations.")
 
 (defun tmr--read-duration (&optional default)
   "Ask the user to type a duration.
 If DEFAULT is provided, use that as a default."
-  (let ((def (or default (nth 0 tmr--duration-hist))))
+  (let ((def (or default (nth 0 tmr-duration-history))))
     (read-string
      (if def
          (format "N minutes for timer (append `h' or `s' for other units) [%s]: " def)
        "N minutes for timer (append `h' or `s' for other units): ")
      nil
-     'tmr--duration-hist def)))
+     'tmr-duration-history def)))
 
 (defvar tmr-description-history '()
   "Minibuffer history of `tmr' descriptions.")
