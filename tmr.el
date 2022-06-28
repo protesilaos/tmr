@@ -42,6 +42,11 @@
   "TMR May Ring: set timers using a simple notation."
   :group 'data)
 
+(define-obsolete-variable-alias
+  'tmr-descriptions-list
+  'tmr-description-list
+  "0.4.0")
+
 (defcustom tmr-description-list 'tmr-description-history
   "List of timer description presets.
 The value can be either a list of strings or the symbol of a
