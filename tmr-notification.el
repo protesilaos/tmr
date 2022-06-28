@@ -38,7 +38,6 @@
 
 ;;; Code:
 (require 'tmr)
-(require 'tmr-sound)
 (require 'notifications)
 
 (defcustom tmr-notification-urgency 'normal
