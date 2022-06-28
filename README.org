@@ -200,8 +200,8 @@ TMR provides the following hooks:
   the newly created timer's start and end time as well as its optional
   description (if provided).
 
-#+vindex: tmr-timer-completed-functions
-+ ~tmr-timer-completed-functions~ :: This runs when a timer elapses.  By
+#+vindex: tmr-timer-finished-functions
++ ~tmr-timer-finished-functions~ :: This runs when a timer elapses.  By
   default, it will (i) produce a desktop notification which describes
   the timer's start/end time and optional description (if available),
   (ii) play an alarm sound ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]), and (iii)

@@ -69,14 +69,14 @@ Each function must accept a timer as argument."
 
 (declare-function tmr-notification-notify "ext:tmr-notification.el" (title message))
 
-(defcustom tmr-timer-completed-functions
-  (list #'tmr-print-message-for-completed-timer
+(defcustom tmr-timer-finished-functions
+  (list #'tmr-print-message-for-finished-timer
         #'tmr-sound-play
         #'tmr-notification-notify)
-  "Functions to execute when a timer is completed.
+  "Functions to execute when a timer is finished.
 Each function must accept a timer as argument."
   :type 'hook
-  :options (list #'tmr-print-message-for-completed-timer
+  :options (list #'tmr-print-message-for-finished-timer
                  #'tmr-sound-play
                  #'tmr-notification-notify))
 
@@ -97,7 +97,7 @@ Each function must accept a timer as argument."
    nil
    :read-only t
    :documentation "Number of seconds after `start' indicating when the timer finishes.")
-  (donep
+  (finishedp
    nil
    :read-only nil
    :documentation "Non-nil if the timer is finished.")
@@ -133,8 +133,8 @@ Each function must accept a timer as argument."
                 (format " [%s]" (propertize description 'face 'bold))
               ""))))
 
-(defun tmr--long-description-for-completed-timer (timer)
-  "Return a human-readable description of completed TIMER.
+(defun tmr--long-description-for-finished-timer (timer)
+  "Return a human-readable description of finished TIMER.
 This includes the creation and completion dates as well as the
 optional `tmr--timer-description'."
   (let ((start (tmr--format-creation-date timer))
@@ -177,10 +177,10 @@ original input for TIMER's duration."
 
 (defun tmr--format-remaining (timer &optional finished prefix)
   "Format remaining time of TIMER.
-FINISHED is the string used for completed timers.
+FINISHED is the string used for finished timers.
 PREFIX is used as prefix for running timers."
   (setq prefix (or prefix ""))
-  (if (tmr--timer-donep timer)
+  (if (tmr--timer-finishedp timer)
       (or finished "✔")
     (let ((secs (round (- (float-time
                            (time-add (tmr--timer-creation-date timer)
@@ -261,7 +261,7 @@ cancelling the original one."
 (defun tmr-remove-finished ()
   "Remove all finished timers."
   (interactive)
-  (setq tmr--timers (cl-delete-if #'tmr--timer-donep tmr--timers))
+  (setq tmr--timers (cl-delete-if #'tmr--timer-finishedp tmr--timers))
   (run-hooks 'tmr--update-hook))
 
 (defvar tmr--read-timer-hook nil
@@ -282,7 +282,7 @@ completion candidates."
    (run-hook-with-args-until-success 'tmr--read-timer-hook)
    (pcase
        (if active
-           (cl-remove-if #'tmr--timer-donep tmr--timers)
+           (cl-remove-if #'tmr--timer-finishedp tmr--timers)
          tmr--timers)
      ('nil (user-error "No timers available"))
      (`(,timer) timer)
@@ -311,9 +311,9 @@ TIMER is unused."
   "Show a `message' informing the user that TIMER was created."
   (message "%s" (tmr--long-description timer)))
 
-(defun tmr-print-message-for-completed-timer (timer)
-  "Show a `message' informing the user that TIMER has completed."
-  (message "%s" (tmr--long-description-for-completed-timer timer)))
+(defun tmr-print-message-for-finished-timer (timer)
+  "Show a `message' informing the user that TIMER has finished."
+  (message "%s" (tmr--long-description-for-finished-timer timer)))
 
 (defun tmr-print-message-for-cancelled-timer (timer)
   "Show a `message' informing the user that TIMER is cancelled."
@@ -356,10 +356,10 @@ If optional DEFAULT is provided use it as a default candidate."
    'tmr-description-history default))
 
 (defun tmr--complete (timer)
-  "Mark TIMER as completed and execute `tmr-timer-completed-functions'."
-  (setf (tmr--timer-donep timer) t)
+  "Mark TIMER as finished and execute `tmr-timer-finished-functions'."
+  (setf (tmr--timer-finishedp timer) t)
   (run-hooks 'tmr--update-hook)
-  (run-hook-with-args 'tmr-timer-completed-functions timer))
+  (run-hook-with-args 'tmr-timer-finished-functions timer))
 
 ;;;###autoload
 (defun tmr (time &optional description)
