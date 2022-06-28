@@ -88,17 +88,22 @@ The input can be a floating point:
 | 1.5   | 1.5 minutes (90 seconds) |
 | 1.5h  | 1.5 hours (90 minutes)   |
 
-#+vindex: tmr-descriptions-list
 If ~tmr~ is called with an optional prefix argument (=C-u= with default
 key bindings), it asks for a description to be associated with the given
-timer.  Preconfigured candidates, as a list of strings, are specified in
-the user option ~tmr-descriptions-list~, though any arbitrary input is
-acceptable at the minibuffer prompt.
+timer.
 
 #+findex: tmr-with-description
 An alternative to the ~tmr~ command is ~tmr-with-description~.  The
 difference between the two is that the latter always prompts for a
 description.
+
+#+vindex: tmr-descriptions-list
+The user option ~tmr-descriptions-list~ defines the completion
+candidates that are shown at the description prompt.  Its value can be
+either a list of strings or the symbol of a variable that holds a list
+of strings.  The default value of ~tmr-description-history~, is the name
+of a variable that contains input provided by the user at the relevant
+prompt of the ~tmr~ and ~tmr-with-description~ commands.
 
 When the timer is set, a message is sent to the echo area recording the
 current time and the point in the future when the timer elapses.  Echo
@@ -304,6 +309,8 @@ Everything is in place to set up the package.
       "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga")
 
 (setq tmr-notification-urgency 'normal)
+
+;; Read the `tmr-descriptions-list' doc string
 (setq tmr-descriptions-list (list "Boil water" "Prepare tea" "Bake bread"))
 
 ;; OPTIONALLY set global key bindings:
