@@ -44,7 +44,12 @@
 
 (defcustom tmr-description-list 'tmr-description-history
   "List of timer description presets.
-The value can either be a variable symbol or a list of strings."
+The value can be either a list of strings or the symbol of a
+variable that holds a list of strings.
+
+The default value of `tmr-description-history', is the name of a
+variable that contains input provided by the user at the relevant
+prompt of the `tmr' and `tmr-with-description' commands."
   :type '(choice symbol (repeat string)))
 
 (defcustom tmr-sound-file
