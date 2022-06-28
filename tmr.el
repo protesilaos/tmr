@@ -69,6 +69,11 @@ Each function must accept a timer as argument."
 
 (declare-function tmr-notification-notify "ext:tmr-notification.el" (title message))
 
+(define-obsolete-variable-alias
+  'tmr-timer-completed-functions
+  'tmr-timer-finished-functions
+  "0.4.0")
+
 (defcustom tmr-timer-finished-functions
   (list #'tmr-print-message-for-finished-timer
         #'tmr-sound-play
@@ -314,6 +319,11 @@ TIMER is unused."
 (defun tmr-print-message-for-finished-timer (timer)
   "Show a `message' informing the user that TIMER has finished."
   (message "%s" (tmr--long-description-for-finished-timer timer)))
+
+(define-obsolete-function-alias
+  'tmr-print-message-for-completed-timer
+  'tmr-print-message-for-finished-timer
+  "0.4.0")
 
 (defun tmr-print-message-for-cancelled-timer (timer)
   "Show a `message' informing the user that TIMER is cancelled."
