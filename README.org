@@ -150,16 +150,17 @@ Timers can be viewed in a grid with ~tmr-tabulated-view~.  The data is
 placed in the =*tmr-tabulated-view*= buffer and looks like this:
 
 #+begin_example
-Start      End        Finished?  Description
-09:22:43   09:32:43   ✔         Prepare tea
-09:17:14   09:37:14              Boil water
-09:07:03   09:57:03              Bake bread
+Start      End        Remaining  Description
+10:11:49   10:11:54   ✔
+10:11:36   10:31:36   19m 35s
+10:11:32   10:26:32   14m 31s    Yet another test
+10:11:16   10:21:16   9m 14s     Testing how it works
 #+end_example
 
 If a timer has elapsed, it has a check mark associated with it,
-otherwise the =Finished?= column is empty.  A =Description= is shown
-only if it is provided while setting the timer, otherwise the field is
-left blank.
+otherwise the =Remaining= column shows the time left.  A =Description=
+is shown only if it is provided while setting the timer, otherwise the
+field is left blank.
 
 The ~tmr-tabulated-view~ command relies on Emacs' ~tabulated-list-mode~.
 From the =*tmr-tabulated-view*= buffer, invoke the command
