@@ -426,9 +426,9 @@ user uses a prefix argument (\\[universal-argument])."
 ;;;###autoload
 (defun tmr-clone (timer &optional prompt)
   "Create a new timer by cloning TIMER.
-With optional PROMPT, such as a prefix argument (C-u), ask for
-confirmation about the duration. The description is asked only
-when the prefix argument is given twice (C-u C-u).
+With optional PROMPT, such as a prefix argument, ask for
+confirmation about the duration.  When PROMPT is a double prefix
+argument, ask for a description as well.
 
 Without a PROMPT, clone TIMER outright."
   (interactive

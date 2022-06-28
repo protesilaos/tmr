@@ -123,10 +123,11 @@ that ~tmr~ and ~tmr-with-description~ accept.
 
 #+findex: tmr-clone
 The ~tmr-clone~ command directly copies the duration and optional
-description of a timer into a new one.  With an optional prefix
-argument, this command prompts for a duration and, if the underlying
-timer had a description, for a description as well.  The default values
-of such prompts as those of the original timer.
+description of a timer into a new one.  With an optional prefix argument
+(=C-u= by default), this command prompts for a duration.  If a double
+prefix argument is supplied (=C-u C-u=), the command asks for a duration
+and then a description.  The default values of such prompts as those of
+the original timer.
 
 #+findex: tmr-remove-finished
 The ~tmr-remove-finished~ command deletes all elapsed timers from the
