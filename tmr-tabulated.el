@@ -89,7 +89,10 @@
                         (if-let (win (get-buffer-window))
                             (with-selected-window win
                               (let ((end (eobp)))
-                                (revert-buffer)
+                                ;; Optimized refreshing
+                                (dolist (entry tabulated-list-entries)
+                                  (setf (aref (cadr entry) 2) (tmr--format-remaining (car entry))))
+                                (tabulated-list-print t t)
                                 (when end
                                   (goto-char (point-max))))
                               ;; HACK: For some reason the hl-line highlighting gets lost here
