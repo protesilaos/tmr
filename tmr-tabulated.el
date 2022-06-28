@@ -92,9 +92,8 @@
                                 ;; Optimized refreshing
                                 (dolist (entry tabulated-list-entries)
                                   (setf (aref (cadr entry) 2) (tmr--format-remaining (car entry))))
-                                (tabulated-list-print t t)
-                                (when end
-                                  (goto-char (point-max))))
+                                (tabulated-list-print t)
+                                (when end (goto-char (point-max))))
                               ;; HACK: For some reason the hl-line highlighting gets lost here
                               (when (and (bound-and-true-p global-hl-line-mode)
                                          (fboundp 'global-hl-line-highlight))
@@ -111,12 +110,17 @@
       (cancel-timer tmr-tabulated--refresh-timer)
       (setq tmr-tabulated--refresh-timer nil))))
 
+(defun tmr-tabulated--compare-remaining (a b)
+  "Compare remaining time of timers A and B."
+  (time-less-p (tmr--timer-end-date (car a))
+               (tmr--timer-end-date (car b))))
+
 (define-derived-mode tmr-tabulated-mode tabulated-list-mode "TMR"
   "Major mode to display tmr timers."
   (setq-local tabulated-list-format
               [("Start" 10 t)
                ("End" 10 t)
-               ("Remaining" 10 t)
+               ("Remaining" 10 tmr-tabulated--compare-remaining)
                ("Description" 0 t)])
   (add-hook 'window-configuration-change-hook #'tmr-tabulated--window-hook nil t)
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)

@@ -104,10 +104,10 @@ Each function must accept a timer as argument."
    nil
    :read-only t
    :documentation "Time at which the timer was created.")
-  (duration
+  (end-date
    nil
    :read-only t
-   :documentation "Number of seconds after `start' indicating when the timer finishes.")
+   :documentation "Time at which the timer finishes.")
   (finishedp
    nil
    :read-only nil
@@ -183,8 +183,7 @@ original input for TIMER's duration."
 
 (defun tmr--format-end-date (timer)
   "Return a string representing when TIMER should finish."
-  (tmr--format-time (time-add (tmr--timer-creation-date timer)
-                              (tmr--timer-duration timer))))
+  (tmr--format-time (tmr--timer-end-date timer)))
 
 (defun tmr--format-remaining (timer &optional finished prefix)
   "Format remaining time of TIMER.
@@ -193,9 +192,7 @@ PREFIX is used as prefix for running timers."
   (setq prefix (or prefix ""))
   (if (tmr--timer-finishedp timer)
       (or finished "✔")
-    (let ((secs (round (- (float-time
-                           (time-add (tmr--timer-creation-date timer)
-                                     (tmr--timer-duration timer)))
+    (let ((secs (round (- (float-time (tmr--timer-end-date timer))
                           (float-time)))))
       (if (> secs 3600)
           (format "%s%sh %sm" prefix (/ secs 3600) (/ (% secs 3600) 60))
@@ -405,7 +402,7 @@ command `tmr-with-description' instead of this one."
          (timer (tmr--timer-create
                  :description description
                  :creation-date creation-date
-                 :duration duration
+                 :end-date (time-add creation-date duration)
                  :input time))
          (timer-object (run-with-timer
                         duration nil
