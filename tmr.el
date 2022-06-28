@@ -42,7 +42,7 @@
   "TMR May Ring: set timers using a simple notation."
   :group 'data)
 
-(defcustom tmr-description-list 'tmr--description-hist
+(defcustom tmr-description-list 'tmr-description-history
   "List of timer description presets.
 The value can either be a variable symbol or a list of strings."
   :type '(choice symbol (repeat string)))
@@ -319,7 +319,7 @@ If DEFAULT is provided, use that as a default."
      nil
      'tmr--duration-hist def)))
 
-(defvar tmr--description-hist '()
+(defvar tmr-description-history '()
   "Minibuffer history of `tmr' descriptions.")
 
 (defun tmr--description-prompt (&optional default)
@@ -339,7 +339,7 @@ If optional DEFAULT is provided use it as a default candidate."
                                (symbol-value tmr-description-list))
                              string predicate)))
    nil nil nil
-   'tmr--description-hist default))
+   'tmr-description-history default))
 
 (defun tmr--complete (timer)
   "Mark TIMER as completed and execute `tmr-timer-completed-functions'."
