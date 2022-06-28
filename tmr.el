@@ -300,7 +300,11 @@ completion candidates."
                            (lambda (x)
                              (cons (funcall formatter x) x))
                            timers)))
-        (cdr (assoc (completing-read "Timer: " timer-alist nil t) timer-alist)))))))
+        (cdr (assoc (completing-read
+                     "Timer: "
+                     (tmr--completion-table timer-alist 'tmr-timer)
+                     nil t)
+                    timer-alist)))))))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
@@ -356,17 +360,11 @@ If optional DEFAULT is provided use it as a default candidate."
    (if default
        (format "Description for this tmr [%s]: " default)
      "Description for this tmr: ")
-   (lambda (string predicate action)
-     (if (eq action 'metadata)
-         `(metadata (display-sort-function . ,#'identity)
-                    (cycle-sort-function . ,#'identity))
-       (complete-with-action action
-                             (if (listp tmr-description-list)
-                                 tmr-description-list
-                               (symbol-value tmr-description-list))
-                             string predicate)))
-   nil nil nil
-   'tmr-description-history default))
+   (tmr--completion-table
+    (if (listp tmr-description-list)
+        tmr-description-list
+      (symbol-value tmr-description-list)))
+   nil nil nil 'tmr-description-history default))
 
 (defun tmr--complete (timer)
   "Mark TIMER as finished and execute `tmr-timer-finished-functions'."
@@ -445,6 +443,15 @@ Without a PROMPT, clone TIMER outright."
    (if (equal prompt '(16))
        (tmr--description-prompt (tmr--timer-description timer))
      (tmr--timer-description timer))))
+
+(defun tmr--completion-table (candidates &optional category)
+  "Return completion table for CANDIDATES of CATEGORY with sorting disabled."
+  (lambda (str pred action)
+    (if (eq action 'metadata)
+        `(metadata (display-sort-function . identity)
+                   (cycle-sort-function . identity)
+                   (category . ,category))
+      (complete-with-action action candidates str pred))))
 
 (provide 'tmr)
 ;;; tmr.el ends here
