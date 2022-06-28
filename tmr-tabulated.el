@@ -86,9 +86,12 @@
                 (lambda ()
                   (if (buffer-live-p buf)
                       (with-current-buffer buf
-                        (if (get-buffer-window)
-                            (progn
-                              (revert-buffer)
+                        (if-let (win (get-buffer-window))
+                            (with-selected-window win
+                              (let ((end (eobp)))
+                                (revert-buffer)
+                                (when end
+                                  (goto-char (point-max))))
                               ;; HACK: For some reason the hl-line highlighting gets lost here
                               (when (and (bound-and-true-p global-hl-line-mode)
                                          (fboundp 'global-hl-line-highlight))
