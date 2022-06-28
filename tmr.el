@@ -118,15 +118,17 @@ Each function must accept a timer as argument."
   "Return a human-readable description for TIMER."
   (let ((start (tmr--format-creation-date timer))
         (end (tmr--format-end-date timer))
+        (remaining (tmr--format-remaining timer "finished" "in "))
         (description (tmr--timer-description timer)))
     ;; We prefix it with TMR just so it is easier to find in
     ;; `view-echo-area-messages'.  The concise wording makes it flexible
     ;; enough to be used when starting a timer but also when cancelling
     ;; one: check `tmr-print-message-for-created-timer' and
     ;; `tmr-print-message-for-cancelled-timer'.
-    (format "TMR start at %s; end at %s%s"
+    (format "TMR start at %s; end at %s; %s%s"
             (propertize start 'face 'success)
             (propertize end 'face 'error)
+            remaining
             (if description
                 (format " [%s]" (propertize description 'face 'bold))
               ""))))
@@ -152,11 +154,13 @@ This is like `tmr--long-description' with the inclusion of the
 original input for TIMER's duration."
   (let ((start (tmr--format-creation-date timer))
         (end (tmr--format-end-date timer))
+        (remaining (tmr--format-remaining timer "finished" "in "))
         (description (tmr--timer-description timer))
         (input (tmr--timer-input timer)))
-    (format "TMR start at %s; end at %s%s (input was '%s')"
+    (format "TMR start at %s; end at %s; %s%s (input was '%s')"
             (propertize start 'face 'success)
             (propertize end 'face 'error)
+            remaining
             (if description
                 (format " [%s]" (propertize description 'face 'bold))
               "")
@@ -171,19 +175,22 @@ original input for TIMER's duration."
   (tmr--format-time (time-add (tmr--timer-creation-date timer)
                               (tmr--timer-duration timer))))
 
-(defun tmr--format-remaining (timer)
-  "Format remaining time of TIMER."
+(defun tmr--format-remaining (timer &optional finished prefix)
+  "Format remaining time of TIMER.
+FINISHED is the string used for completed timers.
+PREFIX is used as prefix for running timers."
+  (setq prefix (or prefix ""))
   (if (tmr--timer-donep timer)
-      "✔"
+      (or finished "✔")
     (let ((secs (round (- (float-time
                            (time-add (tmr--timer-creation-date timer)
                                      (tmr--timer-duration timer)))
                           (float-time)))))
       (if (> secs 3600)
-          (format "%sh %sm" (/ secs 3600) (/ (% secs 3600) 60))
+          (format "%s%sh %sm" prefix (/ secs 3600) (/ (% secs 3600) 60))
         (if (> secs 60)
-            (format "%sm %ss" (/ secs 60) (% secs 60))
-          (format "%ss" secs))))))
+            (format "%s%sm %ss" prefix (/ secs 60) (% secs 60))
+          (format "%s%ss" prefix secs))))))
 
 (defun tmr--format-time (time)
   "Return a human-readable string representing TIME."
