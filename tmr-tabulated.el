@@ -53,7 +53,7 @@
 
 (defun tmr-tabulated--timer-to-entry (timer)
   "Convert TIMER into an entry suitable for `tabulated-list-entries'."
-  (list (tmr--timer-creation-date timer)
+  (list timer
         (vector (tmr--format-creation-date timer)
                 (tmr--format-end-date timer)
                 (tmr--format-remaining timer)
@@ -120,8 +120,7 @@
 
 (defun tmr-tabulated--timer-at-point ()
   "Return the timer on the current line or nil."
-  (and (eq major-mode #'tmr-tabulated-mode)
-       (cl-find (tabulated-list-get-id) tmr--timers :key #'tmr--timer-creation-date)))
+  (and (eq major-mode #'tmr-tabulated-mode) (tabulated-list-get-id)))
 
 (defun tmr-tabulated--refresh ()
   "Refresh *tmr-tabulated-view* buffer if it exists."
