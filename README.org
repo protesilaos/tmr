@@ -320,6 +320,8 @@ Everything is in place to set up the package.
 :CUSTOM_ID: h:64711ce4-c023-4f6e-b9aa-b43942013423
 :END:
 
+[ Part of {{{development-version}}} ]
+
 The =embark= package provides standards-compliant infrastructure to run
 context-dependent actions on all sorts of targets (symbol at point,
 current completion candidate, etc.).  TMR is set up to make its timer
