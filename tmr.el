@@ -67,6 +67,12 @@ If nil, don't play any sound."
           file
           (const :tag "Off" nil)))
 
+(defcustom tmr-confirm t
+  "Confirm timer operations.
+If set to nil and if there is only a single timer,
+the operation is performed without confirmation."
+  :type 'boolean)
+
 (defcustom tmr-timer-created-functions
   (list #'tmr-print-message-for-created-timer)
   "Functions to execute when a timer is created.
@@ -269,13 +275,12 @@ cancelling the original one."
     (format " (%s remaining)" (tmr--format-remaining timer))))
 
 (defun tmr--read-timer (&optional active)
-  "Let the user choose a timer among all timers.
-Return the selected timer.  If there is a single timer, use that.
-If there are multiple timers, prompt for one with completion.  If
-there are no timers, return nil.
+  "Let the user choose a timer among all (or ACTIVE) timers.
 
-If optional ACTIVE is non-nil, limit the list of timers to those
-that are still running."
+Return the selected timer. If there is a single timer and
+`tmr-confirm' is nil, use that. If there are multiple timers,
+prompt for one with completion. If there are no timers, throw an
+error."
   (or
    (run-hook-with-args-until-success 'tmr--read-timer-hook)
    (pcase
@@ -283,7 +288,7 @@ that are still running."
            (seq-remove #'tmr--timer-finishedp tmr--timers)
          tmr--timers)
      ('nil (user-error "No timers available"))
-     (`(,timer) timer)
+     ((and `(,timer) (guard (not tmr-confirm))) timer)
      (timers
       (let* ((timer-list (mapcar
                           (lambda (x)
