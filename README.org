@@ -315,6 +315,36 @@ Everything is in place to set up the package.
   (define-key map (kbd "C-c t R") #'tmr-remove-finished))
 #+end_src
 
+* Integration with Embark
+:PROPERTIES:
+:CUSTOM_ID: h:64711ce4-c023-4f6e-b9aa-b43942013423
+:END:
+
+The =embark= package provides standards-compliant infrastructure to run
+context-dependent actions on all sorts of targets (symbol at point,
+current completion candidate, etc.).  TMR is set up to make its timer
+objects recognisable by Embark.  All the user needs is something like
+the following glue code:
+
+#+begin_src emacs-lisp
+(defvar tmr-action-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "k" #'tmr-remove)
+    (define-key map "r" #'tmr-remove)
+    (define-key map "R" #'tmr-remove-finished)
+    (define-key map "c" #'tmr-clone)
+    (define-key map "e" #'tmr-edit-description)
+    (define-key map "s" #'tmr-reschedule)
+    map))
+
+(with-eval-after-load 'embark
+  (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
+  (cl-loop
+   for cmd the key-bindings of tmr-action-map
+   if (commandp cmd) do
+   (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart))))
+#+end_src
+
 * Acknowledgements
 :PROPERTIES:
 :CUSTOM_ID: h:047ecc52-ca02-4424-a037-c5b6a02383de
