@@ -1,27 +1,24 @@
-#+title: TMR May Ring
-#+author: Protesilaos Stavrou
-#+email: info@protesilaos.com
-#+language: en
-#+options: ':t toc:nil author:t email:t num:t
-#+startup: content
-
-#+macro: stable-version 0.3.0
-#+macro: release-date 2022-05-17
-#+macro: development-version 0.4.0-dev
-#+macro: file @@texinfo:@file{@@$1@@texinfo:}@@
-#+macro: space @@texinfo:@: @@
-#+macro: kbd @@texinfo:@kbd{@@$1@@texinfo:}@@
-
-#+export_file_name: tmr.texi
-
-#+texinfo_filename: tmr.info
-#+texinfo_dir_category: Emacs misc features
-#+texinfo_dir_title: TMR May Ring: (tmr)
-#+texinfo_dir_desc: Set timers using a convenient notation
-#+texinfo_header: @set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
-#+texinfo_header: @set MAINTAINER Protesilaos Stavrou
-#+texinfo_header: @set MAINTAINEREMAIL @email{info@protesilaos.com}
-#+texinfo_header: @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
+#+title:                 TMR May Ring
+#+author:                Protesilaos Stavrou
+#+email:                 info@protesilaos.com
+#+language:              en
+#+options:               ':t toc:nil author:t email:t num:t
+#+startup:               content
+#+macro:                 stable-version 0.3.0
+#+macro:                 release-date 2022-05-17
+#+macro:                 development-version 0.4.0-dev
+#+macro:                 file @@texinfo:@file{@@$1@@texinfo:}@@
+#+macro:                 space @@texinfo:@: @@
+#+macro:                 kbd @@texinfo:@kbd{@@$1@@texinfo:}@@
+#+export_file_name:      tmr.texi
+#+texinfo_filename:      tmr.info
+#+texinfo_dir_category:  Emacs misc features
+#+texinfo_dir_title:     TMR May Ring: (tmr)
+#+texinfo_dir_desc:      Set timers using a convenient notation
+#+texinfo_header:        @set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
+#+texinfo_header:        @set MAINTAINER Protesilaos Stavrou
+#+texinfo_header:        @set MAINTAINEREMAIL @email{info@protesilaos.com}
+#+texinfo_header:        @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
 
 This manual, written by Protesilaos Stavrou, describes the customization
 options for =tmr= (or TMR, TMR May Ring, ...), and provides every other
