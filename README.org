@@ -82,6 +82,11 @@ The input can be a floating point:
 | 1.5   | 1.5 minutes (90 seconds) |
 | 1.5h  | 1.5 hours (90 minutes)   |
 
+The input can also be an absolute time, such as =16:00= or =16:00:30=.
+It sets a timer from present time until the one specified.
+
+[ Absolute time support is part of {{{development-version}}} ]
+
 If ~tmr~ is called with an optional prefix argument (=C-u= with default
 key bindings), it asks for a description to be associated with the given
 timer.
