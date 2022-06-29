@@ -7,6 +7,7 @@
 ;;         Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: TMR Development <~protesilaos/tmr@lists.sr.ht>
 ;; URL: https://git.sr.ht/~protesilaos/tmr
+;; Mailing-List: https://lists.sr.ht/~protesilaos/tmr
 ;; Version: 0.3.1
 ;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: convenience, timer
