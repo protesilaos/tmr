@@ -142,9 +142,12 @@ Each function must accept a timer as argument."
     ;; enough to be used when starting a timer but also when cancelling
     ;; one: check `tmr-print-message-for-created-timer' and
     ;; `tmr-print-message-for-cancelled-timer'.
-    (format "TMR start %s; end %s; duration %s%s"
+    (format "TMR start %s; end %s; %s %s%s"
             (propertize start 'face 'success)
             (propertize end 'face 'error)
+            (if (string-match-p ":" (tmr--timer-input timer))
+                "until"
+              "duration")
             (tmr--timer-input timer)
             (if description
                 (format " [%s]" (propertize description 'face 'bold))
@@ -189,26 +192,32 @@ optional `tmr--timer-description'."
   "Return a human-readable string representing TIME."
   (format-time-string "%T" time))
 
-(defun tmr--unit (time)
-  "Determine common time unit for TIME."
-  (cond
-   ((and (stringp time)
-         (string-match-p "[0-9]\\'" time))
-    (let ((time (string-to-number time)))
-      (* time 60)))
-   ((natnump time)
-    (* time 60))
-   (t
-    (let* ((unit (substring time -1))
-           (str (substring time 0 -1))
-           (num (abs (string-to-number str))))
-      (pcase unit
-        ("s" num)
-        ("h" (* num 60 60))
-        ;; This is not needed, of course, but we should not miss a good
-        ;; chance to make some fun of ourselves.
-        ("w" (user-error "TMR Made Ridiculous; append character for [m]inutes, [h]ours, [s]econds"))
-        (_ (* num 60)))))))
+(defun tmr--unit (now time)
+  "Determine common time unit for TIME given current time NOW."
+  (save-match-data
+    (cond
+     ((natnump time)
+      (* time 60))
+     ((and (stringp time) (string-match-p "\\`[0-9]+\\(?:\\.[0-9]+\\)?\\'" time))
+      (* (string-to-number time) 60))
+     ((and (stringp time) (string-match "\\`\\([0-9]+\\):\\([0-9]+\\)\\(?::\\([0-9]+\\)\\)?\\'" time))
+      (let ((val (decode-time now)))
+        (setf (decoded-time-hour val) (string-to-number (match-string 1 time))
+              (decoded-time-minute val) (string-to-number (match-string 2 time))
+              (decoded-time-second val) (if (match-end 3)
+                                            (string-to-number (match-string 3 time))
+                                          0)
+              val (encode-time val))
+        (when (time-less-p val now)
+          (user-error "Time %s is already over" time))
+        (ceiling (float-time (time-subtract val now)))))
+     ((and (stringp time) (string-match "\\`\\([0-9]+\\(?:\\.[0-9]+\\)?\\)[mhs]\\'" time))
+      (let ((num (string-to-number (match-string 1 time))))
+        (pcase (aref time (1- (length time)))
+          (?s num)
+          (?h (* num 60 60))
+          (?m (* num 60)))))
+     (t (user-error "TMR Made Ridiculous; append character for [m]inutes, [h]ours, [s]econds")))))
 
 (defvar tmr--timers nil
   "List of timer objects.
@@ -396,7 +405,7 @@ command `tmr-with-description' instead of this one."
     (tmr--read-duration)
     (when current-prefix-arg (tmr--description-prompt))))
   (let* ((creation-date (current-time))
-         (duration (tmr--unit time))
+         (duration (tmr--unit creation-date time))
          (timer (tmr--timer-create
                  :description description
                  :creation-date creation-date
