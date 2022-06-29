@@ -286,9 +286,9 @@ cancelling the original one."
 (defun tmr--read-timer (prompt &optional active)
   "Let the user choose a timer among all (or ACTIVE) timers.
 
-Return the selected timer. If there is a single timer and
-`tmr-confirm' is nil, use that. If there are multiple timers,
-prompt for one with completion with PROMPT text. If there are no
+Return the selected timer.  If there is a single timer and
+`tmr-confirm' is nil, use that.  If there are multiple timers,
+prompt for one with completion with PROMPT text.  If there are no
 timers, throw an error."
   (or
    (run-hook-with-args-until-success 'tmr--read-timer-hook)
