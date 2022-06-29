@@ -128,17 +128,16 @@ Each function must accept a timer as argument."
   "Return a human-readable description for TIMER."
   (let ((start (tmr--format-creation-date timer))
         (end (tmr--format-end-date timer))
-        (remaining (tmr--format-remaining timer "finished" "in "))
         (description (tmr--timer-description timer)))
     ;; We prefix it with TMR just so it is easier to find in
     ;; `view-echo-area-messages'.  The concise wording makes it flexible
     ;; enough to be used when starting a timer but also when cancelling
     ;; one: check `tmr-print-message-for-created-timer' and
     ;; `tmr-print-message-for-cancelled-timer'.
-    (format "TMR start at %s; end at %s; %s%s"
+    (format "TMR start %s; end %s; duration %s%s"
             (propertize start 'face 'success)
             (propertize end 'face 'error)
-            remaining
+            (tmr--timer-input timer)
             (if description
                 (format " [%s]" (propertize description 'face 'bold))
               ""))))
@@ -158,24 +157,6 @@ optional `tmr--timer-description'."
             (propertize "Ended" 'face 'error)
             end)))
 
-(defun tmr--long-description-for-clonable-timer (timer)
-  "Return a human-readable description for clonable TIMER.
-This is like `tmr--long-description' with the inclusion of the
-original input for TIMER's duration."
-  (let ((start (tmr--format-creation-date timer))
-        (end (tmr--format-end-date timer))
-        (remaining (tmr--format-remaining timer "finished" "in "))
-        (description (tmr--timer-description timer))
-        (input (tmr--timer-input timer)))
-    (format "TMR start at %s; end at %s; %s%s (input was '%s')"
-            (propertize start 'face 'success)
-            (propertize end 'face 'error)
-            remaining
-            (if description
-                (format " [%s]" (propertize description 'face 'bold))
-              "")
-            (propertize input 'face 'warning))))
-
 (defun tmr--format-creation-date (timer)
   "Return a string representing when TIMER was created."
   (tmr--format-time (tmr--timer-creation-date timer)))
@@ -184,20 +165,17 @@ original input for TIMER's duration."
   "Return a string representing when TIMER should finish."
   (tmr--format-time (tmr--timer-end-date timer)))
 
-(defun tmr--format-remaining (timer &optional finished prefix)
-  "Format remaining time of TIMER.
-FINISHED is the string used for finished timers.
-PREFIX is used as prefix for running timers."
-  (setq prefix (or prefix ""))
+(defun tmr--format-remaining (timer)
+  "Format remaining time of TIMER."
   (if (tmr--timer-finishedp timer)
-      (or finished "✔")
+      "✔"
     (let ((secs (round (- (float-time (tmr--timer-end-date timer))
                           (float-time)))))
       (if (> secs 3600)
-          (format "%s%sh %sm" prefix (/ secs 3600) (/ (% secs 3600) 60))
+          (format "%sh %sm" (/ secs 3600) (/ (% secs 3600) 60))
         (if (> secs 60)
-            (format "%s%sm %ss" prefix (/ secs 60) (% secs 60))
-          (format "%s%ss" prefix secs))))))
+            (format "%sm %ss" (/ secs 60) (% secs 60))
+          (format "%ss" secs))))))
 
 (defun tmr--format-time (time)
   "Return a human-readable string representing TIME."
@@ -274,17 +252,21 @@ cancelling the original one."
 (defvar tmr--read-timer-hook nil
   "Hooks to execute to find current timer.")
 
-(defun tmr--read-timer (&optional active description)
+(defun tmr--timer-annotation (timer)
+  "Annotate TIMER completion candidate with remaining time."
+  (setq timer (get-text-property 0 'tmr-timer timer))
+  (if (tmr--timer-finishedp timer)
+      " (finished)"
+    (format " (%s remaining)" (tmr--format-remaining timer))))
+
+(defun tmr--read-timer (&optional active)
   "Let the user choose a timer among all timers.
 Return the selected timer.  If there is a single timer, use that.
 If there are multiple timers, prompt for one with completion.  If
 there are no timers, return nil.
 
 If optional ACTIVE is non-nil, limit the list of timers to those
-that are still running.
-
-If optional DESCRIPTION function is provided use it to format the
-completion candidates."
+that are still running."
   (or
    (run-hook-with-args-until-success 'tmr--read-timer-hook)
    (pcase
@@ -294,16 +276,20 @@ completion candidates."
      ('nil (user-error "No timers available"))
      (`(,timer) timer)
      (timers
-      (let* ((formatter (or description #'tmr--long-description))
-             (timer-alist (mapcar
-                           (lambda (x)
-                             (cons (funcall formatter x) x))
-                           timers)))
-        (cdr (assoc (completing-read
-                     "Timer: "
-                     (tmr--completion-table timer-alist 'tmr-timer)
-                     nil t)
-                    timer-alist)))))))
+      (let* ((timer-list (mapcar
+                          (lambda (x)
+                            (propertize
+                             (tmr--long-description x)
+                             'tmr-timer x))
+                          timers))
+             (selected
+              (car (member (completing-read
+                            "Timer: "
+                            (tmr--completion-table
+                             timer-list 'tmr-timer #'tmr--timer-annotation)
+                            nil t)
+                           timer-list))))
+        (and selected (get-text-property 0 'tmr-timer selected)))))))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
@@ -433,7 +419,7 @@ argument, ask for a description as well.
 Without a PROMPT, clone TIMER outright."
   (interactive
    (list
-    (tmr--read-timer nil #'tmr--long-description-for-clonable-timer)
+    (tmr--read-timer nil)
     current-prefix-arg))
   (tmr
    (if prompt
