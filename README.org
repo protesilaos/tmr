@@ -335,10 +335,11 @@ Everything is in place to set up the package.
 
 TMR is meant to be a collective effort.  Every bit of help matters.
 
-+ Authors :: Protesilaos Stavrou (maintainer), Damien Cassou.
++ Authors :: Protesilaos Stavrou (maintainer), Damien Cassou, Daniel
+  Mendler.
 
-+ Contributions to the code or manual :: Christian Tietze, Damien
-  Cassou, Daniel Mendler, Nathan R. DeGruchy.
++ Contributions to the code or manual :: Christian Tietze, Nathan
+  R. DeGruchy.
 
 * GNU Free Documentation License
 :PROPERTIES:
