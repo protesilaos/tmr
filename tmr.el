@@ -232,7 +232,7 @@ completion."
 (defun tmr-cancel (timer)
   "Cancel TIMER object set with `tmr' command.
 Interactively, let the user choose which timer to cancel with
-completion. This command is the same as `tmr-remove' but
+completion.  This command is the same as `tmr-remove' but
 chooses only among active timers."
   (interactive (list (tmr--read-timer "Cancel timer: " :active)))
   (tmr-remove timer))

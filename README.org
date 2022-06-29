@@ -112,14 +112,22 @@ is bound to =C-h e= by default.  To check all timers, use the command
 ~tmr-tabulated-view~, which has more features than the generic
 =*Messages*= buffer ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid view]]).
 
+[ The ~tmr-cancel~ has been reviewed as part of {{{development-version}}} ]
+
 #+findex: tmr-cancel
-The ~tmr-cancel~ command cancels running timers and erases them from the
-list of created timer objects.  If there is only one timer, it cancels
-it outright.  If there are multiple running timers, it produces a
-minibuffer completion prompt, asking for one among them.  Timers at the
-completion prompt are described by the exact time they were set and the
-input that was used to create them, including the optional description
-that ~tmr~ and ~tmr-with-description~ accept.
+The ~tmr-cancel~ command cancels running timers without erasesing them
+from the list of created timer objects.  If there is only one timer, it
+cancels it outright.  If there are multiple running timers, it produces
+a minibuffer completion prompt, asking for one among them.  Timers at
+the completion prompt are described by the exact time they were set and
+the input that was used to create them, including the optional
+description that ~tmr~ and ~tmr-with-description~ accept.
+
+[ The ~tmr-remove~ is introduced by {{{development-version}}} ]
+
+#+findex: tmr-remove
+This is like ~tmr-cancel~, except it is not limited to active timers: it
+can target elapsed ones as well.
 
 #+findex: tmr-clone
 The ~tmr-clone~ command directly copies the duration and optional
@@ -169,24 +177,9 @@ From the =*tmr-tabulated-view*= buffer, invoke the command
 applicable functionality, such as how to expand/contract columns and
 toggle their sort.
 
-While in this grid view, one can perform several operations on timers:
-
-[ Updated as part of {{{development-version}}} ]
-
-# If you are reading the Org source, the `tmr-with-description' is bound
-# to *.  The comma escapes the asterisk as it has a special meaning in
-# tables.
-| Key | Command              |
-|-----+----------------------|
-| t   | tmr                  |
-| T   | tmr-with-description |
-| +   | tmr                  |
-| ,*  | tmr-with-description |
-| c   | tmr-clone            |
-| e   | tmr-edit-description |
-| s   | tmr-reschedule       |
-| k   | tmr-cancel           |
-| K   | tmr-remove-finished  |
+While in this grid view, one can perform all the operations on timers we
+have already covered herein (the =C-h m= will show you their key
+bindings in this mode).
 
 ** Hooks
 :PROPERTIES:
