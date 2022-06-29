@@ -319,7 +319,7 @@ timers, throw an error."
 ;; supports .wav and .au formats.  Also, it does not work on all
 ;; platforms and Emacs needs to be compiled --with-sound capabilities.
 (defun tmr-sound-play (&optional _timer)
-  "Play `tmr-sound-file' using the 'ffplay' executable (ffmpeg).
+  "Play `tmr-sound-file' using the ffplay executable (ffmpeg).
 TIMER is unused."
   (when-let ((sound tmr-sound-file)
              ((file-exists-p sound)))
@@ -387,8 +387,8 @@ If optional DEFAULT is provided use it as a default candidate."
 
 When TIME is a number, it is interpreted as a count of minutes.
 Otherwise TIME must be a string that consists of a number and a
-special final character denoting a unit of time: 'h' for 'hours',
-'s' for 'seconds'.
+special final character denoting a unit of time: h for hours, s
+for seconds.
 
 With optional DESCRIPTION as a prefix (\\[universal-argument]),
 prompt for a description among `tmr-description-list', though
