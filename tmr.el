@@ -291,7 +291,8 @@ that are still running."
                              timer-list 'tmr-timer #'tmr--timer-annotation)
                             nil t)
                            timer-list))))
-        (and selected (get-text-property 0 'tmr-timer selected)))))))
+        (or (and selected (get-text-property 0 'tmr-timer selected))
+            (user-error "No timer selected")))))))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
@@ -431,14 +432,17 @@ Without a PROMPT, clone TIMER outright."
        (tmr--description-prompt (tmr--timer-description timer))
      (tmr--timer-description timer))))
 
-(defun tmr--completion-table (candidates &optional category)
-  "Return completion table for CANDIDATES of CATEGORY with sorting disabled."
-  (lambda (str pred action)
-    (if (eq action 'metadata)
-        `(metadata (display-sort-function . identity)
-                   (cycle-sort-function . identity)
-                   (category . ,category))
-      (complete-with-action action candidates str pred))))
+(defun tmr--completion-table (candidates &optional category annotation)
+  "Make completion table for CANDIDATES with sorting disabled.
+CATEGORY is the completion category.
+ANNOTATION is an annotation function."
+   (lambda (str pred action)
+     (if (eq action 'metadata)
+         `(metadata (display-sort-function . identity)
+                    (cycle-sort-function . identity)
+                   (annotation-function . ,annotation)
+                    (category . ,category))
+       (complete-with-action action candidates str pred))))
 
 (provide 'tmr)
 ;;; tmr.el ends here
