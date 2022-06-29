@@ -212,17 +212,24 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
   "Hooks to execute when timers are changed.")
 
 ;;;###autoload
+(defun tmr-remove (timer)
+  "Cancel and remove TIMER object set with `tmr' command.
+Interactively, let the user choose which timer to cancel with
+completion."
+  (interactive (list (tmr--read-timer)))
+  (cancel-timer (tmr--timer-timer-object timer))
+  (setq tmr--timers (delete timer tmr--timers))
+  (run-hooks 'tmr--update-hook)
+  (run-hook-with-args 'tmr-timer-cancelled-functions timer))
+
+;;;###autoload
 (defun tmr-cancel (timer)
   "Cancel TIMER object set with `tmr' command.
 Interactively, let the user choose which timer to cancel with
-completion."
+completion. This command is the same as `tmr-remove' but
+chooses only among active timers."
   (interactive (list (tmr--read-timer :active)))
-  (if (not timer)
-      (user-error "No `tmr' to cancel")
-    (cancel-timer (tmr--timer-timer-object timer))
-    (setq tmr--timers (delete timer tmr--timers))
-    (run-hooks 'tmr--update-hook)
-    (run-hook-with-args 'tmr-timer-cancelled-functions timer)))
+  (tmr-remove timer))
 
 ;;;###autoload
 (defun tmr-reschedule (timer)

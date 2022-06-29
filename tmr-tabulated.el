@@ -62,8 +62,9 @@
 
 (defvar tmr-tabulated-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "k" #'tmr-cancel)
-    (define-key map "K" #'tmr-remove-finished)
+    (define-key map "k" #'tmr-remove)
+    (define-key map "r" #'tmr-remove)
+    (define-key map "R" #'tmr-remove-finished)
     (define-key map "+" #'tmr)
     (define-key map "t" #'tmr)
     (define-key map "*" #'tmr-with-description)
