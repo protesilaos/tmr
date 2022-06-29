@@ -222,7 +222,7 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
   "Cancel and remove TIMER object set with `tmr' command.
 Interactively, let the user choose which timer to cancel with
 completion."
-  (interactive (list (tmr--read-timer)))
+  (interactive (list (tmr--read-timer "Remove timer: ")))
   (cancel-timer (tmr--timer-timer-object timer))
   (setq tmr--timers (delete timer tmr--timers))
   (run-hooks 'tmr--update-hook)
@@ -234,7 +234,7 @@ completion."
 Interactively, let the user choose which timer to cancel with
 completion. This command is the same as `tmr-remove' but
 chooses only among active timers."
-  (interactive (list (tmr--read-timer :active)))
+  (interactive (list (tmr--read-timer "Cancel timer: " :active)))
   (tmr-remove timer))
 
 ;;;###autoload
@@ -242,7 +242,7 @@ chooses only among active timers."
   "Reschedule TIMER.
 This is the same as cloning it, prompting for duration and
 cancelling the original one."
-  (interactive (list (tmr--read-timer)))
+  (interactive (list (tmr--read-timer "Reschedule timer: ")))
   (tmr-clone timer :prompt)
   (let (tmr-timer-cancelled-functions)
     (tmr-cancel timer)))
@@ -252,7 +252,7 @@ cancelling the original one."
   "Change TIMER description with that of DESCRIPTION."
   (interactive
    (list
-    (tmr--read-timer)
+    (tmr--read-timer "Edit description of timer: ")
     (tmr--description-prompt)))
   (setf (tmr--timer-description timer) description)
   (run-hooks 'tmr--update-hook))
@@ -274,13 +274,13 @@ cancelling the original one."
       " (finished)"
     (format " (%s remaining)" (tmr--format-remaining timer))))
 
-(defun tmr--read-timer (&optional active)
+(defun tmr--read-timer (prompt &optional active)
   "Let the user choose a timer among all (or ACTIVE) timers.
 
 Return the selected timer. If there is a single timer and
 `tmr-confirm' is nil, use that. If there are multiple timers,
-prompt for one with completion. If there are no timers, throw an
-error."
+prompt for one with completion with PROMPT text. If there are no
+timers, throw an error."
   (or
    (run-hook-with-args-until-success 'tmr--read-timer-hook)
    (pcase
@@ -298,7 +298,7 @@ error."
                           timers))
              (selected
               (car (member (completing-read
-                            "Timer: "
+                            prompt
                             (tmr--completion-table
                              timer-list 'tmr-timer #'tmr--timer-annotation)
                             nil t)
@@ -434,7 +434,7 @@ argument, ask for a description as well.
 Without a PROMPT, clone TIMER outright."
   (interactive
    (list
-    (tmr--read-timer nil)
+    (tmr--read-timer "Clone timer: ")
     current-prefix-arg))
   (tmr
    (if prompt
