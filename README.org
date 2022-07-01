@@ -96,6 +96,10 @@ An alternative to the ~tmr~ command is ~tmr-with-description~.  The
 difference between the two is that the latter always prompts for a
 description.
 
+#+findex: tmr-edit-description
+The command ~tmr-edit-description~ [ part of {{{development-version}}} ]
+can change the description a given timer object.
+
 #+vindex: tmr-descriptions-list
 The user option ~tmr-descriptions-list~ defines the completion
 candidates that are shown at the description prompt.  Its value can be
