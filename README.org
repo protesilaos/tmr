@@ -299,13 +299,12 @@ Everything is in place to set up the package.
 (require 'tmr)
 
 ;; set to nil to disable the sound
-(setq tmr-sound-file
-      "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga")
+(setq tmr-sound-file "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga")
 
 (setq tmr-notification-urgency 'normal)
 
 ;; Read the `tmr-descriptions-list' doc string
-(setq tmr-descriptions-list (list "Boil water" "Prepare tea" "Bake bread"))
+(setq tmr-descriptions-list 'tmr-description-history)
 
 ;; OPTIONALLY set global key bindings:
 (let ((map global-map))
