@@ -140,6 +140,12 @@ prefix argument is supplied (=C-u C-u=), the command asks for a duration
 and then a description.  The default values of such prompts as those of
 the original timer.
 
+#+findex: tmr-reschedule
+The command ~tmr-reschedule~ [ part of {{{development-version}}} ]
+changes the duration of the given timer to a new one provided at the
+prompt.  In practice this is a shortcut to (i) cloning the timer, (ii)
+prompting for duration, and (iii) cancelling the original timer.
+
 #+findex: tmr-remove-finished
 The ~tmr-remove-finished~ command deletes all elapsed timers from the
 list of timers.  This means that they can no longer be cloned.
