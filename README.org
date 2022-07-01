@@ -150,6 +150,13 @@ prompting for duration, and (iii) cancelling the original timer.
 The ~tmr-remove-finished~ command deletes all elapsed timers from the
 list of timers.  This means that they can no longer be cloned.
 
+#+vindex: tmr-confirm-single-timer
+By default, TMR uses minibuffer completion to pick a timer object in
+operations such as cloning and cancelling.  If the user option
+~tmr-confirm-single-timer~ is set nil, TMR will not use completion when
+there is only one timer available: it will perform the specified command
+outright. [ part of {{{development-version}}} ]
+
 Timers have hooks associated with their creation, cancellation, and
 completion ([[#h:c908f440-da08-462e-be4e-a61fb274ecbc][Hooks]]).  TMR can also integrate with the desktop environment
 to send notifications ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]).
