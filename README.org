@@ -180,6 +180,10 @@ otherwise the =Remaining= column shows the time left.  A =Description=
 is shown only if it is provided while setting the timer, otherwise the
 field is left blank.
 
+Inside this grid view, all TMR commands that operate on timer objects
+automatically target the one at point.  Whereas the global behaviour is
+to use minibuffer completion to pick a timer to operate on.
+
 The ~tmr-tabulated-view~ command relies on Emacs' ~tabulated-list-mode~.
 From the =*tmr-tabulated-view*= buffer, invoke the command
 ~describe-mode~ (=C-h m= with standard key bindings) to learn about the
