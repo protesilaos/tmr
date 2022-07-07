@@ -90,8 +90,6 @@ The input can be a floating point:
 The input can also be an absolute time, such as =16:00= or =16:00:30=.
 It sets a timer from present time until the one specified.
 
-[ Absolute time support is part of {{{development-version}}} ]
-
 If ~tmr~ is called with an optional prefix argument (=C-u= with default
 key bindings), it asks for a description to be associated with the given
 timer.
@@ -102,8 +100,8 @@ difference between the two is that the latter always prompts for a
 description.
 
 #+findex: tmr-edit-description
-The command ~tmr-edit-description~ [ part of {{{development-version}}} ]
-can change the description a given timer object.
+The command ~tmr-edit-description~ can change the description a given
+timer object.
 
 #+vindex: tmr-descriptions-list
 The user option ~tmr-descriptions-list~ defines the completion
@@ -120,16 +118,12 @@ is bound to =C-h e= by default.  To check all timers, use the command
 ~tmr-tabulated-view~, which has more features than the generic
 =*Messages*= buffer ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid view]]).
 
-[ The ~tmr-cancel~ has been reviewed as part of {{{development-version}}} ]
-
 #+findex: tmr-cancel
 The ~tmr-cancel~ command cancels running timers without erasesing them
 from the list of created timer objects.  Timers at the completion prompt
 are described by the exact time they were set and the input that was
 used to create them, including the optional description that ~tmr~ and
 ~tmr-with-description~ accept.
-
-[ The ~tmr-remove~ is introduced by {{{development-version}}} ]
 
 #+findex: tmr-remove
 The ~tmr-remove~ command is like ~tmr-cancel~, except it is not limited
@@ -144,10 +138,10 @@ and then a description.  The default values of such prompts as those of
 the original timer.
 
 #+findex: tmr-reschedule
-The command ~tmr-reschedule~ [ part of {{{development-version}}} ]
-changes the duration of the given timer to a new one provided at the
-prompt.  In practice this is a shortcut to (i) cloning the timer, (ii)
-prompting for duration, and (iii) cancelling the original timer.
+The command ~tmr-reschedule~ changes the duration of the given timer to
+a new one provided at the prompt.  In practice this is a shortcut to (i)
+cloning the timer, (ii) prompting for duration, and (iii) cancelling the
+original timer.
 
 #+findex: tmr-remove-finished
 The ~tmr-remove-finished~ command deletes all elapsed timers from the
@@ -158,7 +152,7 @@ By default, TMR uses minibuffer completion to pick a timer object in
 operations such as cloning and cancelling.  If the user option
 ~tmr-confirm-single-timer~ is set nil, TMR will not use completion when
 there is only one timer available: it will perform the specified command
-outright. [ part of {{{development-version}}} ]
+outright.
 
 Timers have hooks associated with their creation, cancellation, and
 completion ([[#h:c908f440-da08-462e-be4e-a61fb274ecbc][Hooks]]).  TMR can also integrate with the desktop environment
@@ -366,8 +360,6 @@ Everything is in place to set up the package.
 :PROPERTIES:
 :CUSTOM_ID: h:64711ce4-c023-4f6e-b9aa-b43942013423
 :END:
-
-[ Part of {{{development-version}}} ]
 
 The =embark= package provides standards-compliant infrastructure to run
 context-dependent actions on all sorts of targets (symbol at point,
