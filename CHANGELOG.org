@@ -1,3 +1,14 @@
+#+title:    Change log of TMR
+#+author:   Protesilaos Stavrou
+#+email:    info@protesilaos.com
+#+options:  ':nil toc:nil num:nil author:nil email:nil
+
+This document contains the release notes for each tagged commit on the
+project's main git repository: <https://git.sr.ht/~protesilaos/tmr>.
+
+The newest release is at the top.  For further details, please consult
+the manual: <https://protesilaos.com/emacs/tmr>.
+
 * Version 0.3.0 on 2022-05-17
 
 The gist of TMR's May Release is that TMR is Maintained Rigorously---but
