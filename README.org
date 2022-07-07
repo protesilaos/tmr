@@ -124,12 +124,10 @@ is bound to =C-h e= by default.  To check all timers, use the command
 
 #+findex: tmr-cancel
 The ~tmr-cancel~ command cancels running timers without erasesing them
-from the list of created timer objects.  If there is only one timer, it
-cancels it outright.  If there are multiple running timers, it produces
-a minibuffer completion prompt, asking for one among them.  Timers at
-the completion prompt are described by the exact time they were set and
-the input that was used to create them, including the optional
-description that ~tmr~ and ~tmr-with-description~ accept.
+from the list of created timer objects.  Timers at the completion prompt
+are described by the exact time they were set and the input that was
+used to create them, including the optional description that ~tmr~ and
+~tmr-with-description~ accept.
 
 [ The ~tmr-remove~ is introduced by {{{development-version}}} ]
 
