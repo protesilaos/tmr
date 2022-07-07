@@ -261,6 +261,25 @@ Desktop notifications work only if Emacs is built with DBus
 functionality.  This is the norm.  If such functionality is not
 available, TMR will issue warning informing the user accordingly.
 
+** Minibuffer histories
+:PROPERTIES:
+:CUSTOM_ID: h:fbedb656-2402-46bc-9763-d5112700c954
+:END:
+
+TMR defines two variables that store user input: ~tmr-duration-history~
+and ~tmr-description-history~.  Minibuffer histories can persist between
+sessions if the user enables the built-in =savehist= library.  Sample
+configuration:
+
+#+begin_src emacs-lisp
+(require 'savehist)
+(setq savehist-file (locate-user-emacs-file "savehist"))
+(setq history-length 10000)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history t)
+(add-hook 'after-init-hook #'savehist-mode)
+#+end_src
+
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: h:46378bdf-f6cc-469e-b0b0-1b90dd9aa595
