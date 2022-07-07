@@ -73,3 +73,25 @@ enough with The Mostly Recursive acronyms!
 The manual documents the technicalities and provides a sample
 configuration.  Either evaluate the form =(info "(tmr) Top")= if you
 have the package installed or visit https://protesilaos.com/emacs/tmr.
+
+* Version 0.2.0 on 2022-04-21
+
+This entry is retroactively introduced on 2022-07-07.
+
++ Changed the ~tmr~ and ~tmr-cancel~ commands to handle a list of timers
+  instead of only interfacing with the last timer.
+
++ Improved the documentation.
+
++ Made various internal tweaks and refinements.
+
++ Added TMR to the official GNU ELPA archive as =tmr=.
+
+* Version 0.1.0 on 2021-10-02
+
+This entry is retroactively introduced on 2022-07-07.
+
+TMR was originally [[https://protesilaos.com/codelog/2021-10-02-introducing-tmr-el/][announced on my website]].  The code was developed as
+part of [[https://protesilaos.com/emacs/dotemacs][my dotemacs]] for several months before it was placed in its own
+Git repo.  Even before the Elisp implementation, the core idea existed
+as a standalone shell script, which is still part of [[https://git.sr.ht/~protesilaos/dotfiles][my dotfiles]].
