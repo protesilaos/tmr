@@ -9,6 +9,142 @@ project's main git repository: <https://git.sr.ht/~protesilaos/tmr>.
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/tmr>.
 
+* Version 0.4.0 on 2022-07-07
+
+The general theme of this release is that TMR became simpler, better,
+and more robust.  Daniel Mendler provided lots of patches and is now
+recognised as co-author of the package together with Damien Cassou and
+me (Protesilaos).  With the exception of documentation changes and other
+accompanying tweaks, all of the following are courtesy of Daniel
+Mendler.  Consult the git log for the minutia.
+
++ Timers can also be set using an absolute time input.  For example,
+  =21:45= will set a timer from now until the specified time.  The
+  familiar ways of starting timers with relative values, work as they
+  did before.  This is part of a wider internal revision to make the
+  parsing of input more strict.
+
++ TMR no longer maintains distinct feature sets between its minibuffer
+  and tabulated interfaces.  What works in one context, works equally in
+  the other.  All commands that were formerly available only in the
+  ~tmr-tabulated-mode~ (accessed via ~tmr-tabulated-view~) are now
+  implemented anew to provide the requisite minibuffer capabilities.
+  When called from inside the ~tmr-tabulated-mode~, the commands operate
+  on the timer at point.  Otherwise they prompt for completion among the
+  available timers (where relevant).  This covers all operations for
+  creating, cloning, [re-]describing, rescheduling, and removing timers.
+  The ~tmr-tabulated-mode-map~ is updated thus:
+
+  #+begin_src emacs-lisp
+  (defvar tmr-tabulated-mode-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map "k" #'tmr-remove)
+      (define-key map "r" #'tmr-remove)
+      (define-key map "R" #'tmr-remove-finished)
+      (define-key map "+" #'tmr)
+      (define-key map "t" #'tmr)
+      (define-key map "*" #'tmr-with-description)
+      (define-key map "T" #'tmr-with-description)
+      (define-key map "c" #'tmr-clone)
+      (define-key map "e" #'tmr-edit-description)
+      (define-key map "s" #'tmr-reschedule)
+      map)
+    "Keybindings for `tmr-tabulated-mode-map'.")
+  #+end_src
+
+  Similarly, our sample key bindings are these:
+
+  #+begin_src emacs-lisp
+  ;; OPTIONALLY set your own global key bindings:
+  (let ((map global-map))
+    (define-key map (kbd "C-c t t") #'tmr)
+    (define-key map (kbd "C-c t T") #'tmr-with-description)
+    (define-key map (kbd "C-c t l") #'tmr-tabulated-view) ; "list timers" mnemonic
+    (define-key map (kbd "C-c t c") #'tmr-clone)
+    (define-key map (kbd "C-c t k") #'tmr-cancel)
+    (define-key map (kbd "C-c t s") #'tmr-reschedule)
+    (define-key map (kbd "C-c t e") #'tmr-edit-description)
+    (define-key map (kbd "C-c t r") #'tmr-remove)
+    (define-key map (kbd "C-c t R") #'tmr-remove-finished))
+  #+end_src
+
++ The tabulated view now shows the remaining time for all timer objects.
+  This is how the =*tmr-tabulated-view*= buffer is formatted:
+
+  #+begin_example
+  Start      End        Remaining  Description
+  10:11:49   10:11:54   ✔
+  10:11:36   10:31:36   19m 35s
+  10:11:32   10:26:32   14m 31s    Yet another test
+  10:11:16   10:21:16   9m 14s     Testing how it works
+  #+end_example
+
++ All timer objects are refactored to expose a properly formatted
+  completion table.  The completion category is ~tmr-timer~.  In
+  practical terms, =embark= (and other standards-compliant packages) can
+  operate on them.  The manual provides sample glue code for Embark:
+
+  #+begin_src emacs-lisp
+  (defvar tmr-action-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map "k" #'tmr-remove)
+      (define-key map "r" #'tmr-remove)
+      (define-key map "R" #'tmr-remove-finished)
+      (define-key map "c" #'tmr-clone)
+      (define-key map "e" #'tmr-edit-description)
+      (define-key map "s" #'tmr-reschedule)
+      map))
+
+  (with-eval-after-load 'embark
+    (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
+    (cl-loop
+     for cmd the key-bindings of tmr-action-map
+     if (commandp cmd) do
+     (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart))))
+  #+end_src
+
+  The [[https://github.com/oantolin/embark/wiki/Additional-Actions#actions-for-prots-tmr-tmr-may-ring][Embark Wiki]] is updated accordingly.
+
++ The new user option ~tmr-confirm-single-timer~ governs how TMR should
+  behave while operating on the sole timer.  If non-nil (the default),
+  TMR will always use the minibuffer to select a timer object to operate
+  on, even when there is only one candidate available.  If set to nil,
+  TMR will not ask for confirmation when there is one timer available:
+  the operation will be carried out outright.  The default value is
+  optimal for use with Embark.
+
++ The existing user option ~tmr-description-list~ is revised to accept
+  either a list of strings (the old approach) or a symbol of a variable
+  that holds a list of strings.  In the latter case, this can be the
+  ~tmr-description-history~, which is a variable that stores the user's
+  input at the relevant minibuffer prompt.  We have made this the new
+  default value, as it grows naturally to reflect one's usage of TMR.
+  Minibuffer histories can persist between sessions if the user enables
+  the built-in =savehist= library.  Sample configuration:
+
+  #+begin_src emacs-lisp
+  (require 'savehist)
+  (setq savehist-file (locate-user-emacs-file "savehist"))
+  (setq history-length 10000)
+  (setq history-delete-duplicates t)
+  (setq savehist-save-minibuffer-history t)
+  (add-hook 'after-init-hook #'savehist-mode)
+  #+end_src
+
++ Fixed an edge case where a ~when-let*~ form did not return the
+  expected value.  Thanks to Nathan R. DeGruchy for the patch.  The
+  patch is below the ~15 line threshold and thus does not require
+  copyright assignment to the Free Software Foundation.
+
++ Named the mailing list address as the =Maintainer:= of Denote.
+  Together with the other package headers, they help the user find our
+  primary sources and/or communication channels.  This change conforms
+  with work being done upstream in package.el by Philip Kaludercic.  I
+  was informed about it here:
+  <https://lists.sr.ht/~protesilaos/general-issues/%3C875ykl84yi.fsf%40posteo.net%3E>.
+
++ Updated the manual to reflect the aforementioned.
+
 * Version 0.3.0 on 2022-05-17
 
 The gist of TMR's May Release is that TMR is Maintained Rigorously---but
