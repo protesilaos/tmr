@@ -134,8 +134,8 @@ description that ~tmr~ and ~tmr-with-description~ accept.
 [ The ~tmr-remove~ is introduced by {{{development-version}}} ]
 
 #+findex: tmr-remove
-This is like ~tmr-cancel~, except it is not limited to active timers: it
-can target elapsed ones as well.
+The ~tmr-remove~ command is like ~tmr-cancel~, except it is not limited
+to active timers: it can target elapsed ones as well.
 
 #+findex: tmr-clone
 The ~tmr-clone~ command directly copies the duration and optional
