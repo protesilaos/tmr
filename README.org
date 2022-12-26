@@ -355,15 +355,20 @@ Everything is in place to set up the package.
 :CUSTOM_ID: h:64711ce4-c023-4f6e-b9aa-b43942013423
 :END:
 
-The ~embark~ package provides standards-compliant infrastructure to
-run context-dependent actions on all sorts of targets (symbol at
-point, current completion candidate, etc.).  TMR is set up to make its
-timer objects recognisable by Embark.  All the user needs is something
-like the following glue code:
+The =embark= package provides standards-compliant infrastructure to run
+context-dependent actions on all sorts of targets (symbol at point,
+current completion candidate, etc.).  TMR is set up to make its timer
+objects recognisable by Embark.  All the user needs is something like
+the following glue code:
 
 #+begin_src emacs-lisp
-(with-eval-after-load 'embark
-  (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map)))
+  (with-eval-after-load 'tmr
+    (with-eval-after-load 'embark
+      (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
+      (cl-loop
+       for cmd the key-bindings of tmr-action-map
+       if (commandp cmd) do
+       (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart)))))
 #+end_src
 
 * Acknowledgements
