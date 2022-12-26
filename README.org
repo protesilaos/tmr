@@ -332,28 +332,16 @@ Everything is in place to set up the package.
 #+cindex: Package configuration
 
 #+begin_src emacs-lisp
-;; Load the `tmr' library
-(require 'tmr)
+  ;; set to nil to disable the sound
+  (setq tmr-sound-file "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga")
 
-;; set to nil to disable the sound
-(setq tmr-sound-file "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga")
+  (setq tmr-notification-urgency 'normal)
 
-(setq tmr-notification-urgency 'normal)
+  ;; Read the `tmr-descriptions-list' doc string
+  (setq tmr-descriptions-list 'tmr-description-history)
 
-;; Read the `tmr-descriptions-list' doc string
-(setq tmr-descriptions-list 'tmr-description-history)
-
-;; OPTIONALLY set global key bindings:
-(let ((map global-map))
-  (define-key map (kbd "C-c t t") #'tmr)
-  (define-key map (kbd "C-c t T") #'tmr-with-description)
-  (define-key map (kbd "C-c t l") #'tmr-tabulated-view) ; "list timers" mnemonic
-  (define-key map (kbd "C-c t c") #'tmr-clone)
-  (define-key map (kbd "C-c t k") #'tmr-cancel)
-  (define-key map (kbd "C-c t s") #'tmr-reschedule)
-  (define-key map (kbd "C-c t e") #'tmr-edit-description)
-  (define-key map (kbd "C-c t r") #'tmr-remove)
-  (define-key map (kbd "C-c t R") #'tmr-remove-finished))
+  ;; OPTIONALLY set global prefix bindings (autoloaded):
+  (define-key global-map "\C-ct" 'tmr-prefix-map)
 #+end_src
 
 * Integration with Embark
@@ -368,22 +356,13 @@ objects recognisable by Embark.  All the user needs is something like
 the following glue code:
 
 #+begin_src emacs-lisp
-(defvar tmr-action-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map "k" #'tmr-remove)
-    (define-key map "r" #'tmr-remove)
-    (define-key map "R" #'tmr-remove-finished)
-    (define-key map "c" #'tmr-clone)
-    (define-key map "e" #'tmr-edit-description)
-    (define-key map "s" #'tmr-reschedule)
-    map))
-
-(with-eval-after-load 'embark
-  (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
-  (cl-loop
-   for cmd the key-bindings of tmr-action-map
-   if (commandp cmd) do
-   (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart))))
+  (with-eval-after-load 'tmr
+    (with-eval-after-load 'embark
+      (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
+      (cl-loop
+       for cmd the key-bindings of tmr-action-map
+       if (commandp cmd) do
+       (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart)))))
 #+end_src
 
 * Acknowledgements
