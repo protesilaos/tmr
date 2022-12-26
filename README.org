@@ -37,6 +37,7 @@ Current development target is {{{development-version}}}.
     + GitHub: <https://github.com/protesilaos/tmr>
     + GitLab: <https://gitlab.com/protesilaos/tmr>
 + Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
++ Backronym: TMR May Ring; Timer Must Run
 
 #+toc: headlines 8 insert TOC here, with eight headline levels
 
