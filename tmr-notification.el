@@ -8,8 +8,6 @@
 ;; Maintainer: TMR Development <~protesilaos/tmr@lists.sr.ht>
 ;; URL: https://git.sr.ht/~protesilaos/tmr
 ;; Mailing-List: https://lists.sr.ht/~protesilaos/tmr
-;; Version: 0.4.0
-;; Package-Requires: ((emacs "27.1"))
 
 ;; This file is NOT part of GNU Emacs.
 
