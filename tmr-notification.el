@@ -1,4 +1,4 @@
-;;; tmr-notification.el --- Display timers in a notification list -*- lexical-binding: t -*-
+;;; tmr-notification.el --- Display TMR desktop notifications -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2020-2022  Free Software Foundation, Inc.
 

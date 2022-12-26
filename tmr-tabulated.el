@@ -1,4 +1,4 @@
-;;; tmr-tabulated.el --- Display timers in a tabulated list -*- lexical-binding: t -*-
+;;; tmr-tabulated.el --- Display TMR timers in a tabulated list -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2020-2022  Free Software Foundation, Inc.
 
