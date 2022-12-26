@@ -18,7 +18,7 @@
 #+texinfo_header:        @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
 
 This manual, written by Protesilaos Stavrou, describes the customization
-options for =tmr= (or TMR, TMR May Ring, ...), and provides every other
+options for ~tmr~ (or TMR, TMR May Ring, ...), and provides every other
 piece of information pertinent to it.  The name of the package is
 pronounced as "timer" or "T-M-R".
 
@@ -29,7 +29,7 @@ commit, is explicitly marked as such.
 
 Current development target is {{{development-version}}}.
 
-+ Package name (GNU ELPA): =tmr=
++ Package name (GNU ELPA): ~tmr~
 + Official manual: <https://protesilaos.com/emacs/tmr>
 + Change log: <https://protesilaos.com/emacs/tmr-changelog>
 + Git repo on SourceHut: <https://git.sr.ht/~protesilaos/tmr>
@@ -286,7 +286,7 @@ configuration:
 :CUSTOM_ID: h:807c2a8c-3d49-4fb3-bfb9-84d10675c95b
 :END:
 
-The package is available as =tmr=.  Simply do:
+The package is available as ~tmr~.  Simply do:
 
 : M-x package-refresh-contents
 : M-x package-install
