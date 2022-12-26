@@ -45,6 +45,9 @@
   (switch-to-buffer (get-buffer-create "*tmr-tabulated-view*"))
   (tmr-tabulated-mode))
 
+(defalias 'tmr-list-timers 'tmr-tabulated-view
+  "Alias of `tmr-tabulated-view' command.")
+
 (defun tmr-tabulated--set-entries ()
   "Set the value of `tabulated-list-entries' with timers."
   (setq-local tabulated-list-entries
