@@ -509,5 +509,14 @@ This map should be bound to a global prefix.")
         (mapcar (lambda (ev) (cons t ev))
                 (listify-key-sequence (this-command-keys-vector)))))
 
+(defvar embark-keymap-alist)
+(defvar embark-post-action-hooks)
+(with-eval-after-load 'embark
+  (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
+  (cl-loop
+   for cmd the key-bindings of tmr-action-map
+   if (commandp cmd) do
+   (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart))))
+
 (provide 'tmr)
 ;;; tmr.el ends here
