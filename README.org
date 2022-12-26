@@ -158,7 +158,7 @@ Timers have hooks associated with their creation, cancellation, and
 completion ([[#h:c908f440-da08-462e-be4e-a61fb274ecbc][Hooks]]).  TMR can also integrate with the desktop environment
 to send notifications ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]).
 
-#+findex: tmr-prefix-map
+#+vindex: tmr-prefix-map
 TMR specifies key bindings that are prefixed by the ~tmr-prefix-map~
 (part of {{{development-version}}}).  By default, the prefix is not
 bound to any key, though we suggest the use of =C-c t= ([[#h:69eeb3fb-f11d-431e-ae16-2d9b322871cc][Sample configuration]]).
