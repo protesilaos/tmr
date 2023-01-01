@@ -1,6 +1,6 @@
 ;;; tmr-tabulated.el --- Display TMR timers in a tabulated list -*- lexical-binding: t -*-
 
-;; Copyright (C) 2020-2022  Free Software Foundation, Inc.
+;; Copyright (C) 2020-2023  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>,
 ;;         Damien Cassou <damien@cassou.me>,
