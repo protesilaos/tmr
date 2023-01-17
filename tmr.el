@@ -9,7 +9,7 @@
 ;; URL: https://git.sr.ht/~protesilaos/tmr
 ;; Mailing-List: https://lists.sr.ht/~protesilaos/tmr
 ;; Version: 0.4.0
-;; Package-Requires: ((emacs "27.1"))
+;; Package-Requires: ((emacs "27.1") (compat "29.1.3.0"))
 ;; Keywords: convenience, timer
 
 ;; This file is NOT part of GNU Emacs.
@@ -37,6 +37,7 @@
 
 ;;; Code:
 
+(require 'compat)
 (require 'seq)
 (eval-when-compile (require 'cl-lib))
 
@@ -151,7 +152,7 @@ Each function must accept a timer as argument."
     (format "TMR start %s; end %s; %s %s%s"
             (propertize start 'face 'success)
             (propertize end 'face 'error)
-            (if (string-match-p ":" (tmr--timer-input timer))
+            (if (string-search ":" (tmr--timer-input timer))
                 "until"
               "duration")
             (tmr--timer-input timer)
@@ -357,11 +358,9 @@ TIMER is unused."
 If DEFAULT is provided, use that as a default."
   (let ((def (or default (nth 0 tmr-duration-history))))
     (read-string
-     (if def
-         (format "N minutes for timer (append `h' or `s' for other units) [%s]: " def)
-       "N minutes for timer (append `h' or `s' for other units): ")
-     nil
-     'tmr-duration-history def)))
+     (format-prompt
+      "N minutes for timer (append `h' or `s' for other units)" def)
+     nil 'tmr-duration-history def)))
 
 (defvar tmr-description-history '()
   "Minibuffer history of `tmr' descriptions.")
@@ -370,9 +369,7 @@ If DEFAULT is provided, use that as a default."
   "Helper prompt for descriptions in `tmr'.
 If optional DEFAULT is provided use it as a default candidate."
   (completing-read
-   (if default
-       (format "Description for this tmr [%s]: " default)
-     "Description for this tmr: ")
+   (format-prompt "Description for this tmr" default)
    (tmr--completion-table
     (if (listp tmr-description-list)
         tmr-description-list
@@ -471,33 +468,29 @@ ANNOTATION is an annotation function."
                     (category . ,category))
        (complete-with-action action candidates str pred))))
 
-(defvar tmr-action-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map "k" #'tmr-remove)
-    (define-key map "r" #'tmr-remove)
-    (define-key map "R" #'tmr-remove-finished)
-    (define-key map "c" #'tmr-clone)
-    (define-key map "e" #'tmr-edit-description)
-    (define-key map "s" #'tmr-reschedule)
-    map)
-  "Action map for TMRs, which can be utilized by Embark.")
+(defvar-keymap tmr-action-map
+  :doc "Action map for TMRs, which can be utilized by Embark."
+  "k" #'tmr-remove
+  "r" #'tmr-remove
+  "R" #'tmr-remove-finished
+  "c" #'tmr-clone
+  "e" #'tmr-edit-description
+  "s" #'tmr-reschedule)
 
-(defvar tmr-prefix-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map "+" #'tmr)
-    (define-key map "*" #'tmr-with-description)
-    (define-key map "t" #'tmr)
-    (define-key map "T" #'tmr-with-description)
-    (define-key map "l" 'tmr-tabulated-view) ;; autoloaded
-    (define-key map "c" #'tmr-clone)
-    (define-key map "s" #'tmr-reschedule)
-    (define-key map "e" #'tmr-edit-description)
-    (define-key map "r" #'tmr-remove)
-    (define-key map "R" #'tmr-remove-finished)
-    (define-key map "k" #'tmr-cancel)
-    map)
-  "Global prefix map for TMRs.
-This map should be bound to a global prefix.")
+(defvar-keymap tmr-prefix-map
+  :doc "Global prefix map for TMRs.
+This map should be bound to a global prefix."
+  "+" #'tmr
+  "*" #'tmr-with-description
+  "t" #'tmr
+  "T" #'tmr-with-description
+  "l" 'tmr-tabulated-view ;; autoloaded
+  "c" #'tmr-clone
+  "s" #'tmr-reschedule
+  "e" #'tmr-edit-description
+  "r" #'tmr-remove
+  "R" #'tmr-remove-finished
+  "k" #'tmr-cancel)
 
 ;;;###autoload
 (defun tmr-prefix-map ()

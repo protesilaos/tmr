@@ -61,20 +61,18 @@
                 (tmr--format-remaining timer)
                 (or (tmr--timer-description timer) ""))))
 
-(defvar tmr-tabulated-mode-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map "k" #'tmr-remove)
-    (define-key map "r" #'tmr-remove)
-    (define-key map "R" #'tmr-remove-finished)
-    (define-key map "+" #'tmr)
-    (define-key map "t" #'tmr)
-    (define-key map "*" #'tmr-with-description)
-    (define-key map "T" #'tmr-with-description)
-    (define-key map "c" #'tmr-clone)
-    (define-key map "e" #'tmr-edit-description)
-    (define-key map "s" #'tmr-reschedule)
-    map)
-  "Keybindings for `tmr-tabulated-mode-map'.")
+(defvar-keymap tmr-tabulated-mode-map
+  :doc "Keybindings for `tmr-tabulated-mode-map'."
+  "k" #'tmr-remove
+  "r" #'tmr-remove
+  "R" #'tmr-remove-finished
+  "+" #'tmr
+  "t" #'tmr
+  "*" #'tmr-with-description
+  "T" #'tmr-with-description
+  "c" #'tmr-clone
+  "e" #'tmr-edit-description
+  "s" #'tmr-reschedule)
 
 (defvar-local tmr-tabulated--refresh-timer nil
   "Timer used to refresh tabulated view.")
