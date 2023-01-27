@@ -492,15 +492,8 @@ This map should be bound to a global prefix."
   "R" #'tmr-remove-finished
   "k" #'tmr-cancel)
 
-;;;###autoload
-(defun tmr-prefix-map ()
-  "Helper command to autoload variable `tmr-prefix-map'."
-  (interactive)
-  ;; Redefine the prefix map and replay events
-  (fset #'tmr-prefix-map tmr-prefix-map)
-  (setq unread-command-events
-        (mapcar (lambda (ev) (cons t ev))
-                (listify-key-sequence (this-command-keys-vector)))))
+;;;###autoload (autoload 'tmr-prefix-map "tmr" nil t 'keymap)
+(defalias 'tmr-prefix-map tmr-prefix-map)
 
 (defvar embark-keymap-alist)
 (defvar embark-post-action-hooks)
