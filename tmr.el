@@ -100,13 +100,16 @@ Each function must accept a timer as argument."
 (defcustom tmr-timer-finished-functions
   (list #'tmr-sound-play
         #'tmr-notification-notify
-        #'tmr-print-message-for-finished-timer)
+        #'tmr-print-message-for-finished-timer
+        #'tmr-acknowledge-minibuffer)
   "Functions to execute when a timer is finished.
 Each function must accept a timer as argument."
   :type 'hook
   :options (list #'tmr-sound-play
                  #'tmr-notification-notify
-                 #'tmr-print-message-for-finished-timer))
+                 #'tmr-print-message-for-finished-timer
+                 #'tmr-acknowledge-minibuffer
+                 #'tmr-acknowledge-dialog))
 
 (defcustom tmr-timer-cancelled-functions
   (list #'tmr-print-message-for-cancelled-timer)
@@ -163,9 +166,15 @@ Each function must accept a timer as argument."
                 "until"
               "duration")
             (tmr--timer-input timer)
-            (if (tmr--timer-acknowledgep timer)
-                (concat "; " (propertize "acknowledge" 'face 'warning))
-              "")
+            (cond
+             ((and (tmr--timer-acknowledgep timer)
+                   (tmr--timer-finishedp timer))
+              (concat "; " (propertize "acknowledged" 'face 'success)))
+             ((tmr--timer-acknowledgep timer)
+              (concat "; " (propertize "acknowledge" 'face 'warning)))
+             ((tmr--timer-finishedp timer)
+              (concat "; " (propertize "finished" 'face 'success)))
+             (t ""))
             (if description
                 (concat "; " (propertize description 'face 'bold))
               ""))))
@@ -197,13 +206,18 @@ optional `tmr--timer-description'."
   "Format remaining time of TIMER."
   (if (tmr--timer-finishedp timer)
       "✔"
-    (let ((secs (round (- (float-time (tmr--timer-end-date timer))
-                          (float-time)))))
-      (if (> secs 3600)
-          (format "%sh %sm" (/ secs 3600) (/ (% secs 3600) 60))
-        (if (> secs 60)
-            (format "%sm %ss" (/ secs 60) (% secs 60))
-          (format "%ss" secs))))))
+    (let* ((secs (round (- (float-time (tmr--timer-end-date timer))
+                           (float-time))))
+           (str (if (> secs 3600)
+                    (format "%sh %sm" (/ secs 3600) (/ (% secs 3600) 60))
+                  (if (> secs 60)
+                      (format "%sm %ss" (/ secs 60) (% secs 60))
+                    (format "%ss" secs)))))
+      (if (< secs 0)
+          ;; Negative remaining time occurs for non-acknowledged timers with
+          ;; additional duration.
+          (propertize str 'face 'error)
+        str))))
 
 (defun tmr--format-time (time)
   "Return a human-readable string representing TIME."
@@ -399,23 +413,50 @@ If optional DEFAULT is provided use it as a default candidate."
   "Ask the user if a timer must be acknowledged."
   (y-or-n-p "Acknowledge timer after finish? "))
 
+(defun tmr-acknowledge-dialog (timer)
+  "Acknowledge TIMER by showing a GUI dialog."
+  (when-let (((tmr--timer-acknowledgep timer))
+             (duration
+              (x-popup-dialog
+               t
+               `(,(tmr--long-description-for-finished-timer timer)
+                 ("Acknowledge" . nil)
+                 ("+ 1 m" . 60)
+                 ("+ 5 m" . 300)
+                 ("+ 10 min" . 600)
+                 ("+ 15 min" . 960)
+                 nil))))
+    (tmr--continue-overtime timer duration)))
+
+(defun tmr-acknowledge-minibuffer (timer)
+  "Acknowledge TIMER using the minibuffer."
+  (when (tmr--timer-acknowledgep timer)
+    (while
+        (let ((input
+               (read-from-minibuffer
+                (concat (tmr--long-description-for-finished-timer timer)
+                        "\nAcknowledge with `ack' or additional duration: "))))
+          (not (or (equal input "ack")
+                   (when-let ((duration
+                               (ignore-errors
+                                 (tmr--parse-duration (current-time) input))))
+                     (tmr--continue-overtime timer duration)
+                     t)))))))
+
+(defun tmr--continue-overtime (timer duration)
+  "Continue TIMER even after it expired for DURATION.
+This function is used if a timer is not acknowledged."
+  (setf (tmr--timer-finishedp timer) nil
+        (tmr--timer-timer-object timer)
+        (run-with-timer duration nil #'tmr--complete timer))
+  (run-hooks 'tmr--update-hook)
+  (run-hook-with-args 'tmr-timer-created-functions timer))
+
 (defun tmr--complete (timer)
   "Mark TIMER as finished and execute `tmr-timer-finished-functions'."
   (setf (tmr--timer-finishedp timer) t)
   (run-hooks 'tmr--update-hook)
-  (run-hook-with-args 'tmr-timer-finished-functions timer)
-  (when (tmr--timer-acknowledgep timer)
-    (while
-        (let ((duration
-               (read-from-minibuffer
-                (concat (tmr--long-description-for-finished-timer timer)
-                        "\nAcknowledge with `ack' or additional duration: "))))
-          (cond
-           ((equal duration "ack") nil)
-           ((ignore-errors (tmr--parse-duration (current-time) duration))
-            (tmr-cancel timer)
-            (tmr duration (tmr--timer-description timer) t))
-           (t t))))))
+  (run-hook-with-args 'tmr-timer-finished-functions timer))
 
 ;;;###autoload
 (defun tmr (time &optional description acknowledgep)
@@ -453,11 +494,9 @@ command `tmr-with-details' instead of this one."
                  :acknowledgep acknowledgep
                  :creation-date creation-date
                  :end-date (time-add creation-date duration)
-                 :input time))
-         (timer-object (run-with-timer
-                        duration nil
-                        #'tmr--complete timer)))
-    (setf (tmr--timer-timer-object timer) timer-object)
+                 :input time)))
+    (setf (tmr--timer-timer-object timer)
+          (run-with-timer duration nil #'tmr--complete timer))
     (push timer tmr--timers)
     (run-hooks 'tmr--update-hook)
     (run-hook-with-args 'tmr-timer-created-functions timer)))
