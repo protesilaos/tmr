@@ -43,6 +43,9 @@
 
 (defgroup tmr ()
   "TMR May Ring: set timers using a simple notation."
+  :link '(info-link :tag "Info Manual" "(tmr)")
+  :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/tmr")
+  :link '(emacs-library-link :tag "Library Source" "tmr.el")
   :group 'data)
 
 (define-obsolete-variable-alias
@@ -57,7 +60,7 @@ variable that holds a list of strings.
 
 The default value of `tmr-description-history', is the name of a
 variable that contains input provided by the user at the relevant
-prompt of the `tmr' and `tmr-with-description' commands."
+prompt of the `tmr' and `tmr-with-details' commands."
   :type '(choice symbol (repeat string)))
 
 (defcustom tmr-sound-file
@@ -95,15 +98,15 @@ Each function must accept a timer as argument."
   "0.4.0")
 
 (defcustom tmr-timer-finished-functions
-  (list #'tmr-print-message-for-finished-timer
-        #'tmr-sound-play
-        #'tmr-notification-notify)
+  (list #'tmr-sound-play
+        #'tmr-notification-notify
+        #'tmr-print-message-for-finished-timer)
   "Functions to execute when a timer is finished.
 Each function must accept a timer as argument."
   :type 'hook
-  :options (list #'tmr-print-message-for-finished-timer
-                 #'tmr-sound-play
-                 #'tmr-notification-notify))
+  :options (list #'tmr-sound-play
+                 #'tmr-notification-notify
+                 #'tmr-print-message-for-finished-timer))
 
 (defcustom tmr-timer-cancelled-functions
   (list #'tmr-print-message-for-cancelled-timer)
@@ -126,6 +129,10 @@ Each function must accept a timer as argument."
    nil
    :read-only nil
    :documentation "Non-nil if the timer is finished.")
+  (acknowledgep
+   nil
+   :read-only nil
+   :documentation "Non-nil if the timer must be acknowledged.")
   (timer-object
    nil
    :read-only nil
@@ -149,15 +156,18 @@ Each function must accept a timer as argument."
     ;; enough to be used when starting a timer but also when cancelling
     ;; one: check `tmr-print-message-for-created-timer' and
     ;; `tmr-print-message-for-cancelled-timer'.
-    (format "TMR start %s; end %s; %s %s%s"
+    (format "TMR start %s; end %s; %s %s%s%s"
             (propertize start 'face 'success)
             (propertize end 'face 'error)
             (if (string-search ":" (tmr--timer-input timer))
                 "until"
               "duration")
             (tmr--timer-input timer)
+            (if (tmr--timer-acknowledgep timer)
+                (concat "; " (propertize "acknowledge" 'face 'warning))
+              "")
             (if description
-                (format " [%s]" (propertize description 'face 'bold))
+                (concat "; " (propertize description 'face 'bold))
               ""))))
 
 (defun tmr--long-description-for-finished-timer (timer)
@@ -169,7 +179,7 @@ optional `tmr--timer-description'."
         (description (tmr--timer-description timer)))
     ;; For the TMR prefix, see comment in `tmr--long-description'.
     (format "TMR Time is up!\n%s%s %s\n%s %s"
-            (if description (format "%s\n" description) "")
+            (if description (concat (propertize description 'face 'bold) "\n") "")
             (propertize "Started" 'face 'success)
             start
             (propertize "Ended" 'face 'error)
@@ -199,8 +209,8 @@ optional `tmr--timer-description'."
   "Return a human-readable string representing TIME."
   (format-time-string "%T" time))
 
-(defun tmr--unit (now time)
-  "Determine common time unit for TIME given current time NOW."
+(defun tmr--parse-duration (now time)
+  "Parse TIME string given current time NOW."
   (save-match-data
     (cond
      ((string-match-p "\\`[0-9]+\\(?:\\.[0-9]+\\)?\\'" time)
@@ -269,6 +279,15 @@ cancelling the original one."
     (tmr--read-timer "Edit description of timer: ")
     (tmr--description-prompt)))
   (setf (tmr--timer-description timer) description)
+  (run-hooks 'tmr--update-hook))
+
+;;;###autoload
+(defun tmr-toggle-acknowledge (timer)
+  "Toggle ackowledge flag of TIMER."
+  (interactive
+   (list
+    (tmr--read-timer "Toggle acknowledge flag of timer: ")))
+  (setf (tmr--timer-acknowledgep timer) (not (tmr--timer-acknowledgep timer)))
   (run-hooks 'tmr--update-hook))
 
 ;;;###autoload
@@ -376,14 +395,30 @@ If optional DEFAULT is provided use it as a default candidate."
       (symbol-value tmr-description-list)))
    nil nil nil 'tmr-description-history default))
 
+(defun tmr--acknowledge-prompt ()
+  "Ask the user if a timer must be acknowledged."
+  (y-or-n-p "Acknowledge timer after finish? "))
+
 (defun tmr--complete (timer)
   "Mark TIMER as finished and execute `tmr-timer-finished-functions'."
   (setf (tmr--timer-finishedp timer) t)
   (run-hooks 'tmr--update-hook)
-  (run-hook-with-args 'tmr-timer-finished-functions timer))
+  (run-hook-with-args 'tmr-timer-finished-functions timer)
+  (when (tmr--timer-acknowledgep timer)
+    (while
+        (let ((duration
+               (read-from-minibuffer
+                (concat (tmr--long-description-for-finished-timer timer)
+                        "\nAcknowledge with `ack' or additional duration: "))))
+          (cond
+           ((equal duration "ack") nil)
+           ((ignore-errors (tmr--parse-duration (current-time) duration))
+            (tmr-cancel timer)
+            (tmr duration (tmr--timer-description timer) t))
+           (t t))))))
 
 ;;;###autoload
-(defun tmr (time &optional description)
+(defun tmr (time &optional description acknowledgep)
   "Set timer to TIME duration and notify after it elapses.
 
 When TIME is a number, it is interpreted as a count of minutes.
@@ -395,22 +430,27 @@ With optional DESCRIPTION as a prefix (\\[universal-argument]),
 prompt for a description among `tmr-description-list', though
 allow for any string to serve as valid input.
 
+With optional ACKNOWLEDGEP non-nil the timer must be acknowledged
+after it finished, such that the timer cannot be missed.
+
 This command also plays back `tmr-sound-file' if it is available.
 
 To cancel the timer, use the `tmr-cancel' command.
 
 To always prompt for a DESCRIPTION when setting a timer, use the
-command `tmr-with-description' instead of this one."
+command `tmr-with-details' instead of this one."
   (interactive
    (list
     (tmr--read-duration)
-    (when current-prefix-arg (tmr--description-prompt))))
+    (when current-prefix-arg (tmr--description-prompt))
+    (when current-prefix-arg (tmr--acknowledge-prompt))))
   (when (natnump time)
     (setq time (number-to-string time)))
   (let* ((creation-date (current-time))
-         (duration (tmr--unit creation-date time))
+         (duration (tmr--parse-duration creation-date time))
          (timer (tmr--timer-create
                  :description description
+                 :acknowledgep acknowledgep
                  :creation-date creation-date
                  :end-date (time-add creation-date duration)
                  :input time))
@@ -423,25 +463,33 @@ command `tmr-with-description' instead of this one."
     (run-hook-with-args 'tmr-timer-created-functions timer)))
 
 ;;;###autoload
-(defun tmr-with-description (time description)
-  "Set timer to TIME duration and notify with DESCRIPTION after it elapses.
+(defun tmr-with-details (time &optional description acknowledgep)
+  "Set timer to TIME duration and notify after it elapses.
 
-See `tmr' for a description of the arguments.  The difference
-between the two commands is that `tmr-with-description' always
-asks for a description whereas `tmr' only asks for it when the
+See `tmr' for a description of the arguments DESCRIPTION and
+ACKNOWLEDGEP.  The difference between the two commands is that
+`tmr-with-details' always asks for a description and if the timer
+should be acknowledged whereas `tmr' only asks for it when the
 user uses a prefix argument (\\[universal-argument])."
   (interactive
    (list
     (tmr--read-duration)
-    (tmr--description-prompt)))
-  (tmr time description))
+    (tmr--description-prompt)
+    (tmr--acknowledge-prompt)))
+  (tmr time description acknowledgep))
+
+(define-obsolete-function-alias
+  'tmr-with-description
+  'tmr-with-details
+  "0.4.0")
 
 ;;;###autoload
 (defun tmr-clone (timer &optional prompt)
   "Create a new timer by cloning TIMER.
 With optional PROMPT, such as a prefix argument, ask for
 confirmation about the duration.  When PROMPT is a double prefix
-argument, ask for a description as well.
+argument, ask for a description as well and ask if the timer must
+be acknowledged.
 
 Without a PROMPT, clone TIMER outright."
   (interactive
@@ -454,7 +502,10 @@ Without a PROMPT, clone TIMER outright."
      (format "%s" (tmr--timer-input timer)))
    (if (equal prompt '(16))
        (tmr--description-prompt (tmr--timer-description timer))
-     (tmr--timer-description timer))))
+     (tmr--timer-description timer))
+   (if (equal prompt '(16))
+       (tmr--acknowledge-prompt)
+     (tmr--timer-acknowledgep timer))))
 
 (defun tmr--completion-table (candidates &optional category annotation)
   "Make completion table for CANDIDATES with sorting disabled.
@@ -474,6 +525,7 @@ ANNOTATION is an annotation function."
   "r" #'tmr-remove
   "R" #'tmr-remove-finished
   "c" #'tmr-clone
+  "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
   "s" #'tmr-reschedule)
 
@@ -481,12 +533,13 @@ ANNOTATION is an annotation function."
   :doc "Global prefix map for TMRs.
 This map should be bound to a global prefix."
   "+" #'tmr
-  "*" #'tmr-with-description
+  "*" #'tmr-with-details
   "t" #'tmr
-  "T" #'tmr-with-description
+  "T" #'tmr-with-details
   "l" 'tmr-tabulated-view ;; autoloaded
   "c" #'tmr-clone
   "s" #'tmr-reschedule
+  "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
   "r" #'tmr-remove
   "R" #'tmr-remove-finished

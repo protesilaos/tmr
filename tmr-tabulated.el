@@ -59,6 +59,7 @@
         (vector (tmr--format-creation-date timer)
                 (tmr--format-end-date timer)
                 (tmr--format-remaining timer)
+                (if (tmr--timer-acknowledgep timer) "✔" "")
                 (or (tmr--timer-description timer) ""))))
 
 (defvar-keymap tmr-tabulated-mode-map
@@ -68,9 +69,10 @@
   "R" #'tmr-remove-finished
   "+" #'tmr
   "t" #'tmr
-  "*" #'tmr-with-description
-  "T" #'tmr-with-description
+  "*" #'tmr-with-details
+  "T" #'tmr-with-details
   "c" #'tmr-clone
+  "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
   "s" #'tmr-reschedule)
 
@@ -122,6 +124,7 @@
               [("Start" 10 t)
                ("End" 10 t)
                ("Remaining" 10 tmr-tabulated--compare-remaining)
+               ("Ack" 3 t)
                ("Description" 0 t)])
   (add-hook 'window-configuration-change-hook #'tmr-tabulated--window-hook nil t)
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)
