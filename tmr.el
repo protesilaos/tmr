@@ -264,7 +264,6 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
 (defvar tmr--update-hook nil
   "Hooks to execute when timers are changed.")
 
-;;;###autoload
 (defun tmr-remove (timer)
   "Cancel and remove TIMER object set with `tmr' command.
 Interactively, let the user choose which timer to cancel with
@@ -275,7 +274,6 @@ completion."
   (run-hooks 'tmr--update-hook)
   (run-hook-with-args 'tmr-timer-cancelled-functions timer))
 
-;;;###autoload
 (defun tmr-cancel (timer)
   "Cancel TIMER object set with `tmr' command.
 Interactively, let the user choose which timer to cancel with
@@ -284,7 +282,6 @@ chooses only among active timers."
   (interactive (list (tmr--read-timer "Cancel timer: " :active)))
   (tmr-remove timer))
 
-;;;###autoload
 (defun tmr-reschedule (timer)
   "Reschedule TIMER.
 This is the same as cloning it, prompting for duration and
@@ -294,7 +291,6 @@ cancelling the original one."
   (let (tmr-timer-cancelled-functions)
     (tmr-cancel timer)))
 
-;;;###autoload
 (defun tmr-edit-description (timer description)
   "Change TIMER description with that of DESCRIPTION."
   (interactive
@@ -304,7 +300,6 @@ cancelling the original one."
   (setf (tmr--timer-description timer) description)
   (run-hooks 'tmr--update-hook))
 
-;;;###autoload
 (defun tmr-toggle-acknowledge (timer)
   "Toggle ackowledge flag of TIMER."
   (interactive
@@ -313,7 +308,6 @@ cancelling the original one."
   (setf (tmr--timer-acknowledgep timer) (not (tmr--timer-acknowledgep timer)))
   (run-hooks 'tmr--update-hook))
 
-;;;###autoload
 (defun tmr-remove-finished ()
   "Remove all finished timers."
   (interactive)
@@ -549,7 +543,6 @@ user uses a prefix argument (\\[universal-argument])."
   'tmr-with-details
   "0.4.0")
 
-;;;###autoload
 (defun tmr-clone (timer &optional prompt)
   "Create a new timer by cloning TIMER.
 With optional PROMPT, such as a prefix argument, ask for
