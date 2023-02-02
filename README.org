@@ -95,6 +95,8 @@ If ~tmr~ is called with an optional prefix argument (=C-u= with default
 key bindings), it asks for a description to be associated with the given
 timer.
 
+[ The ~tmr-with-details~ is part of {{{development-version}}}. ]
+
 #+findex: tmr-with-details
 An alternative to the ~tmr~ command is ~tmr-with-details~.  The
 difference between the two is that the latter always prompts for a
@@ -104,9 +106,14 @@ description and if the timer should be acknowledged.
 The command ~tmr-edit-description~ can change the description a given
 timer object.
 
+[ The ~tmr-toggle-acknowledge~ is part of {{{development-version}}}. ]
+
 #+findex: tmr-toggle-acknowledge
 The command ~tmr-toggle-acknowledge~ toggles the acknowledge flag of a
-given timer object.
+given timer object.  A timer that needs to be acknowledged prompts for
+confirmation after it elapses.  The user can either confirm and thus
+dismiss the timer, or set a new duration for the next reminder, using
+the familiar TMR input.
 
 #+vindex: tmr-descriptions-list
 The user option ~tmr-descriptions-list~ defines the completion
