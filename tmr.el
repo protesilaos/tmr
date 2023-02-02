@@ -63,6 +63,17 @@ variable that contains input provided by the user at the relevant
 prompt of the `tmr' and `tmr-with-details' commands."
   :type '(choice symbol (repeat string)))
 
+(defcustom tmr-notification-urgency 'normal
+  "The urgency level of the desktop notification.
+Values can be `low', `normal' (default), or `critical'.
+
+The desktop environment or notification daemon is responsible for
+such notifications."
+  :type '(choice
+          (const :tag "Low" low)
+          (const :tag "Normal" normal)
+          (const :tag "Critical" critical)))
+
 (defcustom tmr-sound-file
   "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
   "Path to sound file used by `tmr-sound-play'.
@@ -89,8 +100,6 @@ outright."
 Each function must accept a timer as argument."
   :type 'hook
   :options '(tmr-print-message-for-created-timer))
-
-(declare-function tmr-notification-notify "ext:tmr-notification.el" (title message))
 
 (define-obsolete-variable-alias
   'tmr-timer-completed-functions
@@ -352,6 +361,24 @@ If there are no timers, throw an error."
                            timer-list))))
         (or (and selected (get-text-property 0 'tmr-timer selected))
             (user-error "No timer selected")))))))
+
+(declare-function notifications-notify "notifications")
+(defun tmr-notification-notify (timer)
+  "Dispatch a notification for TIMER.
+
+Read: (info \"(elisp) Desktop Notifications\") for details."
+  (if (featurep 'dbusbind)
+      (let ((title "TMR May Ring (Emacs tmr package)")
+            (body (tmr--long-description-for-finished-timer timer)))
+        (unless (fboundp 'notifications-notify)
+          (require 'notifications))
+        (notifications-notify
+         :title title
+         :body body
+         :app-name "GNU Emacs"
+         :urgency tmr-notification-urgency
+         :sound-file tmr-sound-file))
+    (warn "Emacs has no DBUS support, TMR notifications unavailable")))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
