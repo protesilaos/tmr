@@ -131,10 +131,10 @@ is bound to =C-h e= by default.  To check all timers, use the command
 =*Messages*= buffer ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid view]]).
 
 #+findex: tmr-cancel
-The ~tmr-cancel~ command cancels running timers without erasesing them
-from the list of created timer objects.  Timers at the completion prompt
-are described by the exact time they were set and the input that was
-used to create them, including the optional description that ~tmr~ and
+The ~tmr-cancel~ command cancels running timers without erasing them from
+the list of created timer objects.  Timers at the completion prompt are
+described by the exact time they were set and the input that was used to
+create them, including the optional description that ~tmr~ and
 ~tmr-with-details~ accept.
 
 #+findex: tmr-remove
@@ -146,7 +146,7 @@ The ~tmr-clone~ command directly copies the duration and optional
 description of a timer into a new one.  With an optional prefix argument
 (=C-u= by default), this command prompts for a duration.  If a double
 prefix argument is supplied (=C-u C-u=), the command asks for a duration
-and then a description.  The default values of such prompts as those of
+and then a description.  The default values of such prompts are those of
 the original timer.
 
 #+findex: tmr-reschedule
@@ -162,7 +162,7 @@ list of timers.  This means that they can no longer be cloned.
 #+vindex: tmr-confirm-single-timer
 By default, TMR uses minibuffer completion to pick a timer object in
 operations such as cloning and cancelling.  If the user option
-~tmr-confirm-single-timer~ is set nil, TMR will not use completion when
+~tmr-confirm-single-timer~ is set to nil, TMR will not use completion when
 there is only one timer available: it will perform the specified command
 outright.
 
@@ -206,10 +206,10 @@ automatically target the one at point.  Whereas the global behaviour is
 to use minibuffer completion to pick a timer to operate on.
 
 The ~tmr-tabulated-view~ command relies on Emacs' ~tabulated-list-mode~.
-From the =*tmr-tabulated-view*= buffer, invoke the command
+From the =*tmr-tabulated-view*= buffer, one can invoke the command
 ~describe-mode~ (=C-h m= with standard key bindings) to learn about the
 applicable functionality, such as how to expand/contract columns and
-toggle their sort.
+toggle sorting.
 
 While in this grid view, one can perform all the operations on timers we
 have already covered herein (the =C-h m= will show you their key
@@ -224,23 +224,23 @@ bindings in this mode).
 TMR provides the following hooks:
 
 #+vindex: tmr-timer-created-functions
-+ ~tmr-timer-created-functions~ :: This is triggered by the ~tmr~
-  command.  By default, it will print a message in the echo area showing
-  the newly created timer's start and end time as well as its optional
-  description (if provided).
++ ~tmr-timer-created-functions~ :: This is triggered by the ~tmr~ command.
+  By default, it prints a message in the echo area showing the newly
+  created timer's start and end time as well as its optional description
+  (if provided).
 
 #+vindex: tmr-timer-finished-functions
 + ~tmr-timer-finished-functions~ :: This runs when a timer elapses.  By
-  default, it will (i) produce a desktop notification which describes
-  the timer's start/end time and optional description (if available),
-  (ii) play an alarm sound ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]), and (iii)
-  print a message in the echo area which is basically the same as the
-  desktop notification.
+  default, it (i) produces a desktop notification which describes the
+  timer's start/end time and optional description (if available), (ii)
+  plays an alarm sound ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]), and (iii) prints
+  a message in the echo area which is basically the same as the desktop
+  notification.
 
 #+vindex: tmr-timer-cancelled-functions
 + ~tmr-timer-cancelled-functions~ :: This is called by ~tmr-cancel~.  By
-  default, it will print a message in the echo area describing the timer
-  that was cancelled.
+  default, it prints a message in the echo area describing the timer that
+  was cancelled.
 
 ** Sound and desktop notifications
 :PROPERTIES:
@@ -250,9 +250,9 @@ TMR provides the following hooks:
 
 #+vindex: tmr-sound-file
 #+vindex: tmr-notification-urgency
-Once the timer runs its course, it produces a desktop notification and
-plays an alarm sound.  The notification's message is practically the
-same as that which is sent to the echo area.
+Once the timer has run its course, it produces a desktop notification and
+plays an alarm sound.  The notification's message is practically the same
+as that which is sent to the echo area.
 
 The sound file for the alarm is defined in ~tmr-sound-file~, while the
 urgency of the notification can be set through the user option
@@ -268,7 +268,7 @@ Sound playback depends on the =ffplay= executable which is part of
 
 Desktop notifications work only if Emacs is built with DBus
 functionality.  This is the norm.  If such functionality is not
-available, TMR will issue warning informing the user accordingly.
+available, TMR will issue a warning informing the user accordingly.
 
 ** Minibuffer histories
 :PROPERTIES:
