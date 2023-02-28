@@ -386,8 +386,8 @@ TMR is meant to be a collective effort.  Every bit of help matters.
 + Authors :: Protesilaos Stavrou (maintainer), Damien Cassou, Daniel
   Mendler.
 
-+ Contributions to the code or manual :: Christian Tietze, Nathan
-  R. DeGruchy.
++ Contributions to the code or manual :: Christian Tietze, Ed Tavinor,
+  Nathan R. DeGruchy.
 
 * GNU Free Documentation License
 :PROPERTIES:
