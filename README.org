@@ -32,12 +32,10 @@ Current development target is {{{development-version}}}.
 + Package name (GNU ELPA): ~tmr~
 + Official manual: <https://protesilaos.com/emacs/tmr>
 + Change log: <https://protesilaos.com/emacs/tmr-changelog>
-+ Git repo on SourceHut: <https://git.sr.ht/~protesilaos/tmr>
-  - Mirrors:
-    + GitHub: <https://github.com/protesilaos/tmr>
-    + GitLab: <https://gitlab.com/protesilaos/tmr>
-+ Mailing list: <https://lists.sr.ht/~protesilaos/tmr>
-+ Backronym: TMR May Ring; Timer Must Run
++ Git repositories:
+  + GitHub: <https://github.com/protesilaos/tmr>
+  + GitLab: <https://gitlab.com/protesilaos/tmr>
++ Backronym: TMR May Ring; Timer Must Run.
 
 #+toc: headlines 8 insert TOC here, with eight headline levels
 
