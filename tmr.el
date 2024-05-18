@@ -74,7 +74,7 @@ such notifications."
           (const :tag "Critical" critical)))
 
 (defcustom tmr-notification-timeout -1
-  "The timeout time in milliseconds since the notification disappears.
+  "The timeout time duration in milliseconds since the notification disappears.
 Values can be `-1' (default) or `0' (never expire).
 
 With `-1', It depends on the daemon and may vary for type of notification."
