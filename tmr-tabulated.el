@@ -45,7 +45,7 @@
   (tmr-tabulated-mode))
 
 (defalias 'tmr-list-timers 'tmr-tabulated-view
-  "Alias of `tmr-tabulated-view' command.")
+  "Alias for `tmr-tabulated-view' command.")
 
 (defun tmr-tabulated--set-entries ()
   "Set the value of `tabulated-list-entries' with timers."
