@@ -402,7 +402,8 @@ If there are no timers, throw an error."
         (or (and selected (get-text-property 0 'tmr-timer selected))
             (user-error "No timer selected")))))))
 
-(declare-function notifications-notify "notifications")
+(declare-function notifications-notify "notifications" (&rest params))
+
 (defun tmr-notification-notify (timer)
   "Dispatch a notification for TIMER.
 
