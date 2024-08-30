@@ -125,6 +125,11 @@ Each function must accept a timer as argument."
 Each function must accept a timer as argument."
   :type 'hook)
 
+(defcustom tmr-finished-indicator "✔"
+  "Indicator for a finished timer."
+  :package-version '(tmr . "1.0.0")
+  :type 'string)
+
 (cl-defstruct (tmr--timer
                (:constructor tmr--timer-create)
                (:copier tmr--timer-copy))
@@ -213,7 +218,7 @@ optional `tmr--timer-description'."
 (defun tmr--format-remaining (timer)
   "Format remaining time of TIMER."
   (if (tmr--timer-finishedp timer)
-      "✔"
+      tmr-finished-indicator
     (let* ((secs (round (- (float-time (tmr--timer-end-date timer))
                            (float-time))))
            (str (if (> secs 3600)

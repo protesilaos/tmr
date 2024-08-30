@@ -58,7 +58,7 @@
         (vector (tmr--format-creation-date timer)
                 (tmr--format-end-date timer)
                 (tmr--format-remaining timer)
-                (if (tmr--timer-acknowledgep timer) "✔" "")
+                (if (tmr--timer-acknowledgep timer) tmr-finished-indicator "")
                 (or (tmr--timer-description timer) ""))))
 
 (defvar-keymap tmr-tabulated-mode-map
