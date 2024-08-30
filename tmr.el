@@ -617,13 +617,13 @@ Without a PROMPT, clone TIMER outright."
   "Make completion table for CANDIDATES with sorting disabled.
 CATEGORY is the completion category.
 ANNOTATION is an annotation function."
-   (lambda (str pred action)
-     (if (eq action 'metadata)
-         `(metadata (display-sort-function . identity)
-                    (cycle-sort-function . identity)
+  (lambda (str pred action)
+    (if (eq action 'metadata)
+        `(metadata (display-sort-function . identity)
+                   (cycle-sort-function . identity)
                    (annotation-function . ,annotation)
-                    (category . ,category))
-       (complete-with-action action candidates str pred))))
+                   (category . ,category))
+      (complete-with-action action candidates str pred))))
 
 (defvar-keymap tmr-action-map
   :doc "Action map for TMRs, which can be utilized by Embark."
