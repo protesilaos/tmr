@@ -7,8 +7,8 @@
 ;;         Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/tmr
-;; Version: 0.4.0
-;; Package-Requires: ((emacs "27.1") (compat "29.1.3.0"))
+;; Version: 1.0.0
+;; Package-Requires: ((emacs "27.1") (compat "30.0.0.0"))
 ;; Keywords: convenience, timer
 
 ;; This file is NOT part of GNU Emacs.

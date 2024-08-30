@@ -12,7 +12,120 @@ the manual: <https://protesilaos.com/emacs/tmr>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 1.0.0 on 2024-08-30
+:PROPERTIES:
+:CUSTOM_ID: h:88595352-0263-425c-baab-6042f63ae28a
+:END:
+
+This version adds quality-of-life improvements to an already stable
+base.
+
+** The ~tmr-with-details~ supersedes the ~tmr-with-description~
+:PROPERTIES:
+:CUSTOM_ID: h:ac3d5ea6-2e89-477b-a5eb-9b408ef30b4e
+:END:
+
+The ~tmr-with-description~ would always prompt for a time input and
+then a description of the resulting timer object. We now provide a
+more general command, ~tmr-with-details~, which does this in addition
+to an extra prompt for an acknowledgement. What an "acknowledgement"
+is, is documented in the following section.
+
+** Timers can now be "acknowledged"
+:PROPERTIES:
+:CUSTOM_ID: h:1a971ba1-09a6-4df6-bbe5-73685430417c
+:END:
+
+Normally, when a timer elapses it does not stick around to notify the
+user again and again. This means that the user may miss the one
+notification if, say, they were away from the computer. As such, we
+now provide an opt-in mechanism where a timer persists until it is
+explicitly acknowledged as finished. The acknowledgement is either an
+additional duration for the timer to produce another notification in
+the future, or an explicit consent from the timer to count as
+finished. The goal is to help the user never miss a timer.
+
+Setting up an acknowledgement can be done in the following ways:
+
+- Call the standard ~tmr~ command with a prefix argument (=C-u= by
+  default). This will make it prompt for a description and an
+  acknowledgement.
+
+- Use the new command ~tmr-with-details~, which asks for a timer
+  input, a description, and whether to include an acknowledgement
+  prompt.
+
+- Use the new command ~tmr-toggle-acknowledge~, which will prompt for
+  a timer and then toggle the acknowledgement status on/off. In this
+  scenario, the timer already exists (e.g. it was created with ~tmr~
+  without a prefix argument).
+
+All timers are listed in a nice list with the command
+~tmr-tabulated-view~. An extra column will indicate their
+acknowledgement status.
+
+Thanks to Daniel Mendler for contributing this feature. This was done
+in the form of patches, sent via email. Daniel has assigned copyright
+to the Free Software Foundation.
+
+** The ~tmr-list-timers~ is an alias for ~tmr-tabulated-view~
+:PROPERTIES:
+:CUSTOM_ID: h:f1d80033-45f5-47cc-b76b-c8aee05dd789
+:END:
+
+Perhaps the "list timers" is a more meaningful description of what the
+command does, as opposed to "tabulated view".
+
+** Use the ~tmr-prefix-map~
+:PROPERTIES:
+:CUSTOM_ID: h:20dcbc95-a376-4130-8ae8-7be6c7aa149a
+:END:
+
+We now define a prefix keymap that users can bind directly to a key
+and get all the TMR commands in one go. For example, this adds all TMR
+commands behind the =C-c t= prefix:
+
+#+begin_src emacs-lisp
+(define-key global-map (kbd "C-c t") 'tmr-prefix-map)
+#+end_src
+
+Thanks to Daniel Mendler for this patch.
+
+** TMR uses its own faces
+:PROPERTIES:
+:CUSTOM_ID: h:1d6ddc5a-8856-40d4-8328-f6413cb37f30
+:END:
+
+Theme developers or users can now modify how the various TMR
+indicators look by tweaking the faces we provide:
+
+- ~tmr-duration~
+- ~tmr-description~
+- ~tmr-start-time~
+- ~tmr-end-time~
+- ~tmr-is-acknowledged~
+- ~tmr-must-be-acknowledged~
+- ~tmr-finished~
+
+The default values inherit from basic faces that should be supported
+everywhere.
+
+Existing users will not notice any visual difference, other things
+being equal.
+
+** Fixed some typos in the manual
+:PROPERTIES:
+:CUSTOM_ID: h:2b0e0105-d142-45de-807d-b2ef60c25dc8
+:END:
+
+Thanks to Ed Tavinor for the contribution. The change pertains to
+typos and is within the limit of edits that do not require copyright
+assignment to the Free Software Foundation.
+
 * Version 0.4.0 on 2022-07-07
+:PROPERTIES:
+:CUSTOM_ID: h:52e3b3ac-70ef-47c5-895c-92adbd5c92b0
+:END:
 
 The general theme of this release is that TMR became simpler, better,
 and more robust.  Daniel Mendler provided lots of patches and is now
@@ -149,6 +262,9 @@ Mendler.  Consult the git log for the minutia.
 + Updated the manual to reflect the aforementioned.
 
 * Version 0.3.0 on 2022-05-17
+:PROPERTIES:
+:CUSTOM_ID: h:0a2d4909-0079-47e9-97f4-220e85a811f9
+:END:
 
 The gist of TMR's May Release is that TMR is Maintained Rigorously---but
 enough with The Mostly Recursive acronyms!
@@ -214,6 +330,9 @@ configuration.  Either evaluate the form =(info "(tmr) Top")= if you
 have the package installed or visit https://protesilaos.com/emacs/tmr.
 
 * Version 0.2.0 on 2022-04-21
+:PROPERTIES:
+:CUSTOM_ID: h:054285c2-3d90-4adc-ada4-61222b31fb85
+:END:
 
 This entry is retroactively introduced on 2022-07-07.
 
@@ -227,6 +346,9 @@ This entry is retroactively introduced on 2022-07-07.
 + Added TMR to the official GNU ELPA archive as =tmr=.
 
 * Version 0.1.0 on 2021-10-02
+:PROPERTIES:
+:CUSTOM_ID: h:1fce2c20-a16c-4ea9-9006-cf565f78f812
+:END:
 
 This entry is retroactively introduced on 2022-07-07.
 
