@@ -4,7 +4,7 @@
 #+options:  ':nil toc:nil num:nil author:nil email:nil
 
 This document contains the release notes for each tagged commit on the
-project's main git repository: <https://git.sr.ht/~protesilaos/tmr>.
+project's main git repository: <https://github.com/protesilaos/tmr>.
 
 The newest release is at the top.  For further details, please consult
 the manual: <https://protesilaos.com/emacs/tmr>.
