@@ -427,8 +427,8 @@ Read: (info \"(elisp) Desktop Notifications\") for details."
 (defun tmr-sound-play (&optional _timer)
   "Play `tmr-sound-file' using the ffplay executable (ffmpeg).
 TIMER is unused."
-  (when-let ((sound tmr-sound-file)
-             ((file-exists-p sound)))
+  (when-let* ((sound tmr-sound-file)
+              ((file-exists-p sound)))
     (unless (executable-find "ffplay")
       (user-error "Cannot play %s without `ffplay'" sound))
     (call-process-shell-command
@@ -483,17 +483,17 @@ If optional DEFAULT is provided use it as a default candidate."
 
 (defun tmr-acknowledge-dialog (timer)
   "Acknowledge TIMER by showing a GUI dialog."
-  (when-let (((tmr--timer-acknowledgep timer))
-             (duration
-              (x-popup-dialog
-               t
-               `(,(tmr--long-description-for-finished-timer timer)
-                 ("Acknowledge" . nil)
-                 ("+ 1 m" . 60)
-                 ("+ 5 m" . 300)
-                 ("+ 10 min" . 600)
-                 ("+ 15 min" . 960)
-                 nil))))
+  (when-let* (((tmr--timer-acknowledgep timer))
+              (duration
+               (x-popup-dialog
+                t
+                `(,(tmr--long-description-for-finished-timer timer)
+                  ("Acknowledge" . nil)
+                  ("+ 1 m" . 60)
+                  ("+ 5 m" . 300)
+                  ("+ 10 min" . 600)
+                  ("+ 15 min" . 960)
+                  nil))))
     (tmr--continue-overtime timer duration)))
 
 (defun tmr-acknowledge-minibuffer (timer)
@@ -505,9 +505,9 @@ If optional DEFAULT is provided use it as a default candidate."
                 (concat (tmr--long-description-for-finished-timer timer)
                         "\nAcknowledge with `ack' or additional duration: "))))
           (not (or (equal input "ack")
-                   (when-let ((duration
-                               (ignore-errors
-                                 (tmr--parse-duration (current-time) input))))
+                   (when-let* ((duration
+                                (ignore-errors
+                                  (tmr--parse-duration (current-time) input))))
                      (tmr--continue-overtime timer duration)
                      t)))))))
 

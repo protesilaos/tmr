@@ -88,7 +88,7 @@
                 (lambda ()
                   (if (buffer-live-p buf)
                       (with-current-buffer buf
-                        (if-let (win (get-buffer-window))
+                        (if-let* ((win (get-buffer-window)))
                             (with-selected-window win
                               (let ((end (eobp)))
                                 ;; Optimized refreshing
@@ -137,7 +137,7 @@
 
 (defun tmr-tabulated--refresh ()
   "Refresh *tmr-tabulated-view* buffer if it exists."
-  (when-let (buf (get-buffer "*tmr-tabulated-view*"))
+  (when-let* ((buf (get-buffer "*tmr-tabulated-view*")))
     (with-current-buffer buf
       (let ((lines (line-number-at-pos)))
         (revert-buffer)
