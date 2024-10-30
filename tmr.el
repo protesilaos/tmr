@@ -52,6 +52,8 @@
   'tmr-description-list
   "0.4.0")
 
+;;;; User options
+
 (defcustom tmr-description-list 'tmr-description-history
   "List of timer description presets.
 The value can be either a list of strings or the symbol of a
@@ -130,6 +132,8 @@ Each function must accept a timer as argument."
   :package-version '(tmr . "1.0.0")
   :type 'string)
 
+;;;; Faces
+
 (defgroup tmr-faces ()
   "Faces for `tmr'."
   :link '(info-link :tag "Info Manual" "(tmr)")
@@ -171,6 +175,8 @@ Each function must accept a timer as argument."
   "Face for styling the confirmation of a finished timer."
   :package-version '(tmr . "1.0.0")
   :group 'tmr-faces)
+
+;;;; Common helpers
 
 (cl-defstruct (tmr--timer
                (:constructor tmr--timer-create)
@@ -309,6 +315,8 @@ Populated by `tmr' and then operated on by `tmr-cancel'.")
 
 (defvar tmr--update-hook nil
   "Hooks to execute when timers are changed.")
+
+;;;; Commands
 
 (defun tmr-remove (timer)
   "Cancel and remove TIMER object set with `tmr' command.
@@ -653,6 +661,8 @@ This map should be bound to a global prefix."
 
 ;;;###autoload (autoload 'tmr-prefix-map "tmr" nil t 'keymap)
 (defalias 'tmr-prefix-map tmr-prefix-map)
+
+;;;; Integration with the `embark' package
 
 (defvar embark-keymap-alist)
 (defvar embark-post-action-hooks)
