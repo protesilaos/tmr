@@ -122,6 +122,26 @@ Each function must accept a timer as argument."
   :package-version '(tmr . "1.0.0")
   :type 'string)
 
+(defun tmr-select-and-resize (window)
+  "Select WINDOW and fit it to its buffer."
+  (select-window window)
+  (fit-window-to-buffer window))
+
+(defcustom tmr-list-timers-action-alist
+  '((display-buffer-reuse-mode-window display-buffer-at-bottom)
+    (dedicated . t)
+    (preserve-size . (t . t))
+    (body-function . tmr-select-and-resize))
+  "Action alist used by `tmr-tabulated-view' in interactive use.
+This is the same data that is passed to `display-buffer-alist'.
+Read Info node `(elisp) Displaying Buffers'.  As such, it is
+meant for experienced users."
+  :risky t
+  :type `(alist :key-type
+                (choice :tag "Condition" regexp (function :tag "Matcher function"))
+                :value-type ,display-buffer--action-custom-type)
+  :package-version '(tmr . "1.1.0"))
+
 ;;;; Faces
 
 (defgroup tmr-faces ()
@@ -616,11 +636,18 @@ ANNOTATION is an annotation function."
 ;;;; Tabulated view
 
 ;;;###autoload
-(defun tmr-tabulated-view ()
-  "Open a tabulated list buffer listing tmr timers."
-  (interactive)
-  (switch-to-buffer (get-buffer-create "*tmr-tabulated-view*"))
-  (tmr-tabulated-mode))
+(defun tmr-tabulated-view (buffer action-alist)
+  "Open a tabulated list buffer listing tmr timers.
+BUFFER is the buffer to use and ACTION-ALIST is what `display-buffer'
+uses.  Those parameters are meant for use in Lisp.  In interactive use,
+they are set to reasonable default values."
+  (interactive
+   (list
+    (get-buffer-create "*tmr-tabulated-view*")
+    tmr-list-timers-action-alist))
+  (with-current-buffer buffer
+    (tmr-tabulated-mode))
+  (display-buffer buffer action-alist))
 
 (defalias 'tmr-list-timers 'tmr-tabulated-view
   "Alias for `tmr-tabulated-view' command.")
