@@ -185,6 +185,48 @@ meant for experienced users."
   :package-version '(tmr . "1.0.0")
   :group 'tmr-faces)
 
+(defface tmr-tabulated-start-time
+  '((((class color) (min-colors 88) (background light))
+     :foreground "#004476")
+    (((class color) (min-colors 88) (background dark))
+     :foreground "#c0d0ef")
+    (t :foreground "cyan"))
+  "Start time in the `tmr-tabulated-view'."
+  :package-version '(tmr . "1.1.0")
+  :group 'tmr-faces)
+
+(defface tmr-tabulated-end-time
+  '((((class color) (min-colors 88) (background light))
+     :foreground "#603f00")
+    (((class color) (min-colors 88) (background dark))
+     :foreground "#deba66")
+    (t :foreground "yellow"))
+  "End time in the `tmr-tabulated-view'."
+  :package-version '(tmr . "1.1.0")
+  :group 'tmr-faces)
+
+(defface tmr-tabulated-remaining-time
+  '((((class color) (min-colors 88) (background light))
+     :foreground "#800040")
+    (((class color) (min-colors 88) (background dark))
+     :foreground "#e59fc6")
+    (t :foreground "magenta"))
+  "Remaining time in the `tmr-tabulated-view'."
+  :package-version '(tmr . "1.1.0")
+  :group 'tmr-faces)
+
+(defface tmr-tabulated-acknowledgement
+  '((t :inherit bold))
+  "Acknowledgement indicator in the `tmr-tabulated-view'."
+  :package-version '(tmr . "1.1.0")
+  :group 'tmr-faces)
+
+(defface tmr-tabulated-description
+  '((t :inherit font-lock-doc-face))
+  "Description of timer in the `tmr-tabulated-view'."
+  :package-version '(tmr . "1.1.0")
+  :group 'tmr-faces)
+
 ;;;; Common helpers
 
 (cl-defstruct (tmr--timer
@@ -658,12 +700,14 @@ they are set to reasonable default values."
 
 (defun tmr-tabulated--timer-to-entry (timer)
   "Convert TIMER into an entry suitable for `tabulated-list-entries'."
-  (list timer
-        (vector (tmr--format-creation-date timer)
-                (tmr--format-end-date timer)
-                (tmr--format-remaining timer)
-                (if (tmr--timer-acknowledgep timer) tmr-finished-indicator "")
-                (or (tmr--timer-description timer) ""))))
+  (list
+   timer
+   (vector
+    (propertize (tmr--format-creation-date timer) 'face 'tmr-tabulated-start-time)
+    (propertize (tmr--format-end-date timer) 'face 'tmr-tabulated-end-time)
+    (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time)
+    (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement)
+    (propertize (or (tmr--timer-description timer) "") 'face 'tmr-tabulated-description))))
 
 (defvar-local tmr-tabulated--refresh-timer nil
   "Timer used to refresh tabulated view.")
@@ -683,7 +727,8 @@ they are set to reasonable default values."
                               (let ((end (eobp)))
                                 ;; Optimized refreshing
                                 (dolist (entry tabulated-list-entries)
-                                  (setf (aref (cadr entry) 2) (tmr--format-remaining (car entry))))
+                                  (setf (aref (cadr entry) 2)
+                                        (propertize (tmr--format-remaining (car entry)) 'face 'tmr-tabulated-remaining-time)))
                                 (tabulated-list-print t)
                                 (when end (goto-char (point-max))))
                               ;; HACK: For some reason the hl-line highlighting gets lost here
@@ -713,7 +758,7 @@ they are set to reasonable default values."
               [("Start" 10 t)
                ("End" 10 t)
                ("Remaining" 10 tmr-tabulated--compare-remaining)
-               ("Ack" 3 t)
+               ("Acknowledge?" 14 t)
                ("Description" 0 t)])
   (add-hook 'window-configuration-change-hook #'tmr-tabulated--window-hook nil t)
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)
