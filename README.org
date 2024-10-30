@@ -171,7 +171,7 @@ user has the option to either bind the map to a prefix key, such as
 =C-c t= (so ~tmr~ is =C-c t t=), or bind individual commands to the
 desired keys ([[#h:69eeb3fb-f11d-431e-ae16-2d9b322871cc][Sample configuration]]).
 
-** Grid view
+** Grid or tabulated view
 :PROPERTIES:
 :CUSTOM_ID: h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a
 :END:
@@ -208,6 +208,25 @@ toggle sorting.
 While in this grid view, one can perform all the operations on timers we
 have already covered herein (the =C-h m= will show you their key
 bindings in this mode).
+
+[ The ~tmr-list-timers-action-alist~ and the option to call
+  ~tmr-tabulated-view~ from Lisp are part of {{{development-version}}}. ]
+
+#+vindex: tmr-list-timers-action-alist
+The user option ~tmr-list-timers-action-alist~ controls how the
+command ~tmr-tabulated-view~ displays its buffer. Its default
+behaviour is to (i) place the buffer at the bottom of the Emacs frame,
+(ii) resize the window to match the height of the buffer, and (iii)
+select that window.
+
+The value of this user option is the same data that is passed to
+~display-buffer-alist~. It is meant to be customised by advanced
+users. Evaluate =(info "(elisp) Displaying Buffers")= to read the
+relevant entry in the manual.
+
+The ~tmr-list-timers-action-alist~ is relevant only when the command
+~tmr-tabulated-view~ is called interactively. In Lisp, the ~tmr-tabulated-view~
+requires the buffer it should use and the concomitant action alist.
 
 ** Hooks
 :PROPERTIES:
