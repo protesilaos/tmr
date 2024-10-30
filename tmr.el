@@ -633,16 +633,6 @@ ANNOTATION is an annotation function."
                    (category . ,category))
       (complete-with-action action candidates str pred))))
 
-(defvar-keymap tmr-action-map
-  :doc "Action map for TMRs, which can be utilized by Embark."
-  "k" #'tmr-remove
-  "r" #'tmr-remove
-  "R" #'tmr-remove-finished
-  "c" #'tmr-clone
-  "a" #'tmr-toggle-acknowledge
-  "e" #'tmr-edit-description
-  "s" #'tmr-reschedule)
-
 (defvar-keymap tmr-prefix-map
   :doc "Global prefix map for TMRs.
 This map should be bound to a global prefix key."
@@ -663,6 +653,16 @@ This map should be bound to a global prefix key."
 (defalias 'tmr-prefix-map tmr-prefix-map)
 
 ;;;; Integration with the `embark' package
+
+(defvar-keymap tmr-action-map
+  :doc "Action map for TMRs, which can be utilized by Embark."
+  "k" #'tmr-remove
+  "r" #'tmr-remove
+  "R" #'tmr-remove-finished
+  "c" #'tmr-clone
+  "a" #'tmr-toggle-acknowledge
+  "e" #'tmr-edit-description
+  "s" #'tmr-reschedule)
 
 (defvar embark-keymap-alist)
 (defvar embark-post-action-hooks)
