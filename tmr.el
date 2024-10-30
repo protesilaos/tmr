@@ -645,7 +645,7 @@ ANNOTATION is an annotation function."
 
 (defvar-keymap tmr-prefix-map
   :doc "Global prefix map for TMRs.
-This map should be bound to a global prefix."
+This map should be bound to a global prefix key."
   "+" #'tmr
   "*" #'tmr-with-details
   "t" #'tmr
