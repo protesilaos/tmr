@@ -633,46 +633,6 @@ ANNOTATION is an annotation function."
                    (category . ,category))
       (complete-with-action action candidates str pred))))
 
-(defvar-keymap tmr-prefix-map
-  :doc "Global prefix map for TMRs.
-This map should be bound to a global prefix key."
-  "+" #'tmr
-  "*" #'tmr-with-details
-  "t" #'tmr
-  "T" #'tmr-with-details
-  "l" #'tmr-tabulated-view
-  "c" #'tmr-clone
-  "s" #'tmr-reschedule
-  "a" #'tmr-toggle-acknowledge
-  "e" #'tmr-edit-description
-  "r" #'tmr-remove
-  "R" #'tmr-remove-finished
-  "k" #'tmr-cancel)
-
-;;;###autoload (autoload 'tmr-prefix-map "tmr" nil t 'keymap)
-(defalias 'tmr-prefix-map tmr-prefix-map)
-
-;;;; Integration with the `embark' package
-
-(defvar-keymap tmr-action-map
-  :doc "Action map for TMRs, which can be utilized by Embark."
-  "k" #'tmr-remove
-  "r" #'tmr-remove
-  "R" #'tmr-remove-finished
-  "c" #'tmr-clone
-  "a" #'tmr-toggle-acknowledge
-  "e" #'tmr-edit-description
-  "s" #'tmr-reschedule)
-
-(defvar embark-keymap-alist)
-(defvar embark-post-action-hooks)
-(with-eval-after-load 'embark
-  (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
-  (cl-loop
-   for cmd the key-bindings of tmr-action-map
-   if (commandp cmd) do
-   (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart))))
-
 ;;;; Tabulated view
 
 ;;;###autoload
@@ -790,6 +750,48 @@ This map should be bound to a global prefix key."
 (make-obsolete 'tmr-tabulated-clone #'tmr-clone "0.4.0")
 (make-obsolete 'tmr-tabulated-edit-description #'tmr-edit-description "0.4.0")
 (make-obsolete 'tmr-tabulated-reschedule #'tmr-reschedule "0.4.0")
+
+;;;; Key bindings
+
+(defvar-keymap tmr-prefix-map
+  :doc "Global prefix map for TMRs.
+This map should be bound to a global prefix key."
+  "+" #'tmr
+  "*" #'tmr-with-details
+  "t" #'tmr
+  "T" #'tmr-with-details
+  "l" #'tmr-tabulated-view
+  "c" #'tmr-clone
+  "s" #'tmr-reschedule
+  "a" #'tmr-toggle-acknowledge
+  "e" #'tmr-edit-description
+  "r" #'tmr-remove
+  "R" #'tmr-remove-finished
+  "k" #'tmr-cancel)
+
+;;;###autoload (autoload 'tmr-prefix-map "tmr" nil t 'keymap)
+(defalias 'tmr-prefix-map tmr-prefix-map)
+
+;;;;; Integration with the `embark' package
+
+(defvar-keymap tmr-action-map
+  :doc "Action map for TMRs, which can be utilized by Embark."
+  "k" #'tmr-remove
+  "r" #'tmr-remove
+  "R" #'tmr-remove-finished
+  "c" #'tmr-clone
+  "a" #'tmr-toggle-acknowledge
+  "e" #'tmr-edit-description
+  "s" #'tmr-reschedule)
+
+(defvar embark-keymap-alist)
+(defvar embark-post-action-hooks)
+(with-eval-after-load 'embark
+  (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
+  (cl-loop
+   for cmd the key-bindings of tmr-action-map
+   if (commandp cmd) do
+   (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart))))
 
 (provide 'tmr)
 ;;; tmr.el ends here
