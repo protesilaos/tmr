@@ -665,20 +665,6 @@ they are set to reasonable default values."
                 (if (tmr--timer-acknowledgep timer) tmr-finished-indicator "")
                 (or (tmr--timer-description timer) ""))))
 
-(defvar-keymap tmr-tabulated-mode-map
-  :doc "Keybindings for `tmr-tabulated-mode-map'."
-  "k" #'tmr-remove
-  "r" #'tmr-remove
-  "R" #'tmr-remove-finished
-  "+" #'tmr
-  "t" #'tmr
-  "*" #'tmr-with-details
-  "T" #'tmr-with-details
-  "c" #'tmr-clone
-  "a" #'tmr-toggle-acknowledge
-  "e" #'tmr-edit-description
-  "s" #'tmr-reschedule)
-
 (defvar-local tmr-tabulated--refresh-timer nil
   "Timer used to refresh tabulated view.")
 
@@ -773,6 +759,20 @@ This map should be bound to a global prefix key."
 
 ;;;###autoload (autoload 'tmr-prefix-map "tmr" nil t 'keymap)
 (defalias 'tmr-prefix-map tmr-prefix-map)
+
+(defvar-keymap tmr-tabulated-mode-map
+  :doc "Keybindings for `tmr-tabulated-mode-map'."
+  "k" #'tmr-remove
+  "r" #'tmr-remove
+  "R" #'tmr-remove-finished
+  "+" #'tmr
+  "t" #'tmr
+  "*" #'tmr-with-details
+  "T" #'tmr-with-details
+  "c" #'tmr-clone
+  "a" #'tmr-toggle-acknowledge
+  "e" #'tmr-edit-description
+  "s" #'tmr-reschedule)
 
 ;;;; Ask if there are timers before exiting Emacs
 
