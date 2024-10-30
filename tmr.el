@@ -463,7 +463,7 @@ TIMER is unused."
   "Show a `message' informing the user that TIMER is cancelled."
   (message "Cancelled: <<%s>>" (tmr--long-description timer)))
 
-(defvar tmr-duration-history '()
+(defvar tmr-duration-history nil
   "Minibuffer history of `tmr' durations.")
 
 (defun tmr--read-duration (&optional default)
@@ -475,7 +475,7 @@ If DEFAULT is provided, use that as a default."
       "N minutes for timer (append `h' or `s' for other units)" def)
      nil 'tmr-duration-history def)))
 
-(defvar tmr-description-history '()
+(defvar tmr-description-history nil
   "Minibuffer history of `tmr' descriptions.")
 
 (defun tmr--description-prompt (&optional default)
