@@ -640,7 +640,7 @@ This map should be bound to a global prefix key."
   "*" #'tmr-with-details
   "t" #'tmr
   "T" #'tmr-with-details
-  "l" 'tmr-tabulated-view ;; autoloaded
+  "l" #'tmr-tabulated-view
   "c" #'tmr-clone
   "s" #'tmr-reschedule
   "a" #'tmr-toggle-acknowledge
