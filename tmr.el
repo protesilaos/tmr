@@ -796,5 +796,21 @@ This map should be bound to a global prefix key."
    if (commandp cmd) do
    (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart))))
 
+;;;; Ask if there are timers before exiting Emacs
+
+(defun tmr-kill-emacs-query-function ()
+  "Ask before exiting Emacs if there are any TMR timers."
+  (if (not tmr--timers)
+      t
+    (tmr-tabulated-view
+     (get-buffer-create "*tmr-tabulated-view*")
+     '((display-buffer-reuse-mode-window display-buffer-at-bottom)
+       (window-height . fit-window-to-buffer)
+       (dedicated . t)
+       (preserve-size . (t . t))))
+    (yes-or-no-p "TMR has running timers; exit anyway? ")))
+
+(add-hook 'kill-emacs-query-functions #'tmr-kill-emacs-query-function)
+
 (provide 'tmr)
 ;;; tmr.el ends here
