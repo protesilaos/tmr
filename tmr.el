@@ -117,7 +117,7 @@ Each function must accept a timer as argument."
   :type 'hook)
 
 (defcustom tmr-finished-indicator "✔"
-  "Indicator for a finished timer."
+  "Indicator for a finished timer, shown in `tmr-tabulated-view'."
   :package-version '(tmr . "1.0.0")
   :type 'string)
 
