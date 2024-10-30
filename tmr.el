@@ -8,7 +8,7 @@
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/tmr
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "27.1") (compat "30.0.0.0"))
+;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience, timer
 
 ;; This file is NOT part of GNU Emacs.
@@ -36,7 +36,6 @@
 
 ;;; Code:
 
-(require 'compat)
 (require 'seq)
 (eval-when-compile (require 'cl-lib))
 
