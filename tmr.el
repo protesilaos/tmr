@@ -47,11 +47,6 @@
   :link '(emacs-library-link :tag "Library Source" "tmr.el")
   :group 'data)
 
-(define-obsolete-variable-alias
-  'tmr-descriptions-list
-  'tmr-description-list
-  "0.4.0")
-
 ;;;; User options
 
 (defcustom tmr-description-list 'tmr-description-history
@@ -101,11 +96,6 @@ outright."
 Each function must accept a timer as argument."
   :type 'hook
   :options '(tmr-print-message-for-created-timer))
-
-(define-obsolete-variable-alias
-  'tmr-timer-completed-functions
-  'tmr-timer-finished-functions
-  "0.4.0")
 
 (defcustom tmr-timer-finished-functions
   (list #'tmr-sound-play
@@ -450,11 +440,6 @@ TIMER is unused."
   "Show a `message' informing the user that TIMER has finished."
   (message "%s" (tmr--long-description-for-finished-timer timer)))
 
-(define-obsolete-function-alias
-  'tmr-print-message-for-completed-timer
-  'tmr-print-message-for-finished-timer
-  "0.4.0")
-
 (defun tmr-print-message-for-cancelled-timer (timer)
   "Show a `message' informing the user that TIMER is cancelled."
   (message "Cancelled: <<%s>>" (tmr--long-description timer)))
@@ -592,11 +577,6 @@ user uses a prefix argument (\\[universal-argument])."
     (tmr--description-prompt)
     (tmr--acknowledge-prompt)))
   (tmr time description acknowledgep))
-
-(define-obsolete-function-alias
-  'tmr-with-description
-  'tmr-with-details
-  "0.4.0")
 
 (defun tmr-clone (timer &optional prompt)
   "Create a new timer by cloning TIMER.
@@ -746,10 +726,6 @@ ANNOTATION is an annotation function."
 
 (add-hook 'tmr--update-hook #'tmr-tabulated--refresh)
 (add-hook 'tmr--read-timer-hook #'tmr-tabulated--timer-at-point)
-
-(make-obsolete 'tmr-tabulated-clone #'tmr-clone "0.4.0")
-(make-obsolete 'tmr-tabulated-edit-description #'tmr-edit-description "0.4.0")
-(make-obsolete 'tmr-tabulated-reschedule #'tmr-reschedule "0.4.0")
 
 ;;;; Key bindings
 
