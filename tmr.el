@@ -819,6 +819,27 @@ This map should be bound to a global prefix key."
   "e" #'tmr-edit-description
   "s" #'tmr-reschedule)
 
+;;;;; Integration with the `embark' package
+
+(defvar-keymap tmr-action-map
+  :doc "Action map for TMRs, which can be utilized by Embark."
+  "k" #'tmr-remove
+  "r" #'tmr-remove
+  "R" #'tmr-remove-finished
+  "c" #'tmr-clone
+  "a" #'tmr-toggle-acknowledge
+  "e" #'tmr-edit-description
+  "s" #'tmr-reschedule)
+
+(defvar embark-keymap-alist)
+(defvar embark-post-action-hooks)
+(with-eval-after-load 'embark
+  (add-to-list 'embark-keymap-alist '(tmr-timer . tmr-action-map))
+  (cl-loop
+   for cmd the key-bindings of tmr-action-map
+   if (commandp cmd) do
+   (add-to-list 'embark-post-action-hooks (list cmd 'embark--restart))))
+
 ;;;; Ask if there are timers before exiting Emacs
 
 (defun tmr-kill-emacs-query-function ()
