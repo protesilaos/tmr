@@ -197,20 +197,20 @@ meant for experienced users."
 
 (defface tmr-tabulated-end-time
   '((((class color) (min-colors 88) (background light))
-     :foreground "#603f00")
+     :foreground "#800040")
     (((class color) (min-colors 88) (background dark))
-     :foreground "#deba66")
-    (t :foreground "yellow"))
+     :foreground "#e59fc6")
+    (t :foreground "magenta"))
   "End time in the `tmr-tabulated-view'."
   :package-version '(tmr . "1.1.0")
   :group 'tmr-faces)
 
 (defface tmr-tabulated-remaining-time
   '((((class color) (min-colors 88) (background light))
-     :foreground "#800040")
+     :foreground "#603f00")
     (((class color) (min-colors 88) (background dark))
-     :foreground "#e59fc6")
-    (t :foreground "magenta"))
+     :foreground "#deba66")
+    (t :foreground "yellow"))
   "Remaining time in the `tmr-tabulated-view'."
   :package-version '(tmr . "1.1.0")
   :group 'tmr-faces)
