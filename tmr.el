@@ -843,6 +843,7 @@ they are set to reasonable default values."
 
 ;;;; Ask if there are timers before exiting Emacs
 
+;; FIXME 2024-11-08: Only prompt if there is an active timer.
 (defun tmr-kill-emacs-query-function ()
   "Ask before exiting Emacs if there are any TMR timers."
   (if (not tmr--timers)
