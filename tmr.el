@@ -843,10 +843,9 @@ they are set to reasonable default values."
 
 ;;;; Ask if there are timers before exiting Emacs
 
-;; FIXME 2024-11-08: Only prompt if there is an active timer.
 (defun tmr-kill-emacs-query-function ()
-  "Ask before exiting Emacs if there are any TMR timers."
-  (if (not tmr--timers)
+  "Ask before exiting Emacs if there are any active TMR timers."
+  (if (not (and tmr--timers (seq-remove #'tmr--timer-finishedp tmr--timers)))
       t
     (tmr-tabulated-view
      (get-buffer-create "*tmr-tabulated-view*")
