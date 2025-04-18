@@ -128,6 +128,7 @@ Each function must accept a timer as argument."
 
 (defcustom tmr-list-timers-action-alist
   '((display-buffer-reuse-mode-window display-buffer-at-bottom)
+    (mode . tmr-tabulated-mode)
     (dedicated . t)
     (preserve-size . (t . t))
     (body-function . tmr-select-and-resize))
