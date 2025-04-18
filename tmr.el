@@ -852,6 +852,7 @@ they are set to reasonable default values."
     (tmr-tabulated-view
      (get-buffer-create "*tmr-tabulated-view*")
      '((display-buffer-reuse-mode-window display-buffer-at-bottom)
+       (mode . tmr-tabulated-mode)
        (window-height . fit-window-to-buffer)
        (dedicated . t)
        (preserve-size . (t . t))))
