@@ -137,9 +137,10 @@ This is the same data that is passed to `display-buffer-alist'.
 Read Info node `(elisp) Displaying Buffers'.  As such, it is
 meant for experienced users."
   :risky t
-  :type `(alist :key-type
-                (choice :tag "Condition" regexp (function :tag "Matcher function"))
-                :value-type ,display-buffer--action-custom-type)
+  :type `(alist
+          :key-type (choice :tag "Condition" regexp
+                            (function :tag "Matcher function"))
+          :value-type ,display-buffer--action-custom-type)
   :package-version '(tmr . "1.1.0"))
 
 ;;;; Faces
