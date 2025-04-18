@@ -1,13 +1,13 @@
 ;;; tmr.el --- Set timers using a convenient notation -*- lexical-binding: t -*-
 
-;; Copyright (C) 2020-2024  Free Software Foundation, Inc.
+;; Copyright (C) 2020-2025  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>,
 ;;         Damien Cassou <damien@cassou.me>,
 ;;         Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/tmr
-;; Version: 1.0.0
+;; Version: 1.1.0
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience, timer
 

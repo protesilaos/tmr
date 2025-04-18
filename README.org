@@ -4,9 +4,9 @@
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
 #+startup: content
-#+macro: stable-version 1.0.0
-#+macro: release-date 2024-08-30
-#+macro: development-version 1.1.0-dev
+#+macro: stable-version 1.1.0
+#+macro: release-date 2025-04-18
+#+macro: development-version 1.2.0-dev
 #+export_file_name: tmr.texi
 #+texinfo_filename: tmr.info
 #+texinfo_dir_category: Emacs misc features
@@ -44,7 +44,7 @@ Current development target is {{{development-version}}}.
 :CUSTOM_ID: h:c002f811-ea06-4123-988b-a73183581fb9
 :END:
 
-Copyright (C) 2021-2023  Free Software Foundation, Inc.
+Copyright (C) 2021-2025  Free Software Foundation, Inc.
 
 #+begin_quote
 Permission is granted to copy, distribute and/or modify this document
@@ -208,9 +208,6 @@ toggle sorting.
 While in this grid view, one can perform all the operations on timers we
 have already covered herein (the =C-h m= will show you their key
 bindings in this mode).
-
-[ The ~tmr-list-timers-action-alist~ and the option to call
-  ~tmr-tabulated-view~ from Lisp are part of {{{development-version}}}. ]
 
 #+vindex: tmr-list-timers-action-alist
 The user option ~tmr-list-timers-action-alist~ controls how the

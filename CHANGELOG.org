@@ -12,6 +12,78 @@ the manual: <https://protesilaos.com/emacs/tmr>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 1.1.0 on 2025-04-18
+:PROPERTIES:
+:CUSTOM_ID: h:41248cbf-d399-411d-91ff-5359a00a1577
+:END:
+
+This version makes small refinements to an already stable package.
+
+** All of =tmr-tabulated.el=  is part of =tmr.el=
+:PROPERTIES:
+:CUSTOM_ID: h:cd10fa6b-60ed-4045-ae32-780e62b50f21
+:END:
+
+The command ~tmr-tabulated-view~, which produces a grid with
+timers+descriptions, used to be in a separate file. It now is part of
+the singular =tmr.el= to keep things simple. Users who were using
+=(require 'tmr-tabulated)= or similar will now get a warning. Simply
+load ~tmr~ instead.
+
+** Refined the behaviour of the ~tmr-tabulated-view~ command
+:PROPERTIES:
+:CUSTOM_ID: h:bd56a213-7714-4bd7-bd1a-f3ac108f27d2
+:END:
+
+When the command ~tmr-tabulated-view~ (alias ~tmr-list-timers~) is
+called interactively, it uses the =*tmr-tabulated-view*= buffer just
+as it did before. Though it also evaluates the new user option
+~tmr-list-timers-action-alist~: it is a variable that controls where
+the buffer is displayed. The default value displays the buffer at the
+bottom of the Emacs frame and makes some other tweaks for usability.
+
+Watch my video on the ~display-buffer-alist~ for further details on
+how to control the display of buffers: <https://protesilaos.com/codelog/2024-02-08-emacs-window-rules-display-buffer-alist/>.
+
+The ~tmr-tabulated-view~ command is further revised to make it
+callable from a program. One scenario where we do this is to interrupt
+the termination of Emacs if there are running timers (more below).
+
+** TMR interrupts the termination of Emacs if it must
+:PROPERTIES:
+:CUSTOM_ID: h:5a4bf956-b1c2-446b-848c-eb64ffa50109
+:END:
+
+In the past, we did not have anything to prevent the termination of
+Emacs if timers were running: Emacs would simply shut down. Now we
+define the ~tmr-kill-emacs-query-function~, which is added to the
+standard ~kill-emacs-query-functions~: if there are running timers, it
+asks for confirmation before closing Emacs. To make it easier for
+users to decide how to proceed, it also pops up the list with all the
+timers (i.e. it uses ~tmr-tabulated-view~ from Lisp, as noted above).
+
+** The list view is easier to follow
+:PROPERTIES:
+:CUSTOM_ID: h:c432f1ab-dcaf-4a01-8004-cf268a24b228
+:END:
+
+The buffer produced by ~tmr-tabulated-view~ now uses more colours to
+make it easier to track the data it presents. These are all the faces
+it applies:
+
+- ~tmr-tabulated-start-time~ :: The time when the timer was started.
+
+- ~tmr-tabulated-end-time~ :: The time when the timer is set to end.
+
+- ~tmr-tabulated-remaining-time~ :: The remaining time.
+
+- ~tmr-tabulated-acknowledgement~ :: Whether the timer needs to be
+  "acknowledged" after it ends (if it is marked as "acknowledged",
+  then it will not go away until the user confirms they have seen it).
+
+- ~tmr-tabulated-description~ :: The text describing what the timer is
+  about.
+
 * Version 1.0.0 on 2024-08-30
 :PROPERTIES:
 :CUSTOM_ID: h:88595352-0263-425c-baab-6042f63ae28a
