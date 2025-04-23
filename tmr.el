@@ -528,6 +528,7 @@ Read: (info \"(elisp) Desktop Notifications\") for details."
          :title title
          :body body
          :app-name "GNU Emacs"
+         :app-icon 'emacs
          :urgency tmr-notification-urgency
          :sound-file tmr-sound-file))
     (warn "Emacs has no DBUS support, TMR notifications unavailable")))
