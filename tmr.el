@@ -37,7 +37,10 @@
 ;;; Code:
 
 (require 'seq)
-(eval-when-compile (require 'cl-lib))
+(require 'format-spec)
+(eval-when-compile
+  (require 'cl-lib)
+  (require 'subr-x))
 
 (defgroup tmr ()
   "TMR May Ring: set timers using a simple notation."
@@ -143,6 +146,38 @@ meant for experienced users."
           :value-type ,display-buffer--action-custom-type)
   :package-version '(tmr . "1.1.0"))
 
+(defcustom tmr-mode-line-format "%r%d"
+  "Format string for displaying a timer in the mode-line.
+Available format specifiers:
+- %r: Remaining time.
+- %d: Timer description (truncated to `tmr-mode-line-max-desc-length')."
+  :type 'string
+  :group 'tmr)
+
+(defcustom tmr-mode-line-separator " | "
+  "String used to separate multiple timers in the mode-line."
+  :type 'string
+  :group 'tmr)
+
+(defcustom tmr-mode-line-max-timers 3
+  "Maximum number of timers to display in the mode-line.
+Set to nil to show all timers."
+  :type '(choice (const :tag "Show all" nil)
+                 (integer :tag "Maximum number"))
+  :group 'tmr)
+
+(defcustom tmr-mode-line-max-desc-length 15
+  "Maximum length for timer descriptions in the mode-line.
+Longer descriptions will be truncated."
+  :type '(choice (const :tag "Don't truncate" nil)
+                 (integer :tag "Truncate"))
+  :group 'tmr)
+
+(defcustom tmr-mode-line-prefix "⏰"
+  "Prefix string displayed before the timer list."
+  :type 'string
+  :group 'tmr)
+
 ;;;; Faces
 
 (defgroup tmr-faces ()
@@ -227,6 +262,21 @@ meant for experienced users."
   '((t :inherit font-lock-doc-face))
   "Description of timer in the `tmr-tabulated-view'."
   :package-version '(tmr . "1.1.0")
+  :group 'tmr-faces)
+
+(defface tmr-mode-line-active
+  '((t :inherit mode-line-emphasis))
+  "Face for active timers in the mode-line."
+  :group 'tmr-faces)
+
+(defface tmr-mode-line-soon
+  '((t :inherit warning))
+  "Face for timers that will expire in the next 2 minutes."
+  :group 'tmr-faces)
+
+(defface tmr-mode-line-urgent
+  '((t :inherit error))
+  "Face for timers that will expire in the next 30 seconds."
   :group 'tmr-faces)
 
 ;;;; Common helpers
@@ -842,6 +892,101 @@ they are set to reasonable default values."
 
 (add-hook 'tmr--update-hook #'tmr-tabulated--refresh)
 (add-hook 'tmr--read-timer-hook #'tmr-tabulated--timer-at-point)
+
+;;;; Mode-line indicator
+
+(defvar tmr-mode-line-string nil
+  "TMR mode-line string.")
+(put 'tmr-mode-line-string 'risky-local-variable t)
+
+(defvar tmr-mode-line--update-timer nil
+  "Timer to update the mode-line.")
+
+(defun tmr-mode-line--format-remaining (timer)
+  "Format remaining time for TIMER with appropriate face."
+  (let* ((secs (float-time (time-subtract (tmr--timer-end-date timer) nil)))
+         (face (cond ((and (< secs 5) (evenp (truncate secs)))
+                      '((t :inherit tmr-mode-line-urgent :inverse-video t)))
+                     ((< secs 30) 'tmr-mode-line-urgent)
+                     ((= (truncate secs) 30)
+                      '((t :inherit tmr-mode-line-urgent :inverse-video t)))
+                     ((= (truncate secs) 60)
+                      '((t :inherit tmr-mode-line-soon :inverse-video t)))
+                     ((< secs 120) 'tmr-mode-line-soon)
+                     ((= (truncate secs) 120)
+                      '((t :inherit tmr-mode-line-soon :inverse-video t)))
+                     (t 'tmr-mode-line-active)))
+         (formatted (format-seconds
+                     (cond ((< secs 120) "%mm %ss%z")
+                           ((< secs (* 24 60 60)) "%hh %mm%z")
+                           (t "%dd %hh%z"))
+                     secs)))
+    (propertize formatted 'face face)))
+
+(defun tmr-mode-line--format-description (timer)
+  "Format description for TIMER, truncating if necessary."
+  (if-let* ((desc (tmr--timer-description timer)))
+    (concat " " (if tmr-mode-line-max-desc-length
+                    (truncate-string-to-width
+                     desc tmr-mode-line-max-desc-length
+                     nil nil t)
+                  desc))
+    ""))
+
+(defun tmr-mode-line--format-timer (timer)
+  "Format a single TIMER for display in the mode-line."
+  (propertize
+   (format-spec tmr-mode-line-format
+                `((?r . ,(tmr-mode-line--format-remaining timer))
+                  (?d . ,(tmr-mode-line--format-description timer))))
+   'help-echo (tmr--long-description timer)))
+
+(defun tmr-mode-line--get-active-timers ()
+  "Return a sorted list of active timers."
+  (thread-last tmr--timers
+               (seq-remove #'tmr--timer-finishedp)
+               (seq-sort-by #'tmr--timer-end-date #'time-less-p)))
+
+(defun tmr-mode-line--update ()
+  "Updates `tmr-mode-line-string' based on the current timer state."
+  (setq
+   tmr-mode-line-string
+   (if-let* ((active-timers (tmr-mode-line--get-active-timers)))
+       (let* ((truncate (and tmr-mode-line-max-timers
+                             (length> active-timers tmr-mode-line-max-timers)))
+              (timers-to-show (if truncate
+                                 (seq-take active-timers
+                                           tmr-mode-line-max-timers)
+                                active-timers)))
+         (concat
+          " " tmr-mode-line-prefix " "
+          (string-join (mapcar #'tmr-mode-line--format-timer timers-to-show)
+                       tmr-mode-line-separator)
+          (when truncate
+            (format " +%d" (- (length active-timers) tmr-mode-line-max-timers)))
+          " "))
+     ""))
+  (force-mode-line-update t))
+
+;;;###autoload
+(define-minor-mode tmr-mode-line-mode
+  "Display TMR May Ring timers in the global mode line."
+  :global t
+  :group 'tmr-mode-line
+  (if tmr-mode-line-mode
+      (progn
+        (unless global-mode-string (setq global-mode-string '("")))
+        (unless (memq 'tmr-mode-line-string global-mode-string)
+          (setq global-mode-string
+                (append global-mode-string '(tmr-mode-line-string))))
+        (setq tmr-mode-line--update-timer
+              (run-at-time t 1 #'tmr-mode-line--update))
+        (add-hook 'tmr--update-hook #'tmr-mode-line--update))
+    (when tmr-mode-line--update-timer
+      (cancel-timer tmr-mode-line--update-timer)
+      (setq tmr-mode-line--update-timer nil))
+    (setq tmr-mode-line-string nil)
+    (remove-hook 'tmr--update-hook #'tmr-mode-line--update)))
 
 ;;;; Ask if there are timers before exiting Emacs
 
