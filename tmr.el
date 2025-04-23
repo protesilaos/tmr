@@ -152,11 +152,13 @@ Available format specifiers:
 - %r: Remaining time.
 - %d: Timer description (truncated to `tmr-mode-line-max-desc-length')."
   :type 'string
+  :package-version '(tmr . "1.2.0")
   :group 'tmr)
 
 (defcustom tmr-mode-line-separator " | "
   "String used to separate multiple timers in the mode-line."
   :type 'string
+  :package-version '(tmr . "1.2.0")
   :group 'tmr)
 
 (defcustom tmr-mode-line-max-timers 3
@@ -164,6 +166,7 @@ Available format specifiers:
 Set to nil to show all timers."
   :type '(choice (const :tag "Show all" nil)
                  (integer :tag "Maximum number"))
+  :package-version '(tmr . "1.2.0")
   :group 'tmr)
 
 (defcustom tmr-mode-line-max-desc-length 15
@@ -171,11 +174,13 @@ Set to nil to show all timers."
 Longer descriptions will be truncated."
   :type '(choice (const :tag "Don't truncate" nil)
                  (integer :tag "Truncate"))
+  :package-version '(tmr . "1.2.0")
   :group 'tmr)
 
 (defcustom tmr-mode-line-prefix "⏰"
   "Prefix string displayed before the timer list."
   :type 'string
+  :package-version '(tmr . "1.2.0")
   :group 'tmr)
 
 ;;;; Faces
@@ -267,16 +272,19 @@ Longer descriptions will be truncated."
 (defface tmr-mode-line-active
   '((t :inherit mode-line-emphasis))
   "Face for active timers in the mode-line."
+  :package-version '(tmr . "1.2.0")
   :group 'tmr-faces)
 
 (defface tmr-mode-line-soon
   '((t :inherit warning))
   "Face for timers that will expire in the next 2 minutes."
+  :package-version '(tmr . "1.2.0")
   :group 'tmr-faces)
 
 (defface tmr-mode-line-urgent
   '((t :inherit error))
   "Face for timers that will expire in the next 30 seconds."
+  :package-version '(tmr . "1.2.0")
   :group 'tmr-faces)
 
 ;;;; Common helpers
