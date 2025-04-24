@@ -5,6 +5,7 @@
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>,
 ;;         Damien Cassou <damien@cassou.me>,
 ;;         Daniel Mendler <mail@daniel-mendler.de>
+;;         Steven Allen <steven@stebalien.com>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/tmr
 ;; Version: 1.1.0
