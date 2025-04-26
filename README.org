@@ -226,6 +226,24 @@ The ~tmr-list-timers-action-alist~ is relevant only when the command
 ~tmr-tabulated-view~ is called interactively. In Lisp, the ~tmr-tabulated-view~
 requires the buffer it should use and the concomitant action alist.
 
+Faces used in the tabulated view:
+
+#+vindex: tmr-tabulated-start-time
+- ~tmr-tabulated-start-time~ :: The time the timer started.
+
+#+vindex: tmr-tabulated-end-time
+- ~tmr-tabulated-end-time~ :: The time the timer will end.
+
+#+vindex: tmr-tabulated-remaining-time
+- ~tmr-tabulated-remaining-time~ :: The timer's remaining time.
+
+#+vindex: tmr-tabulated-acknowledgement
+- ~tmr-tabulated-acknowledgement~ :: Whether the timer needs to be
+  acknowledged.
+
+#+vindex: tmr-tabulated-description
+- ~tmr-tabulated-description~ :: The description of the timer.
+
 ** Display timers on the mode line
 :PROPERTIES:
 :CUSTOM_ID: h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc
