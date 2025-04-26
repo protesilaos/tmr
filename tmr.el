@@ -178,7 +178,11 @@ Longer descriptions will be truncated."
   :package-version '(tmr . "1.2.0")
   :group 'tmr)
 
-(defcustom tmr-mode-line-prefix "⏰"
+(defcustom tmr-mode-line-prefix
+  (cond
+   ((char-displayable-p ?⏰) "⏰")
+   ((char-displayable-p ?∞) "∞")
+   (t "!"))
   "Prefix string displayed before the timer list."
   :type 'string
   :package-version '(tmr . "1.2.0")
