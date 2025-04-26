@@ -178,6 +178,7 @@ desired keys ([[#h:69eeb3fb-f11d-431e-ae16-2d9b322871cc][Sample configuration]])
 #+cindex: About tmr-tabulated and relevant commands
 
 #+findex: tmr-tabulated-view
+#+findex: tmr-list-timers
 Timers can be viewed in a grid with ~tmr-tabulated-view~ (alias
 ~tmr-list-timers~). The data is placed in the =*tmr-tabulated-view*=
 buffer and looks like this:
