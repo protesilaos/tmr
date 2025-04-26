@@ -225,6 +225,55 @@ The ~tmr-list-timers-action-alist~ is relevant only when the command
 ~tmr-tabulated-view~ is called interactively. In Lisp, the ~tmr-tabulated-view~
 requires the buffer it should use and the concomitant action alist.
 
+** Display timers on the mode line
+:PROPERTIES:
+:CUSTOM_ID: h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc
+:END:
+#+cindex: About tmr-mode-line-mode and related user options
+
+[ This is part of {{{development-version}}}. ]
+
+#+findex: tmr-mode-line-mode
+The ~tmr-mode-line-mode~ is a minor mode that displays running timers
+on the mode line. Specifically, the timers are shown as part of the
+~global-mode-string~. This means that they may be displayed on the
+~tab-bar-mode~ instead of the mode line if the user option
+~tab-bar-format~ is configured accordingly.
+
+#+vindex: tmr-mode-line-format
+The user option ~tmr-mode-line-format~ controls how the timers are
+rendered. This is a string that treats specially the =%r= and =%d=
+specifiers. The =%r= represents the remaining time, while =%d= is the
+description of the timer.
+
+#+vindex: tmr-mode-line-max-desc-length
+The user option ~tmr-mode-line-max-desc-length~ sets the maximum
+length of a timers description, when the ~tmr-mode-line-format~ is
+configured to show descriptions.
+
+#+vindex: tmr-mode-line-max-timers
+The user option ~tmr-mode-line-max-timers~ sets the maximum number of
+running timers that are shown on the mode line at any one time.
+
+#+vindex: tmr-mode-line-separator
+The user option ~tmr-mode-line-separator~ specifies a string that is
+inserted between timers on the mode line to visually separate them.
+
+#+vindex: tmr-mode-line-prefix
+The user option ~tmr-mode-line-prefix~ specifies a string that is
+prepended to the indicator with all the running timers.
+
+Applicable faces for this case are:
+
+#+vindex: tmr-mode-line-active
+- ~tmr-mode-line-active~ :: Any active timer.
+
+#+vindex: tmr-mode-line-soon
+- ~tmr-mode-line-soon~ :: A timer that expires within 2 minutes.
+
+#+vindex: tmr-mode-line-urgent
+- ~tmr-mode-line-urgent~ :: A timer that expires within 30 seconds.
+
 ** Hooks
 :PROPERTIES:
 :CUSTOM_ID: h:c908f440-da08-462e-be4e-a61fb274ecbc
