@@ -556,8 +556,7 @@ TIMER is unused."
               ((file-exists-p sound)))
     (unless (executable-find "ffplay")
       (user-error "Cannot play %s without `ffplay'" sound))
-    (call-process-shell-command
-     (format "ffplay -nodisp -autoexit -loglevel -8 %s" sound) nil 0)))
+    (start-process "tmr-sound-play" nil "ffplay" "-nodisp" "-autoexit" "-loglevel" "-8" sound)))
 
 (defun tmr-print-message-for-created-timer (timer)
   "Show a `message' informing the user that TIMER was created."
