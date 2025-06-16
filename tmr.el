@@ -940,11 +940,11 @@ they are set to reasonable default values."
 (defun tmr-mode-line--format-description (timer)
   "Format description for TIMER, truncating if necessary."
   (if-let* ((desc (tmr--timer-description timer)))
-    (concat " " (if tmr-mode-line-max-desc-length
-                    (truncate-string-to-width
-                     desc tmr-mode-line-max-desc-length
-                     nil nil t)
-                  desc))
+      (concat " " (if tmr-mode-line-max-desc-length
+                      (truncate-string-to-width
+                       desc tmr-mode-line-max-desc-length
+                       nil nil t)
+                    desc))
     ""))
 
 (defun tmr-mode-line--format-timer (timer)
@@ -969,8 +969,8 @@ they are set to reasonable default values."
        (let* ((truncate (and tmr-mode-line-max-timers
                              (length> active-timers tmr-mode-line-max-timers)))
               (timers-to-show (if truncate
-                                 (seq-take active-timers
-                                           tmr-mode-line-max-timers)
+                                  (seq-take active-timers
+                                            tmr-mode-line-max-timers)
                                 active-timers)))
          (concat
           " " tmr-mode-line-prefix " "
