@@ -949,11 +949,18 @@ they are set to reasonable default values."
 
 (defun tmr-mode-line--format-timer (timer)
   "Format a single TIMER for display in the mode-line."
-  (propertize
-   (format-spec tmr-mode-line-format
-                `((?r . ,(tmr-mode-line--format-remaining timer))
-                  (?d . ,(tmr-mode-line--format-description timer))))
-   'help-echo (tmr--long-description timer)))
+  (let ((map (make-sparse-keymap)))
+    (define-key map [mode-line mouse-1]
+                (lambda ()
+                  (interactive)
+                  (call-interactively 'tmr-tabulated-view)))
+    (propertize
+     (format-spec tmr-mode-line-format
+                  `((?r . ,(tmr-mode-line--format-remaining timer))
+                    (?d . ,(tmr-mode-line--format-description timer))))
+     'mouse-face 'mode-line-highlight
+     'help-echo (tmr--long-description timer)
+     'local-map map)))
 
 (defun tmr-mode-line--get-active-timers ()
   "Return a sorted list of active timers."
