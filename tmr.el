@@ -969,7 +969,7 @@ they are set to reasonable default values."
                (seq-sort-by #'tmr--timer-end-date #'time-less-p)))
 
 (defun tmr-mode-line--update ()
-  "Updates `tmr-mode-line-string' based on the current timer state."
+  "Update `tmr-mode-line-string' based on the current timer state."
   (setq
    tmr-mode-line-string
    (if-let* ((active-timers (tmr-mode-line--get-active-timers)))
