@@ -530,8 +530,7 @@ If there are no timers, throw an error."
 
 (defun tmr-notification-notify (timer)
   "Dispatch a notification for TIMER.
-
-Read: (info \"(elisp) Desktop Notifications\") for details."
+Read Info node `(elisp) Desktop Notifications' for details."
   (if (featurep 'dbusbind)
       (let ((title "TMR May Ring (Emacs tmr package)")
             (body (tmr--long-description-for-finished-timer timer)))
