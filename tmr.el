@@ -543,7 +543,7 @@ Read Info node `(elisp) Desktop Notifications' for details."
          :app-icon 'emacs
          :urgency tmr-notification-urgency
          :sound-file tmr-sound-file))
-    (warn "Emacs has no DBUS support, TMR notifications unavailable")))
+    (display-warning 'tmr "Emacs has no DBUS support, TMR notifications unavailable")))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
