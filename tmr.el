@@ -548,9 +548,8 @@ Read Info node `(elisp) Desktop Notifications' for details."
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
 ;; supports .wav and .au formats.  Also, it does not work on all
 ;; platforms and Emacs needs to be compiled --with-sound capabilities.
-(defun tmr-sound-play (&optional _timer)
-  "Play `tmr-sound-file' using the ffplay executable (ffmpeg).
-TIMER is unused."
+(defun tmr-sound-play (&rest _)
+  "Play `tmr-sound-file' using the ffplay executable (ffmpeg)."
   (if (executable-find "ffplay")
       (when-let* ((sound (expand-file-name tmr-sound-file))
                   (_ (file-exists-p sound)))
