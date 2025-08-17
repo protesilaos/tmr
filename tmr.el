@@ -551,10 +551,11 @@ Read Info node `(elisp) Desktop Notifications' for details."
 (defun tmr-sound-play (&optional _timer)
   "Play `tmr-sound-file' using the ffplay executable (ffmpeg).
 TIMER is unused."
-  (when-let* ((_ (executable-find "ffplay"))
-              (sound (expand-file-name tmr-sound-file))
-              ((file-exists-p sound)))
-    (call-process "ffplay" nil 0 nil "-nodisp" "-autoexit" sound)))
+  (if (executable-find "ffplay")
+      (when-let* ((sound (expand-file-name tmr-sound-file))
+                  (_ (file-exists-p sound)))
+        (call-process "ffplay" nil 0 nil "-nodisp" "-autoexit" sound))
+    (display-warning 'tmr "`ffplay' is not available to play back `tmr-sound-file'")))
 
 (defun tmr-print-message-for-created-timer (timer)
   "Show a `message' informing the user that TIMER was created."
