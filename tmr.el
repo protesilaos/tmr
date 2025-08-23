@@ -1008,9 +1008,13 @@ they are set to reasonable default values."
 
 ;;;; Ask if there are timers before exiting Emacs
 
+(defun tmr-running-timers-p ()
+  "Return non-nil if there are running timers."
+  (and tmr--timers (seq-remove #'tmr--timer-finishedp tmr--timers)))
+
 (defun tmr-kill-emacs-query-function ()
   "Ask before exiting Emacs if there are any active TMR timers."
-  (if (not (and tmr--timers (seq-remove #'tmr--timer-finishedp tmr--timers)))
+  (if (not (tmr-running-timers-p))
       t
     (tmr-tabulated-view
      (get-buffer-create "*tmr-tabulated-view*")
