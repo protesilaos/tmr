@@ -527,22 +527,45 @@ If there are no timers, throw an error."
             (user-error "No timer selected")))))))
 
 (declare-function notifications-notify "notifications" (&rest params))
+(declare-function android-notifications-notify "androidselect.c" (&rest params))
+(declare-function w32-notification-notify "w32fns.c" (&rest params))
+(declare-function haiku-notifications-notify "haikuselect.c" (&rest params))
 
 (defun tmr-notification-notify (timer)
   "Dispatch a notification for TIMER.
 Read Info node `(elisp) Desktop Notifications' for details."
-  (if (featurep 'dbusbind)
+  (if (or (featurep 'dbusbind)
+          (seq-some #'fboundp
+                    (list #'android-notifications-notify
+                          #'w32-notification-notify
+                          #'haiku-notifications-notify)))
       (let ((title "TMR May Ring (Emacs tmr package)")
             (body (tmr--long-description-for-finished-timer timer)))
-        (unless (fboundp 'notifications-notify)
-          (require 'notifications))
-        (notifications-notify
-         :title title
-         :body body
-         :app-name "GNU Emacs"
-         :app-icon 'emacs
-         :urgency tmr-notification-urgency
-         :sound-file tmr-sound-file))
+        (cond ((fboundp 'android-notifications-notify)
+               (android-notifications-notify
+                :title title
+                :body body
+                :urgency tmr-notification-urgency))
+              ((fboundp 'w32-notification-notify)
+               (w32-notification-notify
+                :title title
+                :body body))
+              ((fboundp 'haiku-notifications-notify)
+               (haiku-notifications-notify
+                :title title
+                :body body
+                :app-icon 'emacs
+                :urgency tmr-notification-urgency))
+              (t
+               (unless (fboundp 'notifications-notify)
+                 (require 'notifications))
+               (notifications-notify
+                :title title
+                :body body
+                :app-name "GNU Emacs"
+                :app-icon 'emacs
+                :urgency tmr-notification-urgency
+                :sound-file tmr-sound-file))))
     (display-warning 'tmr "Emacs has no DBUS support, TMR notifications unavailable")))
 
 ;; NOTE 2022-04-21: Emacs has a `play-sound' function but it only
