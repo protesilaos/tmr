@@ -402,6 +402,15 @@ optional `tmr--timer-description'."
           (propertize str 'face 'tmr-must-be-acknowledged)
         str))))
 
+(defun tmr--format-duration (timer)
+  "Format duration of TIMER."
+  (let ((input (tmr--timer-input timer)))
+    (if (string-match-p ":" input)
+        (tmr--format-seconds (tmr--get-seconds timer))
+      (if (string-match-p "\\`[0-9]+\\(?:\\.[0-9]+\\)?\\'" input)
+          (concat input "m")
+        input))))
+
 (defun tmr--format-time (time)
   "Return a human-readable string representing TIME."
   (format-time-string "%T" time))
@@ -831,6 +840,7 @@ they are set to reasonable default values."
    (vector
     (propertize (tmr--format-creation-date timer) 'face 'tmr-tabulated-start-time)
     (propertize (tmr--format-end-date timer) 'face 'tmr-tabulated-end-time)
+    (propertize (tmr--format-duration timer) 'face 'tmr-duration)
     (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time)
     (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement)
     (propertize (or (tmr--timer-description timer) "") 'face 'tmr-tabulated-description))))
@@ -853,7 +863,7 @@ they are set to reasonable default values."
                               (let ((end (eobp)))
                                 ;; Optimized refreshing
                                 (dolist (entry tabulated-list-entries)
-                                  (setf (aref (cadr entry) 2)
+                                  (setf (aref (cadr entry) 3)
                                         (propertize (tmr--format-remaining (car entry)) 'face 'tmr-tabulated-remaining-time)))
                                 (tabulated-list-print t)
                                 (when end (goto-char (point-max))))
@@ -883,6 +893,7 @@ they are set to reasonable default values."
   (setq-local tabulated-list-format
               [("Start" 10 t)
                ("End" 10 t)
+               ("Duration" 10 t)
                ("Remaining" 10 tmr-tabulated--compare-remaining)
                ("Acknowledge?" 14 t)
                ("Description" 0 t)])
