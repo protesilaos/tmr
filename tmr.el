@@ -379,18 +379,24 @@ optional `tmr--timer-description'."
   "Return a string representing when TIMER should finish."
   (tmr--format-time (tmr--timer-end-date timer)))
 
+(defun tmr--format-seconds (seconds)
+  "Format the SECONDS in a human-readable way."
+  (cond
+   ((>= seconds 3600) (format "%sh %sm" (/ seconds 3600) (/ (% seconds 3600) 60)))
+   ((>= seconds 60) (format "%sm %ss" (/ seconds 60) (% seconds 60)))
+   (t (format "%ss" seconds))))
+
+(defun tmr--get-seconds (timer)
+  "Get the TIMER in seconds."
+  (round (- (float-time (tmr--timer-end-date timer)) (float-time))))
+
 (defun tmr--format-remaining (timer)
   "Format remaining time of TIMER."
   (if (tmr--timer-finishedp timer)
       tmr-finished-indicator
-    (let* ((secs (round (- (float-time (tmr--timer-end-date timer))
-                           (float-time))))
-           (str (if (> secs 3600)
-                    (format "%sh %sm" (/ secs 3600) (/ (% secs 3600) 60))
-                  (if (> secs 60)
-                      (format "%sm %ss" (/ secs 60) (% secs 60))
-                    (format "%ss" secs)))))
-      (if (< secs 0)
+    (let* ((seconds (tmr--get-seconds timer))
+           (str (tmr--format-seconds seconds)))
+      (if (< seconds 0)
           ;; Negative remaining time occurs for non-acknowledged timers with
           ;; additional duration.
           (propertize str 'face 'tmr-must-be-acknowledged)
