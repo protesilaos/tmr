@@ -116,7 +116,7 @@ Each function must accept a timer as argument."
 
 (defcustom tmr-timer-cancelled-functions
   (list #'tmr-print-message-for-cancelled-timer)
-  "Functions to execute when a timer is created.
+  "Functions to execute when a timer is cancelled.
 Each function must accept a timer as argument."
   :type 'hook)
 
