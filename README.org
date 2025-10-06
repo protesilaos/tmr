@@ -184,15 +184,15 @@ Timers can be viewed in a grid with ~tmr-tabulated-view~ (alias
 buffer and looks like this:
 
 #+begin_example
-Start      End        Remaining  Description
-10:11:49   10:11:54   ✔
-10:11:36   10:31:36   19m 35s
-10:11:32   10:26:32   14m 31s    Yet another test
-10:11:16   10:21:16   9m 14s     Testing how it works
+Start      End        Duration   Remaining  Acknowlegde?   Description
+
+10:26:05   10:36:05   10m        9m 45s                    Prepare tea
+10:25:50   10:30:50   5m         4m 31s     Yes            Test the feature
+10:25:04   10:35:04   10m        8m 44s
 #+end_example
 
 If a timer has elapsed, it has a check mark associated with it,
-otherwise the =Remaining= column shows the time left.  A =Description=
+otherwise the =Remaining= column shows the time left. A =Description=
 is shown only if it is provided while setting the timer, otherwise the
 field is left blank.
 
