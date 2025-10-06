@@ -8,7 +8,7 @@
 ;;         Steven Allen <steven@stebalien.com>
 ;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/tmr
-;; Version: 1.1.0
+;; Version: 1.2.0
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience, timer
 

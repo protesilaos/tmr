@@ -12,6 +12,97 @@ the manual: <https://protesilaos.com/emacs/tmr>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 1.2.0 on 2025-10-06
+:PROPERTIES:
+:CUSTOM_ID: h:87d321d7-e88e-4303-a7fc-fa4264e62a92
+:END:
+
+This release introduces several quality-of-life refinements to an
+already stable and featureful package.
+
+** Timers can now appear on the modeline
+:PROPERTIES:
+:CUSTOM_ID: h:4a695649-c356-4410-ab3e-27edcf5852e7
+:END:
+
+The new minor mode ~tmr-mode-line-mode~ controls whether running
+timers are displayed on the mode line. More specifically, they are
+displayed in the ~global-mode-string~, which can also be set in the
+~tab-bar-mode~ (this way the information appears in one place instead
+of all the mode lines, assuming default settings).
+
+The exact format of a timer on display is controlled by the user
+option ~tmr-mode-line-format~. The number of timers is set with the
+option ~tmr-mode-line-max-timers~. The separator between multiple
+timers is ~tmr-mode-line-separator~. The length of each timer's
+optional description is subject to ~tmr-mode-line-max-desc-length~.
+While the entire indicator can have a prefix, per ~tmr-mode-line-prefix~.
+
+Thanks to Steven Allen for contributing the original version of this
+feature in pull request 2: <https://github.com/protesilaos/tmr/pull/2>.
+Steven has assigned copyright to the Free Software Foundation. Further
+changes by me, such as to make the timers on the mode line clickable
+(which produces a tabulated view, per ~tmr-tabulated-view~).
+
+** Notifications for more operating systems
+:PROPERTIES:
+:CUSTOM_ID: h:5bc7646d-b785-461a-9d85-331afb958002
+:END:
+
+Timers can optionally trigger a system notification, via the abnormal
+hook ~tmr-timer-finished-functions~. The relevant function is
+~tmr-notification-notify~. It used to only support Linux. Now it is
+extended to handle Android, Windows, and Haiku.
+
+Thanks to Lucas Quintana for the contribution in pull request 10:
+<https://github.com/protesilaos/tmr/pull/10>. Lucas has assigned
+copyright to the Free Software Foundation.
+
+** The tabulated timers have a "duration" column
+:PROPERTIES:
+:CUSTOM_ID: h:78bf9f7d-549c-46e5-bde2-efab21f1fba4
+:END:
+
+The ~tmr-tabulated-view~ command (alias ~tmr-list-timers~) now
+includes a "duration" column, in addition to all the other informative
+data on display.
+
+[ Remember that the tabulated view can be used to create, duplicate,
+  edit, etc. the timers. ]
+
+Thanks to jpg for suggesting this in issue 11:
+<https://github.com/protesilaos/tmr/issues/11>.
+
+** Miscellaneous
+:PROPERTIES:
+:CUSTOM_ID: h:5309ee0b-edd0-4d75-849c-df008b4014ae
+:END:
+
+- System notifications specify the =:app-icon= of Emacs. It will be
+  displayed, if the underlying software supports it (I see it on
+  Linux, anyway).
+
+- The option to play the ~tmr-sound-file~ via the abnormal hook
+  ~tmr-timer-finished-functions~ is redone to not rely on the system
+  shell (implicitly ~bash~). This way, users who use exotic shell
+  alternatives will not run into any trouble. This is done in response
+  to a relevant problem that g-gundam was facing with the ~nushell~:
+  <https://github.com/protesilaos/tmr/pull/7>.
+
+- The function ~tmr-notification-notify~ is better at informing the
+  user that it has produced the warning about the lack of DBUS
+  support. Before, the notification did not identity itself as
+  belonging to the ~tmr~ package.
+
+- The function ~tmr-running-timers-p~ is now available as a standalone
+  function to do what was done before inside other functions. This is
+  useful for anyone writing custom code on top of ~tmr~. Thanks to
+  Eugene Mikhaylov for suggesting the idea in issue 9:
+  <https://github.com/protesilaos/tmr/issues/9>.
+
+- The manual is updated to include whatever necessary from the
+  aforementioned.
+
 * Version 1.1.0 on 2025-04-18
 :PROPERTIES:
 :CUSTOM_ID: h:41248cbf-d399-411d-91ff-5359a00a1577
