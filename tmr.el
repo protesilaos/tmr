@@ -647,7 +647,7 @@ If optional DEFAULT is provided use it as a default candidate."
                   ("+ 1 m" . 60)
                   ("+ 5 m" . 300)
                   ("+ 10 min" . 600)
-                  ("+ 15 min" . 960)
+                  ("+ 15 min" . 900)
                   nil))))
     (tmr--continue-overtime timer duration)))
 
