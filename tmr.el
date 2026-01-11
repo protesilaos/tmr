@@ -1,6 +1,6 @@
 ;;; tmr.el --- Set timers using a convenient notation -*- lexical-binding: t -*-
 
-;; Copyright (C) 2020-2025  Free Software Foundation, Inc.
+;; Copyright (C) 2020-2026  Free Software Foundation, Inc.
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>,
 ;;         Damien Cassou <damien@cassou.me>,

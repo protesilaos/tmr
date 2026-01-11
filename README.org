@@ -44,7 +44,7 @@ Current development target is {{{development-version}}}.
 :CUSTOM_ID: h:c002f811-ea06-4123-988b-a73183581fb9
 :END:
 
-Copyright (C) 2021-2025  Free Software Foundation, Inc.
+Copyright (C) 2021-2026  Free Software Foundation, Inc.
 
 #+begin_quote
 Permission is granted to copy, distribute and/or modify this document
