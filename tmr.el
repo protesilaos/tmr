@@ -132,7 +132,7 @@ user can do that manually by invoking the command `revert-buffer'."
   :package-version '(tmr . "1.3.0")
   :type '(choice
           (natnum :tag "Seconds to auto-refresh the `tmr-tabulated-view' buffer")
-          (const :tag "Never auto-refresh the `tmr-tabulated-view' buffer")))
+          (const :tag "Never auto-refresh the `tmr-tabulated-view' buffer" nil)))
 
 (defun tmr-select-and-resize (window)
   "Select WINDOW and fit it to its buffer."
