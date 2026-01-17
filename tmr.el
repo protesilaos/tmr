@@ -891,9 +891,6 @@ they are set to reasonable default values."
                                 (tabulated-list-print t)
                                 (when end (goto-char (point-max))))
                               ;; HACK: For some reason the hl-line highlighting gets lost here
-                              (when (and (bound-and-true-p global-hl-line-mode)
-                                         (fboundp 'global-hl-line-highlight))
-                                (global-hl-line-highlight))
                               (when (and (bound-and-true-p hl-line-mode)
                                          (fboundp 'hl-line-highlight))
                                 (hl-line-highlight)))
