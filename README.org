@@ -210,6 +210,15 @@ While in this grid view, one can perform all the operations on timers we
 have already covered herein (the =C-h m= will show you their key
 bindings in this mode).
 
+By default, the ~tmr-tabulated-view~ buffer is updated automatically
+every 5 seconds. Users can change the number of seconds by modifying
+the user option ~tmr-tabulated-refresh-interval~. A ~nil~ value means
+to never refresh that buffer automatically: users can update it
+manually by invoking the command ~revert-buffer~, which is bound to
+=g= by default. [ This is part of {{{development-version}}}, instead
+of the old arrangement of updating the buffer every second without an
+option to change it. ]
+
 #+vindex: tmr-list-timers-action-alist
 The user option ~tmr-list-timers-action-alist~ controls how the
 command ~tmr-tabulated-view~ displays its buffer. Its default
