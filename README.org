@@ -184,7 +184,7 @@ Timers can be viewed in a grid with ~tmr-tabulated-view~ (alias
 buffer and looks like this:
 
 #+begin_example
-Start      End        Duration   Remaining  Acknowlegde?   Description
+Start      End        Duration   Remaining  Acknowledge?   Description
 
 10:26:05   10:36:05   10m        9m 45s                    Prepare tea
 10:25:50   10:30:50   5m         4m 31s     Yes            Test the feature
