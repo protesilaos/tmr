@@ -128,7 +128,7 @@ Each function must accept a timer as argument."
 (defcustom tmr-acknoledge-timer-text "ack"
   "Text to confirm that a timer is acknowledged.
 This is the input to be given to the minibuffer prompt that asks for
-confirmation when a timer has to be acknowledged (acknolegdement here
+confirmation when a timer has to be acknowledged (acknowledgement here
 means that the user confirms that the timer has elapsed)."
   :package-version '(tmr . "1.3.0")
   :type 'string)
