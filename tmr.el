@@ -125,6 +125,14 @@ Each function must accept a timer as argument."
   :package-version '(tmr . "1.0.0")
   :type 'string)
 
+(defcustom tmr-acknoledge-timer-text "ack"
+  "Text to confirm that a timer is acknowledged.
+This is the input to be given to the minibuffer prompt that asks for
+confirmation when a timer has to be acknowledged (acknolegdement here
+means that the user confirms that the timer has elapsed)."
+  :package-version '(tmr . "1.3.0")
+  :type 'string)
+
 (defcustom tmr-tabulated-refresh-interval 5
   "Refresh the `tmr-tabulated-view' buffer after these many seconds.
 If the value is nil, then never automatically refresh that buffer: the
@@ -666,8 +674,9 @@ If optional DEFAULT is provided use it as a default candidate."
     (while
         (let ((input
                (read-from-minibuffer
-                (concat (tmr--long-description-for-finished-timer timer)
-                        "\nAcknowledge with `ack' or additional duration: "))))
+                (format "%s\nAcknowledge with `%s' or additional duration: "
+                        (tmr--long-description-for-finished-timer timer)
+                        tmr-acknoledge-timer-text))))
           (not (or (equal input "ack")
                    (when-let* ((duration
                                 (ignore-errors

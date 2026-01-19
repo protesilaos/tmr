@@ -103,11 +103,15 @@ The command ~tmr-edit-description~ can change the description a given
 timer object.
 
 #+findex: tmr-toggle-acknowledge
+#+vindex: tmr-acknoledge-timer-text
 The command ~tmr-toggle-acknowledge~ toggles the acknowledge flag of a
-given timer object.  A timer that needs to be acknowledged prompts for
-confirmation after it elapses.  The user can either confirm and thus
+given timer object. A timer that needs to be acknowledged prompts for
+confirmation after it elapses. The user can either confirm and thus
 dismiss the timer, or set a new duration for the next reminder, using
-the familiar TMR input.
+the familiar TMR input. The confirmation text to be provided at the
+minibuffer prompt (=ack= by default) can be configured via the user
+option ~tmr-acknoledge-timer-text~ [ The confirmation text is
+configurable as part of {{{development-version}}}. ]
 
 #+vindex: tmr-descriptions-list
 The user option ~tmr-descriptions-list~ defines the completion
