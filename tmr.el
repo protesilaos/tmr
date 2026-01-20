@@ -629,7 +629,7 @@ Read Info node `(elisp) Desktop Notifications' for details."
 (defun tmr--read-duration (&optional default)
   "Ask the user to type a duration.
 If DEFAULT is provided, use that as a default."
-  (let ((def (or default (nth 0 tmr-duration-history))))
+  (let ((def (or default (car tmr-duration-history))))
     (read-string
      (format-prompt
       "N minutes for timer (append `h' or `s' for other units)" def)
