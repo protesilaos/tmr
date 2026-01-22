@@ -409,15 +409,19 @@ optional `tmr--timer-description'."
 
 (defun tmr--format-remaining (timer)
   "Format remaining time of TIMER."
-  (if (tmr--timer-finishedp timer)
-      tmr-finished-indicator
+  (cond
+   ((tmr--timer-finishedp timer)
+    tmr-finished-indicator)
+   ((when-let* ((remaining (tmr--timer-paused-remaining timer)))
+      (tmr--format-seconds remaining)))
+   (t
     (let* ((seconds (tmr--get-seconds timer))
            (str (tmr--format-seconds seconds)))
       (if (< seconds 0)
           ;; Negative remaining time occurs for non-acknowledged timers with
           ;; additional duration.
           (propertize str 'face 'tmr-must-be-acknowledged)
-        str))))
+        str)))))
 
 (defun tmr--format-duration (timer)
   "Format duration of TIMER."
