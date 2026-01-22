@@ -488,8 +488,8 @@ TMR is meant to be a collective effort.  Every bit of help matters.
   Mendler, Steven Allen.
 
 + Contributions to the code or manual :: Christian Tietze, Ed Tavinor,
-  Eugene Mikhaylov, Lucas Quintana, Mirko Hernandez, Nathan R.
-  DeGruchy, jpg.
+  Eugene Mikhaylov, Karol Mróz, Lucas Quintana, Mirko Hernandez,
+  Nathan R. DeGruchy, jpg.
 
 * GNU Free Documentation License
 :PROPERTIES:

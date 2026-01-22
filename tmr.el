@@ -614,6 +614,7 @@ If there are no timers, throw an error."
 (declare-function android-notifications-notify "androidselect.c" (&rest params))
 (declare-function w32-notification-notify "w32fns.c" (&rest params))
 (declare-function haiku-notifications-notify "haikuselect.c" (&rest params))
+(defvar notifications-application-icon)
 
 (defun tmr-notification-notify (timer)
   "Dispatch a notification for TIMER.
@@ -647,7 +648,7 @@ Read Info node `(elisp) Desktop Notifications' for details."
                 :title title
                 :body body
                 :app-name "GNU Emacs"
-                :app-icon 'emacs
+                :app-icon notifications-application-icon
                 :urgency tmr-notification-urgency
                 :sound-file tmr-sound-file))))
     (display-warning 'tmr "Emacs has no DBUS support, TMR notifications unavailable")))
