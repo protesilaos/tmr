@@ -426,11 +426,13 @@ optional `tmr--timer-description'."
 (defun tmr--format-duration (timer)
   "Format duration of TIMER."
   (let ((input (tmr--timer-input timer)))
-    (if (string-match-p ":" input)
-        (tmr--format-seconds (tmr--get-seconds timer))
-      (if (string-match-p "\\`[0-9]+\\(?:\\.[0-9]+\\)?\\'" input)
-          (concat input "m")
-        input))))
+    (cond
+     ((string-match-p ":" input)
+      (tmr--format-seconds (tmr--get-seconds timer)))
+     ((string-match-p "\\`[0-9]+\\(?:\\.[0-9]+\\)?\\'" input)
+      (concat input "m"))
+     (t
+      input))))
 
 (defun tmr--format-time (time)
   "Return a human-readable string representing TIME."
