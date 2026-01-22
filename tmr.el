@@ -245,7 +245,7 @@ Longer descriptions will be truncated."
   :group 'tmr-faces)
 
 (defface tmr-finished '((t :inherit error))
-  "Face for styling the confirmation of a finished timer."
+  "Face for styling the description of a finished timer."
   :package-version '(tmr . "1.0.0")
   :group 'tmr-faces)
 
