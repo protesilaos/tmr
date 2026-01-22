@@ -464,8 +464,7 @@ optional `tmr--timer-description'."
      (t (user-error "TMR Made Ridiculous; append character for [m]inutes, [h]ours, [s]econds")))))
 
 (defvar tmr--timers nil
-  "List of timer objects.
-Populated by `tmr' and then operated on by `tmr-cancel'.")
+  "List of timer objects.")
 
 (defvar tmr--update-hook nil
   "Hooks to execute when timers are changed.")
