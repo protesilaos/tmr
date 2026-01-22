@@ -677,7 +677,7 @@ If optional DEFAULT is provided use it as a default candidate."
                 (format "%s\nAcknowledge with `%s' or additional duration: "
                         (tmr--long-description-for-finished-timer timer)
                         tmr-acknoledge-timer-text))))
-          (not (or (equal input "ack")
+          (not (or (equal input tmr-acknoledge-timer-text)
                    (when-let* ((duration
                                 (ignore-errors
                                   (tmr--parse-duration (current-time) input))))
