@@ -798,7 +798,6 @@ ANNOTATION is an annotation function."
                    (category . ,category))
       (complete-with-action action candidates str pred))))
 
-
 ;;;; Key bindings
 
 (defvar-keymap tmr-prefix-map
