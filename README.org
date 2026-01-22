@@ -113,6 +113,13 @@ minibuffer prompt (=ack= by default) can be configured via the user
 option ~tmr-acknoledge-timer-text~ [ The confirmation text is
 configurable as part of {{{development-version}}}. ]
 
+#+findex: tmr-toggle-pause
+The command ~tmr-toggle-pause~ pauses the given timer. The tabulated
+view has a column to show when a timer is paused ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid or tabulated view]]).
+Similarly, the mode line indicator adapts the text of the timer to
+tell that it is paused ([[#h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc][Display timers on the mode line]]). [ The
+~tmr-toggle-pause~ and related functionality is part of {{{development-version}}}. ]
+
 #+vindex: tmr-descriptions-list
 The user option ~tmr-descriptions-list~ defines the completion
 candidates that are shown at the description prompt.  Its value can be
@@ -187,12 +194,14 @@ Timers can be viewed in a grid with ~tmr-tabulated-view~ (alias
 ~tmr-list-timers~). The data is placed in the =*tmr-tabulated-view*=
 buffer and looks like this:
 
-#+begin_example
-Start      End        Duration   Remaining  Acknowledge?   Description
+[ The pause functionality is part of {{{development-version}}}. ]
 
-10:26:05   10:36:05   10m        9m 45s                    Prepare tea
-10:25:50   10:30:50   5m         4m 31s     Yes            Test the feature
-10:25:04   10:35:04   10m        8m 44s
+#+begin_example
+Start      End        Duration   Remaining  Paused?  Acknowledge?   Description
+
+08:49:41   09:19:46   30m        29m 17s    Yes                     Work on TMR for 30 minutes
+08:49:31   08:54:31   5m         3m 53s                             Prepare tea
+08:49:21   08:59:21   10m        8m 42s              Yes            Edit the description with this one instead
 #+end_example
 
 If a timer has elapsed, it has a check mark associated with it,
@@ -249,6 +258,9 @@ Faces used in the tabulated view:
 
 #+vindex: tmr-tabulated-remaining-time
 - ~tmr-tabulated-remaining-time~ :: The timer's remaining time.
+
+#+vindex: tmr-tabulated-paused
+- ~tmr-tabulated-paused~ :: Whether the timer is paused or not.
 
 #+vindex: tmr-tabulated-acknowledgement
 - ~tmr-tabulated-acknowledgement~ :: Whether the timer needs to be

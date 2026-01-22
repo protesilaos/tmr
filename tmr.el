@@ -120,6 +120,20 @@ Each function must accept a timer as argument."
 Each function must accept a timer as argument."
   :type 'hook)
 
+(defcustom tmr-timer-paused-functions
+  (list #'tmr-print-message-for-paused-timer)
+  "Functions to execute when a timer is paused.
+Each function must accept a timer as argument."
+  :package-version '(tmr . "1.3.0")
+  :type 'hook)
+
+(defcustom tmr-timer-resumed-functions
+  (list #'tmr-print-message-for-resumed-timer)
+  "Functions to execute when a timer is resumed.
+Each function must accept a timer as argument."
+  :package-version '(tmr . "1.3.0")
+  :type 'hook)
+
 (defcustom tmr-finished-indicator "✔"
   "Indicator for a finished timer, shown in `tmr-tabulated-view'."
   :package-version '(tmr . "1.0.0")
@@ -249,6 +263,11 @@ Longer descriptions will be truncated."
   :package-version '(tmr . "1.0.0")
   :group 'tmr-faces)
 
+(defface tmr-paused '((t :inherit bold))
+  "Face for styling the description of a paused timer."
+  :package-version '(tmr . "1.3.0")
+  :group 'tmr-faces)
+
 (defface tmr-tabulated-start-time
   '((((class color) (min-colors 88) (background light))
      :foreground "#004476")
@@ -277,6 +296,11 @@ Longer descriptions will be truncated."
     (t :foreground "yellow"))
   "Remaining time in the `tmr-tabulated-view'."
   :package-version '(tmr . "1.1.0")
+  :group 'tmr-faces)
+
+(defface tmr-tabulated-paused '((t :inherit bold))
+  "Face for styling the description of a paused timer."
+  :package-version '(tmr . "1.3.0")
   :group 'tmr-faces)
 
 (defface tmr-tabulated-acknowledgement
@@ -320,7 +344,6 @@ Longer descriptions will be truncated."
    :documentation "Time at which the timer was created.")
   (end-date
    nil
-   :read-only t
    :documentation "Time at which the timer finishes.")
   (finishedp
    nil
@@ -341,7 +364,11 @@ Longer descriptions will be truncated."
   (description
    nil
    :read-only nil
-   :documentation "Optional string describing the purpose of the timer, e.g., \"Stop the oven\"."))
+   :documentation "Optional string describing the purpose of the timer, e.g., \"Stop the oven\".")
+  (paused-remaining
+   nil
+   :read-only nil
+   :documentation "Remaining seconds when the timer was paused or nil if not paused."))
 
 (defun tmr--long-description (timer)
   "Return a human-readable description for TIMER."
@@ -368,6 +395,8 @@ Longer descriptions will be truncated."
               (concat "; " (propertize "acknowledge" 'face 'tmr-must-be-acknowledged)))
              ((tmr--timer-finishedp timer)
               (concat "; " (propertize "finished" 'face 'tmr-finished)))
+             ((when-let* ((remaining (tmr--timer-paused-remaining timer)))
+              (format "; %s: remaining %s" (propertize "PAUSED" 'face 'tmr-paused) (tmr--format-seconds remaining))))
              (t ""))
             (if description
                 (concat "; " (propertize description 'face 'tmr-description))
@@ -507,6 +536,24 @@ cancelling the original one."
   (setf (tmr--timer-description timer) description)
   (run-hooks 'tmr--update-hook))
 
+(defun tmr-toggle-pause (timer)
+  "Toggle pause/resume state of TIMER."
+  (interactive (list (tmr--read-timer "Pause/resume timer: " :active)))
+  (if-let* ((remaining (tmr--timer-paused-remaining timer)))
+      (progn
+        (setf (tmr--timer-end-date timer) (time-add (current-time) remaining))
+        (setf (tmr--timer-timer-object timer) (run-with-timer remaining nil #'tmr--complete timer))
+        (setf (tmr--timer-paused-remaining timer) nil)
+        (run-hooks 'tmr--update-hook)
+        (run-hook-with-args 'tmr-timer-resumed-functions timer))
+    (let ((remaining (tmr--get-seconds timer)))
+      (when (> remaining 0)
+        (cancel-timer (tmr--timer-timer-object timer))
+        (setf (tmr--timer-paused-remaining timer) remaining)
+        (run-hooks 'tmr--update-hook)
+        (run-hook-with-args 'tmr-timer-paused-functions timer)))))
+
+
 (defun tmr-toggle-acknowledge (timer)
   "Toggle ackowledge flag of TIMER."
   (interactive
@@ -627,6 +674,14 @@ Read Info node `(elisp) Desktop Notifications' for details."
 (defun tmr-print-message-for-cancelled-timer (timer)
   "Show a `message' informing the user that TIMER is cancelled."
   (message "Cancelled: <<%s>>" (tmr--long-description timer)))
+
+(defun tmr-print-message-for-paused-timer (timer)
+  "Show a `message' informing the user that TIMER is paused."
+  (message "Paused: <<%s>> (REMAINING %s)" (tmr--long-description timer) (tmr--format-remaining timer)))
+
+(defun tmr-print-message-for-resumed-timer (timer)
+  "Show a `message' informing the user that TIMER is resumed."
+  (message "Resumed: <<%s>> (REMAINING %s)" (tmr--long-description timer) (tmr--format-remaining timer)))
 
 (defvar tmr-duration-history nil
   "Minibuffer history of `tmr' durations.")
@@ -808,8 +863,8 @@ This map should be bound to a global prefix key."
   "t" #'tmr
   "T" #'tmr-with-details
   "l" #'tmr-tabulated-view
-  "c" #'tmr-clone
   "s" #'tmr-reschedule
+  "p" #'tmr-toggle-pause
   "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
   "r" #'tmr-remove
@@ -831,7 +886,8 @@ This map should be bound to a global prefix key."
   "c" #'tmr-clone
   "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
-  "s" #'tmr-reschedule)
+  "s" #'tmr-reschedule
+  "p" #'tmr-toggle-pause)
 
 ;;;;; Integration with the `embark' package
 
@@ -843,7 +899,8 @@ This map should be bound to a global prefix key."
   "c" #'tmr-clone
   "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
-  "s" #'tmr-reschedule)
+  "s" #'tmr-reschedule
+  "p" #'tmr-toggle-pause)
 
 (defvar embark-keymap-alist)
 (defvar embark-post-action-hooks)
@@ -887,6 +944,7 @@ they are set to reasonable default values."
     (propertize (tmr--format-end-date timer) 'face 'tmr-tabulated-end-time)
     (propertize (tmr--format-duration timer) 'face 'tmr-duration)
     (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time)
+    (propertize (if (tmr--timer-paused-remaining timer) "Yes" "") 'face 'tmr-paused)
     (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement)
     (propertize (or (tmr--timer-description timer) "") 'face 'tmr-tabulated-description))))
 
@@ -938,6 +996,7 @@ they are set to reasonable default values."
                ("End" 10 t)
                ("Duration" 10 t)
                ("Remaining" 10 tmr-tabulated--compare-remaining)
+               ("Paused?" 8 t)
                ("Acknowledge?" 14 t)
                ("Description" 0 t)])
   (add-hook 'window-configuration-change-hook #'tmr-tabulated--window-hook nil t)
@@ -975,24 +1034,26 @@ they are set to reasonable default values."
 
 (defun tmr-mode-line--format-remaining (timer)
   "Format remaining time for TIMER with appropriate face."
-  (let* ((secs (float-time (time-subtract (tmr--timer-end-date timer) nil)))
-         (face (cond ((and (< secs 5) (= (% (truncate secs) 2) 0))
-                      '(tmr-mode-line-urgent (:inverse-video t)))
-                     ((< secs 30) 'tmr-mode-line-urgent)
-                     ((= (truncate secs) 30)
-                      '(tmr-mode-line-urgent (:inverse-video t)))
-                     ((= (truncate secs) 60)
-                      '(tmr-mode-line-soon (:inverse-video t)))
-                     ((< secs 120) 'tmr-mode-line-soon)
-                     ((= (truncate secs) 120)
-                      '(tmr-mode-line-soon (:inverse-video t)))
-                     (t 'tmr-mode-line-active)))
-         (formatted (format-seconds
-                     (cond ((< secs 120) "%mm %ss%z")
-                           ((< secs (* 24 60 60)) "%hh %mm%z")
-                           (t "%dd %hh%z"))
-                     secs)))
-    (propertize formatted 'face face)))
+  (if-let* ((remaining (tmr--timer-paused-remaining timer)))
+      (propertize (format "PAUSED %s" (tmr--format-seconds remaining)) 'face 'tmr-paused)
+    (let* ((secs (float-time (time-subtract (tmr--timer-end-date timer) nil)))
+           (face (cond ((and (< secs 5) (= (% (truncate secs) 2) 0))
+                        '(tmr-mode-line-urgent (:inverse-video t)))
+                       ((< secs 30) 'tmr-mode-line-urgent)
+                       ((= (truncate secs) 30)
+                        '(tmr-mode-line-urgent (:inverse-video t)))
+                       ((= (truncate secs) 60)
+                        '(tmr-mode-line-soon (:inverse-video t)))
+                       ((< secs 120) 'tmr-mode-line-soon)
+                       ((= (truncate secs) 120)
+                        '(tmr-mode-line-soon (:inverse-video t)))
+                       (t 'tmr-mode-line-active)))
+           (formatted (format-seconds
+                       (cond ((< secs 120) "%mm %ss%z")
+                             ((< secs (* 24 60 60)) "%hh %mm%z")
+                             (t "%dd %hh%z"))
+                       secs)))
+      (propertize formatted 'face face))))
 
 (defun tmr-mode-line--format-description (timer)
   "Format description for TIMER, truncating if necessary."
