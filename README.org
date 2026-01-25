@@ -450,20 +450,13 @@ Everything is in place to set up the package.
 #+cindex: Package configuration
 
 #+begin_src emacs-lisp
-  ;; Set to nil to disable the sound
-  (setq tmr-sound-file "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga")
-
-  ;; Desktop notification urgency level
-  (setq tmr-notification-urgency 'normal)
-
-  ;; Read the `tmr-descriptions-list' doc string
-  (setq tmr-descriptions-list 'tmr-description-history)
-
-  ;; Set global prefix bindings (autoloaded):
-  (define-key global-map "\C-ct" 'tmr-prefix-map)
-
-  ;; Alternatively bind tmr command (autoloaded):
-  (define-key global-map "\C-ct" 'tmr)
+(use-package tmr
+  :ensure t
+  :config
+  (define-key global-map (kbd "C-c t") #'tmr-prefix-map)
+  (setq tmr-sound-file "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+        tmr-notification-urgency 'normal
+        tmr-description-list 'tmr-description-history))
 #+end_src
 
 * Integration with Embark
