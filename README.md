@@ -11,4 +11,5 @@ timers in a nice grid.
 + Git repositories:
   + GitHub: <https://github.com/protesilaos/tmr>
   + GitLab: <https://gitlab.com/protesilaos/tmr>
++ Video demonstration: <https://protesilaos.com/codelog/2026-01-19-emacs-timers-tmr-demo/>
 + Backronym: TMR May Ring; Timer Must Run.
