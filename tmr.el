@@ -865,7 +865,7 @@ This map should be bound to a global prefix key."
   "T" #'tmr-with-details
   "l" #'tmr-tabulated-view
   "s" #'tmr-reschedule
-  "p" #'tmr-toggle-pause
+  "P" #'tmr-toggle-pause
   "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
   "r" #'tmr-remove
@@ -888,7 +888,7 @@ This map should be bound to a global prefix key."
   "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
   "s" #'tmr-reschedule
-  "p" #'tmr-toggle-pause)
+  "P" #'tmr-toggle-pause)
 
 ;;;;; Integration with the `embark' package
 
