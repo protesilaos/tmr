@@ -12,6 +12,76 @@ the manual: <https://protesilaos.com/emacs/tmr>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 1.3.0 on 2026-01-25
+:PROPERTIES:
+:CUSTOM_ID: h:705987e4-60e9-4d06-bdc0-4f08347348a0
+:END:
+
+This version adds some user options and new features to an already
+stable package.
+
+** Timers can be paused
+:PROPERTIES:
+:CUSTOM_ID: h:4e740a08-0e29-4d5e-84ec-e5507df3845c
+:END:
+
+The command ~tmr-toggle-pause~ will prompt for a running timer and
+pause it.
+
+Users who have something like the following in their configuration,
+have access to ~tmr-toggle-pause~ under the =P= key:
+
+#+begin_src emacs-lisp
+;; All TMR commands are behind this prefix key.  So `tmr-toggle-pause' is C-c t P.
+(define-key global-map (kbd "C-c t") #'tmr-prefix-map)
+#+end_src
+
+In the buffer produced by the command ~tmr-tabulated-view~ the pause
+functionality applies to the timer at point. The ~tmr-toggle-pause~ is
+invoked with the =P= key.
+
+An extra column in the tabulated view shows whether a timer is paused
+or not. Here is an example:
+
+#+begin_example
+Start      End        Duration   Remaining  Paused?  Acknowledge?   Description
+
+08:49:41   09:19:46   30m        29m 17s    Yes                     Work on TMR for 30 minutes
+08:49:31   08:54:31   5m         3m 53s                             Prepare tea
+08:49:21   08:59:21   10m        8m 42s              Yes            Edit the description with this one instead
+#+end_example
+
+** Configure the confirmation text for acknowledgements
+:PROPERTIES:
+:CUSTOM_ID: h:b08bda30-2991-4d36-83d8-39d619abb20f
+:END:
+
+When a timer is set to be acknowledged (i.e. the user must confirm
+that they saw it elapse) it prompts for confirmation. The default
+input text that confirms the acknowledgement is =ack=. This is now
+subject to configuration via the user option ~tmr-acknowledge-timer-text~.
+
+** Change how frequently the tabulated list is refreshed
+:PROPERTIES:
+:CUSTOM_ID: h:758d2691-14c5-4f3e-9044-a394101f9cff
+:END:
+
+The buffer produced by ~tmr-tabulated-view~ is set to automatically
+refresh every 5 seconds by default. In previous versions this was every
+1 second. The new user option ~tmr-tabulated-refresh-interval~ can be
+set to a number of seconds or ~nil~. In the latter case, the automatic
+refresh is disabled.
+
+** Removed the long-obsolete =tmr-tabulated.el=
+:PROPERTIES:
+:CUSTOM_ID: h:5bd873e9-15fa-4660-947f-b4f104d4e577
+:END:
+
+Its code was merged into =tmr.el= on 2024-10-30 and all it was doing
+thenceforth is issue a warning to those who would ~require~ the
+~tmr-tabulated~ feature. Now ~(require 'tmr-tabulated)~ produces an
+error.
+
 * Version 1.2.0 on 2025-10-06
 :PROPERTIES:
 :CUSTOM_ID: h:87d321d7-e88e-4303-a7fc-fa4264e62a92

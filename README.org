@@ -104,22 +104,20 @@ The command ~tmr-edit-description~ can change the description a given
 timer object.
 
 #+findex: tmr-toggle-acknowledge
-#+vindex: tmr-acknoledge-timer-text
+#+vindex: tmr-acknowledge-timer-text
 The command ~tmr-toggle-acknowledge~ toggles the acknowledge flag of a
 given timer object. A timer that needs to be acknowledged prompts for
 confirmation after it elapses. The user can either confirm and thus
 dismiss the timer, or set a new duration for the next reminder, using
 the familiar TMR input. The confirmation text to be provided at the
 minibuffer prompt (=ack= by default) can be configured via the user
-option ~tmr-acknoledge-timer-text~ [ The confirmation text is
-configurable as part of {{{development-version}}}. ]
+option ~tmr-acknowledge-timer-text~.
 
 #+findex: tmr-toggle-pause
 The command ~tmr-toggle-pause~ pauses the given timer. The tabulated
 view has a column to show when a timer is paused ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid or tabulated view]]).
 Similarly, the mode line indicator adapts the text of the timer to
-tell that it is paused ([[#h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc][Display timers on the mode line]]). [ The
-~tmr-toggle-pause~ and related functionality is part of {{{development-version}}}. ]
+tell that it is paused ([[#h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc][Display timers on the mode line]]).
 
 #+vindex: tmr-descriptions-list
 The user option ~tmr-descriptions-list~ defines the completion
@@ -195,8 +193,6 @@ Timers can be viewed in a grid with ~tmr-tabulated-view~ (alias
 ~tmr-list-timers~). The data is placed in the =*tmr-tabulated-view*=
 buffer and looks like this:
 
-[ The pause functionality is part of {{{development-version}}}. ]
-
 #+begin_example
 Start      End        Duration   Remaining  Paused?  Acknowledge?   Description
 
@@ -230,9 +226,7 @@ every 5 seconds. Users can change the number of seconds by modifying
 the user option ~tmr-tabulated-refresh-interval~. A ~nil~ value means
 to never refresh that buffer automatically: users can update it
 manually by invoking the command ~revert-buffer~, which is bound to
-=g= by default. [ This is part of {{{development-version}}}, instead
-of the old arrangement of updating the buffer every second without an
-option to change it. ]
+=g= by default.
 
 #+vindex: tmr-list-timers-action-alist
 The user option ~tmr-list-timers-action-alist~ controls how the
