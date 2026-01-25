@@ -224,6 +224,7 @@ While in this grid view, one can perform all the operations on timers we
 have already covered herein (the =C-h m= will show you their key
 bindings in this mode).
 
+#+vindex: tmr-tabulated-refresh-interval
 By default, the ~tmr-tabulated-view~ buffer is updated automatically
 every 5 seconds. Users can change the number of seconds by modifying
 the user option ~tmr-tabulated-refresh-interval~. A ~nil~ value means
