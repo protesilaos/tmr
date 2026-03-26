@@ -945,7 +945,7 @@ they are set to reasonable default values."
     (propertize (tmr--format-end-date timer) 'face 'tmr-tabulated-end-time)
     (propertize (tmr--format-duration timer) 'face 'tmr-duration)
     (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time)
-    (propertize (if (tmr--timer-paused-remaining timer) "Yes" "") 'face 'tmr-paused)
+    (propertize (if (tmr--timer-paused-remaining timer) "Yes" "") 'face 'tmr-tabulated-paused)
     (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement)
     (propertize (or (tmr--timer-description timer) "") 'face 'tmr-tabulated-description))))
 
