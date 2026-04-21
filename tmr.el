@@ -114,6 +114,19 @@ Each function must accept a timer as argument."
                  #'tmr-acknowledge-minibuffer
                  #'tmr-acknowledge-dialog))
 
+(defcustom tmr-timer-repeat-functions
+  (list #'tmr-sound-play
+        #'tmr-notification-notify
+        #'tmr-print-message-for-repeating-timer)
+  "Functions to execute when a timer is about to repeat.
+Each function must accept a timer as argument."
+  :type 'hook
+  :options (list #'tmr-sound-play
+                 #'tmr-notification-notify
+                 #'tmr-print-message-for-repeating-timer
+                 #'tmr-acknowledge-minibuffer
+                 #'tmr-acknowledge-dialog))
+
 (defcustom tmr-timer-cancelled-functions
   (list #'tmr-print-message-for-cancelled-timer)
   "Functions to execute when a timer is cancelled.
@@ -353,6 +366,14 @@ Longer descriptions will be truncated."
    nil
    :read-only nil
    :documentation "Non-nil if the timer must be acknowledged.")
+  (repeat-count
+   0
+   :read-only nil
+   :documentation "Remaining repetitions.")
+  (duration
+   nil
+   :read-only t
+   :documentation "Duration of this timer.")
   (timer-object
    nil
    :read-only nil
@@ -380,9 +401,12 @@ Longer descriptions will be truncated."
     ;; enough to be used when starting a timer but also when cancelling
     ;; one: check `tmr-print-message-for-created-timer' and
     ;; `tmr-print-message-for-cancelled-timer'.
-    (format "TMR start %s; end %s; %s %s%s%s"
+    (format "TMR start %s; end %s; %s%s %s%s%s"
             (propertize start 'face 'tmr-start-time)
             (propertize end 'face 'tmr-end-time)
+            (if (< 0 (tmr--timer-repeat-count timer))
+                (format "repeat %d; " (tmr--timer-repeat-count timer))
+              "")
             (if (string-search ":" (tmr--timer-input timer))
                 "until"
               "duration")
@@ -415,6 +439,22 @@ optional `tmr--timer-description'."
             (propertize "Started" 'face 'tmr-start-time)
             start
             (propertize "Ended" 'face 'tmr-end-time)
+            end)))
+
+(defun tmr--long-description-for-repeated-timer (timer)
+  "Return a human-readable description of repeating TIMER.
+This includes the creation and completion dates as well as the
+optional `tmr--timer-description'."
+  (let ((start (tmr--format-creation-date timer))
+        (end (tmr--format-end-date timer))
+        (description (tmr--timer-description timer)))
+    ;; For the TMR prefix, see comment in `tmr--long-description'.
+    (format "TMR Time is up! %d repetitions remain.\n%s%s %s\n%s %s"
+            (tmr--timer-repeat-count timer)
+            (if description (concat (propertize description 'face 'tmr-description) "\n") "")
+            (propertize "Started" 'face 'tmr-start-time)
+            start
+            (propertize "Ends" 'face 'tmr-end-time)
             end)))
 
 (defun tmr--format-creation-date (timer)
@@ -670,7 +710,9 @@ Read Info node `(elisp) Desktop Notifications' for details."
 
 (defun tmr-print-message-for-finished-timer (timer)
   "Show a `message' informing the user that TIMER has finished."
-  (message "%s" (tmr--long-description-for-finished-timer timer)))
+  (if (< 0 (tmr--timer-repeat-count timer))
+      (message "%s" (tmr--long-description-for-repeated-timer timer))
+    (message "%s" (tmr--long-description-for-finished-timer timer))))
 
 (defun tmr-print-message-for-cancelled-timer (timer)
   "Show a `message' informing the user that TIMER is cancelled."
@@ -755,13 +797,22 @@ This function is used if a timer is not acknowledged."
   (run-hook-with-args 'tmr-timer-created-functions timer))
 
 (defun tmr--complete (timer)
-  "Mark TIMER as finished and execute `tmr-timer-finished-functions'."
-  (setf (tmr--timer-finishedp timer) t)
-  (run-hooks 'tmr--update-hook)
-  (run-hook-with-args 'tmr-timer-finished-functions timer))
+  "Mark TIMER as finished or repeat it and execute hooks."
+  (if (>= 0 (tmr--timer-repeat-count timer))
+      (progn
+        (setf (tmr--timer-finishedp timer) t)
+        (run-hooks 'tmr--update-hook)
+        (run-hook-with-args 'tmr-timer-finished-functions timer))
+    (setf (tmr--timer-repeat-count timer) (1- (tmr--timer-repeat-count timer)))
+    (setf (tmr--timer-end-date timer) (time-add (tmr--timer-end-date timer)
+                                                (tmr--timer-duration timer)))
+    (setf (tmr--timer-timer-object timer)
+          (run-with-timer (tmr--timer-duration timer) nil #'tmr--complete timer))
+    (run-hooks 'tmr--update-hook)
+    (run-hook-with-args 'tmr-timer-repeat-functions timer)))
 
 ;;;###autoload
-(defun tmr (time &optional description acknowledgep)
+(defun tmr (time &optional description acknowledgep repeat-n)
   "Set timer to TIME duration and notify after it elapses.
 
 When TIME is a number, it is interpreted as a count of minutes.
@@ -775,6 +826,9 @@ allow for any string to serve as valid input.
 
 With optional ACKNOWLEDGEP non-nil the timer must be acknowledged
 after it finished, such that the timer cannot be missed.
+
+Optional integer REPEAT-N indicates how many times the timer shall
+repeat.
 
 This command also plays back `tmr-sound-file' if it is available.
 
@@ -794,6 +848,8 @@ command `tmr-with-details' instead of this one."
          (timer (tmr--timer-create
                  :description description
                  :acknowledgep acknowledgep
+                 :repeat-count (or repeat-n 0)
+                 :duration duration
                  :creation-date creation-date
                  :end-date (time-add creation-date duration)
                  :input time)))
@@ -818,6 +874,26 @@ user uses a prefix argument (\\[universal-argument])."
     (tmr--description-prompt)
     (tmr--acknowledge-prompt)))
   (tmr time description acknowledgep))
+
+;;;###autoload
+(defun tmr-repeat (time repeat-n &optional description acknowledgep)
+  "Set timer to TIME duration and repeat.
+
+REPEAT-N is an integer indicating how many times the timer shall be
+repeated.
+
+See `tmr' for a description of the arguments DESCRIPTION and
+ACKNOWLEDGEP.  The difference between the two commands is that
+`tmr-with-details' always asks for a description and if the timer
+should be acknowledged whereas `tmr' only asks for it when the
+user uses a prefix argument (\\[universal-argument])."
+  (interactive
+   (list
+    (tmr--read-duration)
+    (read-number "Repeat N times: ")
+    (when current-prefix-arg (tmr--description-prompt))
+    (when current-prefix-arg (tmr--acknowledge-prompt))))
+  (tmr time nil nil repeat-n))
 
 (defun tmr-clone (timer &optional prompt)
   "Create a new timer by cloning TIMER.
