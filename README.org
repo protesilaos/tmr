@@ -99,6 +99,11 @@ An alternative to the ~tmr~ command is ~tmr-with-details~.  The
 difference between the two is that the latter always prompts for a
 description and if the timer should be acknowledged.
 
+#+findex: tmr-repeat
+Similarly, the ~tmr-repeat~ is a wrapper for ~tmr~ that always prompts
+for a timer with a repeat count. This means that the timer will ring
+that many times. [ Part of {{{development-version}}}. ]
+
 #+findex: tmr-edit-description
 The command ~tmr-edit-description~ can change the description a given
 timer object.
