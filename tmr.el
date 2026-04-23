@@ -752,6 +752,17 @@ If optional DEFAULT is provided use it as a default candidate."
       (symbol-value tmr-description-list)))
    nil nil nil 'tmr-description-history default))
 
+(defvar tmr-repeat-prompt-history nil
+  "Minibuffer history for `tmr-repeat-prompt'.")
+
+(defun tmr-repeat-prompt ()
+  "Prompt for a repeat count."
+  (let ((default (car tmr-repeat-prompt-history)))
+    (read-number
+     (format-prompt "Repeat N times" default)
+     default
+     'tmr-repeat-prompt-history)))
+
 (defun tmr--acknowledge-prompt ()
   "Ask the user if a timer must be acknowledged."
   (y-or-n-p "Acknowledge timer after finish? "))
@@ -890,7 +901,7 @@ user uses a prefix argument (\\[universal-argument])."
   (interactive
    (list
     (tmr--read-duration)
-    (read-number "Repeat N times: ")
+    (tmr-repeat-prompt)
     (when current-prefix-arg (tmr--description-prompt))
     (when current-prefix-arg (tmr--acknowledge-prompt))))
   (tmr time nil nil repeat-n))
