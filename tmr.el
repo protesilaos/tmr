@@ -808,6 +808,11 @@ This function is used if a timer is not acknowledged."
   (run-hooks 'tmr--update-hook)
   (run-hook-with-args 'tmr-timer-created-functions timer))
 
+(defun tmr-print-message-for-repeating-timer (timer)
+  "Print message for how many times TIMER repeats."
+  (when-let* ((count (tmr--timer-repeat-count timer)))
+    (message "TMR repeats another %d times" count)))
+
 (defun tmr--complete (timer)
   "Mark TIMER as finished or repeat it and execute hooks."
   (if (>= 0 (tmr--timer-repeat-count timer))
