@@ -839,7 +839,7 @@ With optional ACKNOWLEDGEP non-nil the timer must be acknowledged
 after it finished, such that the timer cannot be missed.
 
 Optional integer REPEAT-N indicates how many times the timer shall
-repeat.
+repeated.
 
 This command also plays back `tmr-sound-file' if it is available.
 
@@ -878,7 +878,9 @@ See `tmr' for a description of the arguments DESCRIPTION and
 ACKNOWLEDGEP.  The difference between the two commands is that
 `tmr-with-details' always asks for a description and if the timer
 should be acknowledged whereas `tmr' only asks for it when the
-user uses a prefix argument (\\[universal-argument])."
+user uses a prefix argument (\\[universal-argument]).
+
+Also see `tmr-repeat'."
   (interactive
    (list
     (tmr--read-duration)
@@ -888,16 +890,15 @@ user uses a prefix argument (\\[universal-argument])."
 
 ;;;###autoload
 (defun tmr-repeat (time repeat-n &optional description acknowledgep)
-  "Set timer to TIME duration and repeat.
+  "Set timer to TIME duration and repeat it REPEAT-N times.
 
 REPEAT-N is an integer indicating how many times the timer shall be
 repeated.
 
 See `tmr' for a description of the arguments DESCRIPTION and
-ACKNOWLEDGEP.  The difference between the two commands is that
-`tmr-with-details' always asks for a description and if the timer
-should be acknowledged whereas `tmr' only asks for it when the
-user uses a prefix argument (\\[universal-argument])."
+ACKNOWLEDGEP.
+
+Also see `tmr-with-details'."
   (interactive
    (list
     (tmr--read-duration)
