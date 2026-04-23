@@ -959,7 +959,8 @@ This map should be bound to a global prefix key."
   "e" #'tmr-edit-description
   "r" #'tmr-remove
   "R" #'tmr-remove-finished
-  "k" #'tmr-cancel)
+  "k" #'tmr-cancel
+  "n" #'tmr-repeat)
 
 ;;;###autoload (autoload 'tmr-prefix-map "tmr" nil t 'keymap)
 (defalias 'tmr-prefix-map tmr-prefix-map)
