@@ -828,6 +828,11 @@ This function is used if a timer is not acknowledged."
     (run-hooks 'tmr--update-hook)
     (run-hook-with-args 'tmr-timer-repeat-functions timer)))
 
+;; TODO 2026-04-23: How best to include the REPEAT-N in the
+;; `interactive' spec of `tmr'.  What we have now suggests we should
+;; use the double prefix arg, but I do not like that.  Maybe we can
+;; leave it as-is and not use the repeat interactively in this way:
+;; users can rely on `tmr-repeat'.
 ;;;###autoload
 (defun tmr (time &optional description acknowledgep repeat-n)
   "Set timer to TIME duration and notify after it elapses.
