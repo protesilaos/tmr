@@ -759,8 +759,9 @@ If optional DEFAULT is provided use it as a default candidate."
   "Prompt for a repeat count."
   (let ((default (car tmr-repeat-prompt-history)))
     (read-number
-     (format-prompt "Repeat N times" default)
-     default
+     "Repeat N times: "
+     (when default
+       (string-to-number default))
      'tmr-repeat-prompt-history)))
 
 (defun tmr--acknowledge-prompt ()
