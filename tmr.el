@@ -905,7 +905,7 @@ Also see `tmr-with-details'."
     (tmr-repeat-prompt)
     (when current-prefix-arg (tmr--description-prompt))
     (when current-prefix-arg (tmr--acknowledge-prompt))))
-  (tmr time nil nil repeat-n))
+  (tmr time description acknowledgep repeat-n))
 
 (defun tmr-clone (timer &optional prompt)
   "Create a new timer by cloning TIMER.
