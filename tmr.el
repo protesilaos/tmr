@@ -2,11 +2,11 @@
 
 ;; Copyright (C) 2020-2026  Free Software Foundation, Inc.
 
-;; Author: Protesilaos Stavrou <info@protesilaos.com>,
+;; Author: Protesilaos <info@protesilaos.com>,
 ;;         Damien Cassou <damien@cassou.me>,
 ;;         Daniel Mendler <mail@daniel-mendler.de>
 ;;         Steven Allen <steven@stebalien.com>
-;; Maintainer: Protesilaos Stavrou <info@protesilaos.com>
+;; Maintainer: Protesilaos <info@protesilaos.com>
 ;; URL: https://github.com/protesilaos/tmr
 ;; Version: 1.3.0
 ;; Package-Requires: ((emacs "29.1"))

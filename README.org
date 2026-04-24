@@ -1,5 +1,5 @@
 #+title: TMR May Ring
-#+author: Protesilaos Stavrou
+#+author: Protesilaos
 #+email: info@protesilaos.com
 #+language: en
 #+options: ':t toc:nil author:t email:t num:t
@@ -13,11 +13,11 @@
 #+texinfo_dir_title: TMR May Ring: (tmr)
 #+texinfo_dir_desc: Set timers using a convenient notation
 #+texinfo_header: @set MAINTAINERSITE @uref{https://protesilaos.com,maintainer webpage}
-#+texinfo_header: @set MAINTAINER Protesilaos Stavrou
+#+texinfo_header: @set MAINTAINER Protesilaos
 #+texinfo_header: @set MAINTAINEREMAIL @email{info@protesilaos.com}
 #+texinfo_header: @set MAINTAINERCONTACT @uref{mailto:info@protesilaos.com,contact the maintainer}
 
-This manual, written by Protesilaos Stavrou, describes the customization
+This manual, written by Protesilaos, describes the customization
 options for ~tmr~ (or TMR, TMR May Ring, ...), and provides every other
 piece of information pertinent to it.  The name of the package is
 pronounced as "timer" or "T-M-R".
@@ -479,7 +479,7 @@ recognisable by Embark and registers the ~tmr-action-map~ in Embark.
 
 TMR is meant to be a collective effort.  Every bit of help matters.
 
-+ Authors :: Protesilaos Stavrou (maintainer), Damien Cassou, Daniel
++ Authors :: Protesilaos (maintainer), Damien Cassou, Daniel
   Mendler, Óscar Fuentes, Steven Allen.
 
 + Contributions to the code or manual :: Christian Tietze, Ed Tavinor,
