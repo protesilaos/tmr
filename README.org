@@ -353,25 +353,36 @@ TMR provides the following hooks:
 
 #+vindex: tmr-sound-file
 #+vindex: tmr-notification-urgency
-Once the timer has run its course, it produces a desktop notification and
-plays an alarm sound.  The notification's message is practically the same
-as that which is sent to the echo area.
+Once the timer has run its course, it produces a desktop notification
+and plays an alarm sound.  The notification's message is practically
+the same as that which is sent to the echo area.
 
-The sound file for the alarm is defined in ~tmr-sound-file~, while the
-urgency of the notification can be set through the user option
-~tmr-notification-urgency~.  Note that it is up to the desktop
-environment or notification daemon to decide how to handle the urgency
-value.
+The sound file for the alarm is defined in ~tmr-sound-file~.  On Linux
+this should be a path to an audio file; on macOS it is the name of a
+built-in alert sound (see below).  The urgency of the notification can
+be set through the user option ~tmr-notification-urgency~.  Note that
+it is up to the desktop environment or notification daemon to decide
+how to handle the urgency value.
 
-If the ~tmr-sound-file~ is nil, or the file is not found, no sound will
-be played.
+If the ~tmr-sound-file~ is nil, or the value is not found, no sound
+will be played.
 
-Sound playback depends on the =ffplay= executable which is part of
-=ffmpeg=.
+Desktop notifications and sound playback behave differently depending
+on the platform:
 
-Desktop notifications work only if Emacs is built with DBus
-functionality.  This is the norm.  If such functionality is not
-available, TMR will issue a warning informing the user accordingly.
+- On Linux, notifications require Emacs to be built with DBus
+  functionality.  This is the norm for most distributions.  If DBus is
+  not available, TMR will issue a warning.  Sound playback depends on
+  the =ffplay= executable which is part of =ffmpeg=.
+- On macOS, notifications and sound are handled natively via
+  =osascript= (the AppleScript interpreter bundled with the OS; see
+  [[https://developer.apple.com/library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/DisplayNotifications.html#//apple_ref/doc/uid/TP40016239-CH61-SW1][Apple's documentation on notifications]]).  No
+  additional dependencies are required.  Set ~tmr-sound-file~ to the
+  name of one of the built-in macOS alert sounds: =Basso=, =Blow=,
+  =Bottle=, =Frog=, =Funk=, =Glass=, =Hero=, =Morse=, =Ping=, =Pop=,
+  =Purr=, =Sosumi=, =Submarine=, =Tink=.
+- On Windows and Android, the platform's native notification API is
+  used automatically.
 
 ** Minibuffer histories
 :PROPERTIES:
@@ -452,13 +463,17 @@ Everything is in place to set up the package.
 #+cindex: Package configuration
 
 #+begin_src emacs-lisp
-(use-package tmr
-  :ensure t
-  :config
-  (define-key global-map (kbd "C-c t") #'tmr-prefix-map)
-  (setq tmr-sound-file "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
-        tmr-notification-urgency 'normal
-        tmr-description-list 'tmr-description-history))
+  (use-package tmr
+    :ensure t
+    :config
+    (define-key global-map (kbd "C-c t") #'tmr-prefix-map)
+    (setq tmr-sound-file "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+          tmr-notification-urgency 'normal
+          tmr-description-list 'tmr-description-history))
+
+    ;; macOS specific
+    (when (eq system-type 'darwin)
+      (setq tmr-macos-notification-sound "Glass"))
 #+end_src
 
 * Integration with Embark

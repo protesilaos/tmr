@@ -654,6 +654,20 @@ If there are no timers, throw an error."
 (declare-function android-notifications-notify "androidselect.c" (&rest params))
 (declare-function w32-notification-notify "w32fns.c" (&rest params))
 (declare-function haiku-notifications-notify "haikuselect.c" (&rest params))
+
+(cl-defun macos-notification-notify (&key title body sound-file)
+  "Send a native MacOS notification for TITLE, BODY and SOUND-FILE.
+
+SOUND-FILE must be a macOS system sound name such as \"Glass\", not a
+file path.  File paths (including the default value of `tmr-sound-file')
+are intentionally ignored to prevent the Linux default path from being
+passed to osascript, which would fall back to a default system sound
+unexpectedly."
+  (let* ((sound (when (and sound-file (not (file-name-directory sound-file))) (format " sound name %S" sound-file)))
+         (sanitized-body (substring-no-properties body))
+         (script (format "display notification %S with title %S%s" sanitized-body title (or sound ""))))
+    (call-process "osascript" nil 0 nil "-e" script)))
+
 (defvar notifications-application-icon)
 
 (defvar tmr--notification-notify-count 0
@@ -667,7 +681,8 @@ Read Info node `(elisp) Desktop Notifications' for details."
         (seq-some #'fboundp
                   (list #'android-notifications-notify
                         #'w32-notification-notify
-                        #'haiku-notifications-notify)))
+                        #'haiku-notifications-notify))
+        (eq system-type 'darwin))
     (let ((title "TMR May Ring (Emacs tmr package)")
           (body (tmr--long-description-for-finished-timer timer)))
       (setq tmr--notification-notify-count 0)
@@ -687,6 +702,11 @@ Read Info node `(elisp) Desktop Notifications' for details."
          :body body
          :app-icon 'emacs
          :urgency tmr-notification-urgency))
+       ((eq system-type 'darwin)
+        (macos-notification-notify
+         :title title
+         :body body
+         :sound-file tmr-sound-file))
        (t
         (unless (fboundp 'notifications-notify)
           (require 'notifications))
