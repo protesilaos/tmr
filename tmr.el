@@ -81,17 +81,7 @@ If nil, don't play any sound."
           file
           (const :tag "Off" nil)))
 
-(defcustom tmr-confirm-single-timer t
-  "Whether to act on the sole timer outright or with confirmation.
-
-If non-nil (the default), TMR will use the minibuffer to select a
-timer object to operate on, even when there is only one candidate
-available.
-
-If set to nil, TMR will not ask for confirmation when there is
-one timer available: the operatation will be carried out
-outright."
-  :type 'boolean)
+(make-obsolete-variable 'tmr-confirm-single-timer nil "1.4.0")
 
 (defcustom tmr-timer-created-functions
   (list #'tmr-print-message-for-created-timer)
@@ -600,13 +590,80 @@ optional `tmr--timer-description'."
 (defvar tmr--update-hook nil
   "Hooks to execute when timers are changed.")
 
+;;;; Timer prompt
+
+(defvar tmr--read-timer-hook nil
+  "Hooks to execute to find current timer.")
+
+(defun tmr-completion-annotate (timer)
+  "Annotate TIMER completion candidate with remaining time."
+  (setq timer (tmr--string-to-object timer))
+  (if (tmr--timer-finishedp timer)
+      " (finished)"
+    (format " (%s remaining)" (tmr--format-remaining timer))))
+
+(defun tmr--timer-object-to-string (timer)
+  "Return TIMER as a propertized long description of it.
+Include the TIMER as the value of property `tmr-timer-object' of the
+resulting string.
+
+Also see `tmr--string-to-object'."
+  (propertize (tmr--long-description timer) 'tmr-timer-object timer))
+
+(defun tmr--string-to-object (string)
+  "Get from STRING the `tmr-timer-object' property value.
+Also see `tmr--timer-object-to-string'."
+  (get-text-property 0 'tmr-timer-object string))
+
+(defun tmr-completion-sort (strings)
+  "Display sort function for STRINGS completion candidates.
+STRINGS are the string representation of TMR timer objects."
+  (let* ((timer-objects (mapcar #'tmr--string-to-object strings))
+         (timer-objects-sorted
+          (sort timer-objects (lambda (timer1 timer2)
+                                (time-less-p
+                                 (tmr--timer-end-date timer1)
+                                 (tmr--timer-end-date timer2))))))
+    (mapcar #'tmr--timer-object-to-string timer-objects-sorted)))
+
+;; NOTE 2026-07-30: I am defining it like this because someone might
+;; still want to use the `identity' for sorting.  It otherwise is the
+;; same as what we had before.
+(defvar tmr-completion-metadata
+  (list
+   (cons 'category 'tmr-timer)
+   (cons 'display-sort-function #'tmr-completion-sort)
+   (cons 'annotation-function #'tmr-completion-annotate))
+  "The `completion-metadata' for TMR prompts that select a timer.")
+
+(define-obsolete-function-alias 'tmr--read-timer #'tmr-read-timer "1.4.0")
+
+(defun tmr-read-timer (prompt &optional active)
+  "Let the user choose a timer among all (or ACTIVE) timers.
+
+Return the selected timer.  If there is a single timer and
+`tmr-confirm-single-timer' is nil, use that.  If there are
+multiple timers, prompt for one with completion with PROMPT text.
+If there are no timers, throw an error."
+  (or (run-hook-with-args-until-success 'tmr--read-timer-hook)
+      (if-let* ((timers (if active
+                            (seq-remove #'tmr--timer-finishedp tmr--timers)
+                          tmr--timers))
+                (strings (mapcar #'tmr--timer-object-to-string timers))
+                (table (apply #'tmr-get-completion-table strings tmr-completion-metadata))
+                (choice (completing-read prompt table nil t))
+                (selected (car (member choice strings))))
+          (or (and selected (tmr--string-to-object selected))
+              (user-error "No timer selected"))
+        (user-error "No timers available"))))
+
 ;;;; Commands
 
 (defun tmr-remove (timer)
   "Cancel and remove TIMER object set with `tmr' command.
 Interactively, let the user choose which timer to cancel with
 completion."
-  (interactive (list (tmr--read-timer "Remove timer: ")))
+  (interactive (list (tmr-read-timer "Remove timer: ")))
   (cancel-timer (tmr--timer-timer-object timer))
   (setq tmr--timers (delete timer tmr--timers))
   (run-hooks 'tmr--update-hook)
@@ -617,14 +674,14 @@ completion."
 Interactively, let the user choose which timer to cancel with
 completion.  This command is the same as `tmr-remove' but
 chooses only among active timers."
-  (interactive (list (tmr--read-timer "Cancel timer: " :active)))
+  (interactive (list (tmr-read-timer "Cancel timer: " :active)))
   (tmr-remove timer))
 
 (defun tmr-reschedule (timer)
   "Reschedule TIMER.
 This is the same as cloning it, prompting for duration and
 cancelling the original one."
-  (interactive (list (tmr--read-timer "Reschedule timer: ")))
+  (interactive (list (tmr-read-timer "Reschedule timer: ")))
   (tmr-clone timer :prompt)
   (let (tmr-timer-cancelled-functions)
     (tmr-cancel timer)))
@@ -633,14 +690,14 @@ cancelling the original one."
   "Change TIMER description with that of DESCRIPTION."
   (interactive
    (list
-    (tmr--read-timer "Edit description of timer: ")
+    (tmr-read-timer "Edit description of timer: ")
     (tmr--description-prompt)))
   (setf (tmr--timer-description timer) description)
   (run-hooks 'tmr--update-hook))
 
 (defun tmr-toggle-pause (timer)
   "Toggle pause/resume state of TIMER."
-  (interactive (list (tmr--read-timer "Pause/resume timer: " :active)))
+  (interactive (list (tmr-read-timer "Pause/resume timer: " :active)))
   (if-let* ((remaining (tmr--timer-paused-remaining timer)))
       (progn
         (setf (tmr--timer-end-date timer) (time-add (current-time) remaining))
@@ -660,7 +717,7 @@ cancelling the original one."
   "Toggle ackowledge flag of TIMER."
   (interactive
    (list
-    (tmr--read-timer "Toggle acknowledge flag of timer: ")))
+    (tmr-read-timer "Toggle acknowledge flag of timer: ")))
   (setf (tmr--timer-acknowledgep timer) (not (tmr--timer-acknowledgep timer)))
   (run-hooks 'tmr--update-hook))
 
@@ -669,48 +726,6 @@ cancelling the original one."
   (interactive)
   (setq tmr--timers (seq-remove #'tmr--timer-finishedp tmr--timers))
   (run-hooks 'tmr--update-hook))
-
-(defvar tmr--read-timer-hook nil
-  "Hooks to execute to find current timer.")
-
-(defun tmr--timer-annotation (timer)
-  "Annotate TIMER completion candidate with remaining time."
-  (setq timer (get-text-property 0 'tmr-timer timer))
-  (if (tmr--timer-finishedp timer)
-      " (finished)"
-    (format " (%s remaining)" (tmr--format-remaining timer))))
-
-(defun tmr--read-timer (prompt &optional active)
-  "Let the user choose a timer among all (or ACTIVE) timers.
-
-Return the selected timer.  If there is a single timer and
-`tmr-confirm-single-timer' is nil, use that.  If there are
-multiple timers, prompt for one with completion with PROMPT text.
-If there are no timers, throw an error."
-  (or
-   (run-hook-with-args-until-success 'tmr--read-timer-hook)
-   (pcase
-       (if active
-           (seq-remove #'tmr--timer-finishedp tmr--timers)
-         tmr--timers)
-     ('nil (user-error "No timers available"))
-     ((and `(,timer) (guard (not tmr-confirm-single-timer))) timer)
-     (timers
-      (let* ((timer-list (mapcar
-                          (lambda (x)
-                            (propertize
-                             (tmr--long-description x)
-                             'tmr-timer x))
-                          timers))
-             (selected
-              (car (member (completing-read
-                            prompt
-                            (tmr--completion-table
-                             timer-list 'tmr-timer #'tmr--timer-annotation)
-                            nil t)
-                           timer-list))))
-        (or (and selected (get-text-property 0 'tmr-timer selected))
-            (user-error "No timer selected")))))))
 
 (declare-function notifications-notify "notifications" (&rest params))
 (declare-function android-notifications-notify "androidselect.c" (&rest params))
@@ -1027,7 +1042,7 @@ be acknowledged.
 Without a PROMPT, clone TIMER outright."
   (interactive
    (list
-    (tmr--read-timer "Clone timer: ")
+    (tmr-read-timer "Clone timer: ")
     current-prefix-arg))
   (tmr
    (if prompt
@@ -1040,17 +1055,14 @@ Without a PROMPT, clone TIMER outright."
        (tmr--acknowledge-prompt)
      (tmr--timer-acknowledgep timer))))
 
-(defun tmr--completion-table (candidates &optional category annotation)
-  "Make completion table for CANDIDATES with sorting disabled.
-CATEGORY is the completion category.
-ANNOTATION is an annotation function."
-  (lambda (str pred action)
+(defun tmr-get-completion-table (candidates &rest metadata)
+  "Return completion table with CANDIDATES and METADATA.
+CANDIDATES is a list of strings.  METADATA is described in
+`completion-metadata'."
+  (lambda (string pred action)
     (if (eq action 'metadata)
-        `(metadata (display-sort-function . identity)
-                   (cycle-sort-function . identity)
-                   (annotation-function . ,annotation)
-                   (category . ,category))
-      (complete-with-action action candidates str pred))))
+        (cons 'metadata metadata)
+      (complete-with-action action candidates string pred))))
 
 ;;;; Key bindings
 
