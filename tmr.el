@@ -1079,18 +1079,19 @@ This map should be bound to a global prefix key."
 
 (defvar-keymap tmr-tabulated-mode-map
   :doc "Keybindings for `tmr-tabulated-mode'."
-  "k" #'tmr-remove
-  "r" #'tmr-remove
-  "R" #'tmr-remove-finished
   "+" #'tmr
-  "t" #'tmr
   "*" #'tmr-with-details
+  "@" #'tmr-repeat
+  "t" #'tmr
   "T" #'tmr-with-details
   "c" #'tmr-clone
+  "s" #'tmr-reschedule
+  "P" #'tmr-toggle-pause
   "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
-  "s" #'tmr-reschedule
-  "P" #'tmr-toggle-pause)
+  "R" #'tmr-remove-finished
+  "r" #'tmr-remove
+  "k" #'tmr-remove)
 
 ;;;;; Integration with the `embark' package
 
