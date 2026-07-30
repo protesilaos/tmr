@@ -434,40 +434,57 @@ Longer descriptions will be truncated."
    :read-only nil
    :documentation "Remaining seconds when the timer was paused or nil if not paused."))
 
+(defun tmr--long-description-repeat (timer)
+  "Format the repeat count for TIMER long description."
+  (if (< 0 (tmr--timer-repeat-count timer))
+      (propertize (format "repeat %d; " (tmr--timer-repeat-count timer)) 'face 'tmr-repeat-count)
+    ""))
+
+(defun tmr--long-description-duration (timer)
+  "Format the duration/until for TIMER long description."
+  (format "%s %s"
+          (if (string-search ":" (tmr--timer-input timer))
+              "until"
+            "duration")
+          (propertize (tmr--timer-input timer) 'face 'tmr-duration)))
+
+(defun tmr--long-description-status (timer)
+  "Format the status for TIMER long description."
+  (cond
+   ((and (tmr--timer-acknowledgep timer)
+         (tmr--timer-finishedp timer))
+    (concat "; " (propertize "acknowledged" 'face 'tmr-is-acknowledged)))
+   ((tmr--timer-acknowledgep timer)
+    (concat "; " (propertize "acknowledge YES" 'face 'tmr-must-be-acknowledged)))
+   ((tmr--timer-finishedp timer)
+    (concat "; " (propertize "finished" 'face 'tmr-finished)))
+   ((when-let* ((remaining (tmr--timer-paused-remaining timer)))
+      (format "; %s: remaining %s" (propertize "PAUSED" 'face 'tmr-paused) (tmr--format-seconds remaining))))
+   (t "")))
+
+(defun tmr--long-description-description (timer)
+  "Format the description for TIMER long description."
+  (if-let* ((description (tmr--timer-description timer))
+            (_ (not (string-blank-p description))))
+      (concat "; " (propertize description 'face 'tmr-description))
+    ""))
+
 (defun tmr--long-description (timer)
   "Return a human-readable description for TIMER."
   (let ((start (tmr--format-creation-date timer))
-        (end (tmr--format-end-date timer))
-        (description (tmr--timer-description timer)))
+        (end (tmr--format-end-date timer)))
     ;; We prefix it with TMR just so it is easier to find in
     ;; `view-echo-area-messages'.  The concise wording makes it flexible
     ;; enough to be used when starting a timer but also when cancelling
     ;; one: check `tmr-print-message-for-created-timer' and
     ;; `tmr-print-message-for-cancelled-timer'.
-    (format "TMR start %s; end %s; %s%s %s%s%s"
+    (format "TMR start %s; end %s; %s%s%s%s"
             (propertize start 'face 'tmr-start-time)
             (propertize end 'face 'tmr-end-time)
-            (if (< 0 (tmr--timer-repeat-count timer))
-                (propertize (format "repeat %d; " (tmr--timer-repeat-count timer)) 'face 'tmr-repeat-count)
-              "")
-            (if (string-search ":" (tmr--timer-input timer))
-                "until"
-              "duration")
-            (propertize (tmr--timer-input timer) 'face 'tmr-duration)
-            (cond
-             ((and (tmr--timer-acknowledgep timer)
-                   (tmr--timer-finishedp timer))
-              (concat "; " (propertize "acknowledged" 'face 'tmr-is-acknowledged)))
-             ((tmr--timer-acknowledgep timer)
-              (concat "; " (propertize "acknowledge" 'face 'tmr-must-be-acknowledged)))
-             ((tmr--timer-finishedp timer)
-              (concat "; " (propertize "finished" 'face 'tmr-finished)))
-             ((when-let* ((remaining (tmr--timer-paused-remaining timer)))
-              (format "; %s: remaining %s" (propertize "PAUSED" 'face 'tmr-paused) (tmr--format-seconds remaining))))
-             (t ""))
-            (if description
-                (concat "; " (propertize description 'face 'tmr-description))
-              ""))))
+            (tmr--long-description-repeat timer)
+            (tmr--long-description-duration timer)
+            (tmr--long-description-status timer)
+            (tmr--long-description-description timer))))
 
 (defun tmr--long-description-for-finished-timer (timer)
   "Return a human-readable description of finished TIMER.
