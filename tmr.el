@@ -913,7 +913,7 @@ This function is used if a timer is not acknowledged."
                  (propertize (number-to-string count) 'face 'tmr-repeat-count)))))))
 
 (defun tmr--complete (timer)
-  "Mark TIMER as finished or repeat it and execute hooks."
+  "Mark TIMER as finished or repeat it, if appropriate, and execute hooks."
   (if (>= 0 (tmr--timer-repeat-count timer))
       (progn
         (setf (tmr--timer-finishedp timer) t)
