@@ -494,7 +494,9 @@ optional `tmr--timer-description'."
     ;; For the TMR prefix, see comment in `tmr--long-description'.
     (format "TMR Time is up! %d repetitions remain.\n%s%s %s\n%s %s"
             (tmr--timer-repeat-count timer)
-            (if description (concat (propertize description 'face 'tmr-description) "\n") "")
+            (if (and description (not (string-blank-p description)))
+                (concat (propertize description 'face 'tmr-description) "\n")
+              "")
             (propertize "Started" 'face 'tmr-start-time)
             start
             (propertize "Ends" 'face 'tmr-end-time)
@@ -867,21 +869,24 @@ This function is used if a timer is not acknowledged."
   (when-let* ((count (tmr--timer-repeat-count timer)))
     (cond
      ((= count 1)
-      (if-let* ((description (tmr--timer-description timer)))
+      (if-let* ((description (tmr--timer-description timer))
+                (_ (not (string-blank-p description))))
 	      (message "TMR with duration `%s' and description `%s' repeats another time"
                    (propertize (tmr--format-duration timer) 'face 'tmr-duration)
                    (propertize description 'face 'tmr-description))
 	    (message "TMR with duration `%s' repeats another time"
                  (propertize (tmr--format-duration timer) 'face 'tmr-duration))))
 	 ((= count 0)
-      (if-let* ((description (tmr--timer-description timer)))
+      (if-let* ((description (tmr--timer-description timer))
+                (_ (not (string-blank-p description))))
 	      (message "TMR with duration `%s' and description `%s' will not repeat again"
                    (propertize (tmr--format-duration timer) 'face 'tmr-duration)
                    (propertize description 'face 'tmr-description))
 	    (message "TMR with duration `%s' will not repeat again"
                  (propertize (tmr--format-duration timer) 'face 'tmr-duration))))
 	 (t
-      (if-let* ((description (tmr--timer-description timer)))
+      (if-let* ((description (tmr--timer-description timer))
+                (_ (not (string-blank-p description))))
           (message "TMR with duration `%s' and description `%s' repeats another `%s' times"
                    (propertize (tmr--format-duration timer) 'face 'tmr-duration)
                    (propertize description 'face 'tmr-description)
@@ -1255,12 +1260,15 @@ they are set to reasonable default values."
 
 (defun tmr-mode-line--format-description (timer)
   "Format description for TIMER, truncating if necessary."
-  (if-let* ((desc (tmr--timer-description timer)))
-      (concat " " (if tmr-mode-line-max-desc-length
-                      (truncate-string-to-width
-                       desc tmr-mode-line-max-desc-length
-                       nil nil t)
-                    desc))
+  (if-let* ((description (tmr--timer-description timer))
+            (_ (not (string-blank-p description))))
+      (concat
+       " "
+       (if tmr-mode-line-max-desc-length
+           (truncate-string-to-width
+            description tmr-mode-line-max-desc-length
+            nil nil t)
+         description))
     ""))
 
 (defun tmr-mode-line--format-timer (timer)
