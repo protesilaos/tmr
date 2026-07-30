@@ -829,11 +829,28 @@ This function is used if a timer is not acknowledged."
   (when-let* ((count (tmr--timer-repeat-count timer)))
     (cond
      ((= count 1)
-	  (message "TMR repeats another time"))
+      (if-let* ((description (tmr--timer-description timer)))
+	      (message "TMR with duration `%s' and description `%s' repeats another time"
+                   (propertize (tmr--format-duration timer) 'face 'tmr-duration)
+                   (propertize description 'face 'tmr-description))
+	    (message "TMR with duration `%s' repeats another time"
+                 (propertize (tmr--format-duration timer) 'face 'tmr-duration))))
 	 ((= count 0)
-	  (message "TMR will not repeat again"))
+      (if-let* ((description (tmr--timer-description timer)))
+	      (message "TMR with duration `%s' and description `%s' will not repeat again"
+                   (propertize (tmr--format-duration timer) 'face 'tmr-duration)
+                   (propertize description 'face 'tmr-description))
+	    (message "TMR with duration `%s' will not repeat again"
+                 (propertize (tmr--format-duration timer) 'face 'tmr-duration))))
 	 (t
-	  (message "TMR repeats another %d times" count)))))
+      (if-let* ((description (tmr--timer-description timer)))
+          (message "TMR with duration `%s' and description `%s' repeats another `%s' times"
+                   (propertize (tmr--format-duration timer) 'face 'tmr-duration)
+                   (propertize description 'face 'tmr-description)
+                   (propertize (number-to-string count) 'face 'tmr-repeat-count))
+	    (message "TMR with duration `%s' repeats another `%s' times"
+                 (propertize (tmr--format-duration timer) 'face 'tmr-duration)
+                 (propertize (number-to-string count) 'face 'tmr-repeat-count)))))))
 
 (defun tmr--complete (timer)
   "Mark TIMER as finished or repeat it and execute hooks."
