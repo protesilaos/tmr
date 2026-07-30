@@ -208,13 +208,14 @@ Start      End        Duration   Remaining  Paused?  Acknowledge?   Description
 #+end_example
 
 If a timer has elapsed, it has a check mark associated with it,
-otherwise the =Remaining= column shows the time left. A =Description=
-is shown only if it is provided while setting the timer, otherwise the
-field is left blank.
+otherwise the =Remaining= column shows the time left ([[#h:0711f3d0-323b-4d54-b856-158e73c4dc23][Control how frequently the tabulated view is refreshed for the remaining time]]).
+A =Description= is shown only if it is provided while setting the
+timer, otherwise the field is left blank.
 
-Inside this grid view, all TMR commands that operate on timer objects
-automatically target the one at point.  Whereas the global behaviour is
-to use minibuffer completion to pick a timer to operate on.
+Inside this grid view, all TMR commands that operate on timer objects,
+such as for pausing or rescheduling, automatically target the one at
+point. Whereas the global behaviour is to use minibuffer completion to
+pick a timer to operate on.
 
 The ~tmr-tabulated-view~ command relies on Emacs' ~tabulated-list-mode~.
 From the =*tmr-tabulated-view*= buffer, one can invoke the command
@@ -222,9 +223,14 @@ From the =*tmr-tabulated-view*= buffer, one can invoke the command
 applicable functionality, such as how to expand/contract columns and
 toggle sorting.
 
-While in this grid view, one can perform all the operations on timers we
-have already covered herein (the =C-h m= will show you their key
-bindings in this mode).
+While in this grid view, one can perform all the operations on timers
+we have already covered herein (the ~describe-mode~ (=C-h m=) will
+show you their key bindings in this mode).
+
+*** Control how frequently the tabulated view is refreshed for the remaining time
+:PROPERTIES:
+:CUSTOM_ID: h:0711f3d0-323b-4d54-b856-158e73c4dc23
+:END:
 
 #+vindex: tmr-tabulated-refresh-interval
 By default, the ~tmr-tabulated-view~ buffer is updated automatically
@@ -233,6 +239,11 @@ the user option ~tmr-tabulated-refresh-interval~. A ~nil~ value means
 to never refresh that buffer automatically: users can update it
 manually by invoking the command ~revert-buffer~, which is bound to
 =g= by default.
+
+*** Specify how the tabulated view is displayed in a window
+:PROPERTIES:
+:CUSTOM_ID: h:504b8479-d4f2-49f4-aded-b109dca031e5
+:END:
 
 #+vindex: tmr-list-timers-action-alist
 The user option ~tmr-list-timers-action-alist~ controls how the
@@ -250,25 +261,28 @@ The ~tmr-list-timers-action-alist~ is relevant only when the command
 ~tmr-tabulated-view~ is called interactively. In Lisp, the ~tmr-tabulated-view~
 requires the buffer it should use and the concomitant action alist.
 
-Faces used in the tabulated view:
+*** Faces specifically used in the tabulated view
+:PROPERTIES:
+:CUSTOM_ID: h:31e2c539-b3af-48a6-b835-b7b5204f3805
+:END:
 
-#+vindex: tmr-tabulated-start-time
+  #+vindex: tmr-tabulated-start-time
 - ~tmr-tabulated-start-time~ :: The time the timer started.
 
-#+vindex: tmr-tabulated-end-time
+  #+vindex: tmr-tabulated-end-time
 - ~tmr-tabulated-end-time~ :: The time the timer will end.
 
-#+vindex: tmr-tabulated-remaining-time
+  #+vindex: tmr-tabulated-remaining-time
 - ~tmr-tabulated-remaining-time~ :: The timer's remaining time.
 
-#+vindex: tmr-tabulated-paused
+  #+vindex: tmr-tabulated-paused
 - ~tmr-tabulated-paused~ :: Whether the timer is paused or not.
 
-#+vindex: tmr-tabulated-acknowledgement
+  #+vindex: tmr-tabulated-acknowledgement
 - ~tmr-tabulated-acknowledgement~ :: Whether the timer needs to be
   acknowledged.
 
-#+vindex: tmr-tabulated-description
+  #+vindex: tmr-tabulated-description
 - ~tmr-tabulated-description~ :: The description of the timer.
 
 ** Display timers on the mode line
