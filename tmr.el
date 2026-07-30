@@ -246,6 +246,11 @@ Longer descriptions will be truncated."
   :package-version '(tmr . "1.0.0")
   :group 'tmr-faces)
 
+(defface tmr-repeat-count nil
+  "Face for styling the repeat count of a timer."
+  :package-version '(tmr . "1.4.0")
+  :group 'tmr-faces)
+
 (defface tmr-description '((t :inherit bold))
   "Face for styling the description of a timer."
   :package-version '(tmr . "1.0.0")
@@ -405,7 +410,7 @@ Longer descriptions will be truncated."
             (propertize start 'face 'tmr-start-time)
             (propertize end 'face 'tmr-end-time)
             (if (< 0 (tmr--timer-repeat-count timer))
-                (format "repeat %d; " (tmr--timer-repeat-count timer))
+                (propertize (format "repeat %d; " (tmr--timer-repeat-count timer)) 'face 'tmr-repeat-count)
               "")
             (if (string-search ":" (tmr--timer-input timer))
                 "until"
