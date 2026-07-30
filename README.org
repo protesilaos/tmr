@@ -323,13 +323,13 @@ prepended to the indicator with all the running timers.
 
 Applicable faces for this case are:
 
-#+vindex: tmr-mode-line-active
+  #+vindex: tmr-mode-line-active
 - ~tmr-mode-line-active~ :: Any active timer.
 
-#+vindex: tmr-mode-line-soon
+  #+vindex: tmr-mode-line-soon
 - ~tmr-mode-line-soon~ :: A timer that expires within 2 minutes.
 
-#+vindex: tmr-mode-line-urgent
+  #+vindex: tmr-mode-line-urgent
 - ~tmr-mode-line-urgent~ :: A timer that expires within 30 seconds.
 
 ** Hooks
