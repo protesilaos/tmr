@@ -59,419 +59,6 @@ included in the section entitled “GNU Free Documentation License.”
 modify this GNU manual.”
 #+end_quote
 
-* Overview
-:PROPERTIES:
-:CUSTOM_ID: h:7b3966d3-43c6-47f1-816a-8104f634bbd1
-:END:
-#+cindex: Overview of features
-
-#+findex: tmr
-TMR is an Emacs package that provides facilities for setting timers
-using a convenient notation.  The first point of entry is the ~tmr~
-command.  It prompts for a unit of time, which is represented as a
-string that consists of a number and, optionally, a single character
-suffix which specifies the unit of time.  Without a suffix, the number
-is interpreted as a count in minutes.  Valid input formats:
-
-| Input | Meaning   |
-|-------+-----------|
-| 5     | 5 minutes |
-| 5m    | 5 minutes |
-| 5s    | 5 seconds |
-| 5h    | 5 hours   |
-
-The input can be a floating point:
-
-| Input | Meaning                  |
-|-------+--------------------------|
-| 1.5   | 1.5 minutes (90 seconds) |
-| 1.5h  | 1.5 hours (90 minutes)   |
-
-The input can also be an absolute time, such as =16:00= or =16:00:30=.
-It sets a timer from present time until the one specified.
-
-If ~tmr~ is called with an optional prefix argument (=C-u= with default
-key bindings), it asks for a description to be associated with the given
-timer.
-
-#+findex: tmr-with-details
-An alternative to the ~tmr~ command is ~tmr-with-details~.  The
-difference between the two is that the latter always prompts for a
-description and if the timer should be acknowledged.
-
-#+findex: tmr-repeat
-Similarly, the ~tmr-repeat~ is a wrapper for ~tmr~ that always prompts
-for a timer with a repeat count. This means that the timer will ring
-that many times. [ Part of {{{development-version}}}. ]
-
-#+findex: tmr-edit-description
-The command ~tmr-edit-description~ can change the description a given
-timer object.
-
-#+findex: tmr-toggle-acknowledge
-#+vindex: tmr-acknowledge-timer-text
-The command ~tmr-toggle-acknowledge~ toggles the acknowledge flag of a
-given timer object. A timer that needs to be acknowledged prompts for
-confirmation after it elapses. The user can either confirm and thus
-dismiss the timer, or set a new duration for the next reminder, using
-the familiar TMR input. The confirmation text to be provided at the
-minibuffer prompt (=ack= by default) can be configured via the user
-option ~tmr-acknowledge-timer-text~.
-
-#+findex: tmr-toggle-pause
-The command ~tmr-toggle-pause~ pauses the given timer. The tabulated
-view has a column to show when a timer is paused ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid or tabulated view]]).
-Similarly, the mode line indicator adapts the text of the timer to
-tell that it is paused ([[#h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc][Display timers on the mode line]]).
-
-#+vindex: tmr-descriptions-list
-The user option ~tmr-descriptions-list~ defines the completion
-candidates that are shown at the description prompt.  Its value can be
-either a list of strings or the symbol of a variable that holds a list
-of strings.  The default value of ~tmr-description-history~, is the name
-of a variable that contains input provided by the user at the relevant
-prompt of the ~tmr~ and ~tmr-with-details~ commands (or anywhere else
-where a description is given).
-
-When the timer is set, a message is sent to the echo area recording the
-current time and the point in the future when the timer elapses.  Echo
-area messages can be reviewed with the ~view-echo-area-messages~ which
-is bound to =C-h e= by default.  To check all timers, use the command
-~tmr-tabulated-view~, which has more features than the generic
-=*Messages*= buffer ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid view]]).
-
-#+findex: tmr-cancel
-The ~tmr-cancel~ command cancels running timers without erasing them from
-the list of created timer objects.  Timers at the completion prompt are
-described by the exact time they were set and the input that was used to
-create them, including the optional description that ~tmr~ and
-derivative commands have.
-
-#+findex: tmr-remove
-The ~tmr-remove~ command is like ~tmr-cancel~, except it is not limited
-to active timers: it can target elapsed ones as well.
-
-#+findex: tmr-clone
-The ~tmr-clone~ command directly copies the duration and optional
-description of a timer into a new one.  With an optional prefix argument
-(=C-u= by default), this command prompts for a duration.  If a double
-prefix argument is supplied (=C-u C-u=), the command asks for a duration
-and then a description.  The default values of such prompts are those of
-the original timer.
-
-#+findex: tmr-reschedule
-The command ~tmr-reschedule~ changes the duration of the given timer to
-a new one provided at the prompt.  In practice this is a shortcut to (i)
-cloning the timer, (ii) prompting for duration, and (iii) cancelling the
-original timer.
-
-#+findex: tmr-remove-finished
-The ~tmr-remove-finished~ command deletes all elapsed timers from the
-list of timers.  This means that they can no longer be cloned.
-
-Timers have hooks associated with their creation, cancellation, and
-completion ([[#h:c908f440-da08-462e-be4e-a61fb274ecbc][Hooks]]).  TMR can also integrate with the desktop environment
-to send notifications ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]).
-
-#+vindex: tmr-prefix-map
-TMR does not specify global key bindings. Instead, it sets up the
-~tmr-prefix-map~, which specifies keys for the relevant commands. The
-user has the option to either bind the map to a prefix key, such as
-=C-c t= (so ~tmr~ is =C-c t t=), or bind individual commands to the
-desired keys ([[#h:69eeb3fb-f11d-431e-ae16-2d9b322871cc][Sample configuration]]).
-
-** Grid or tabulated view
-:PROPERTIES:
-:CUSTOM_ID: h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a
-:END:
-#+cindex: About tmr-tabulated and relevant commands
-
-#+findex: tmr-tabulated-view
-#+findex: tmr-list-timers
-Timers can be viewed in a grid with ~tmr-tabulated-view~ (alias
-~tmr-list-timers~). The data is placed in the =*tmr-tabulated-view*=
-buffer and looks like this ([[#h:814702d3-2bda-439c-b176-d78bd96fd6b6][Control the visible columns of the tabulated view]]):
-
-#+begin_example
-Start      End        Duration   Remaining  Paused?  Acknowledge?   Description
-
-08:49:41   09:19:46   30m        29m 17s    Yes                     Work on TMR for 30 minutes
-08:49:31   08:54:31   5m         3m 53s                             Prepare tea
-08:49:21   08:59:21   10m        8m 42s              Yes            Edit the description with this one instead
-#+end_example
-
-If a timer has elapsed, it has a check mark associated with it,
-otherwise the =Remaining= column shows the time left ([[#h:0711f3d0-323b-4d54-b856-158e73c4dc23][Control how frequently the tabulated view is refreshed for the remaining time]]).
-A =Description= is shown only if it is provided while setting the
-timer, otherwise the field is left blank.
-
-Inside this grid view, all TMR commands that operate on timer objects,
-such as for pausing or rescheduling, automatically target the one at
-point. Whereas the global behaviour is to use minibuffer completion to
-pick a timer to operate on.
-
-The ~tmr-tabulated-view~ command relies on Emacs' ~tabulated-list-mode~.
-From the =*tmr-tabulated-view*= buffer, one can invoke the command
-~describe-mode~ (=C-h m= with standard key bindings) to learn about the
-applicable functionality, such as how to expand/contract columns and
-toggle sorting.
-
-While in this grid view, one can perform all the operations on timers
-we have already covered herein (the ~describe-mode~ (=C-h m=) will
-show you their key bindings in this mode).
-
-*** Control how frequently the tabulated view is refreshed for the remaining time
-:PROPERTIES:
-:CUSTOM_ID: h:0711f3d0-323b-4d54-b856-158e73c4dc23
-:END:
-
-#+vindex: tmr-tabulated-refresh-interval
-By default, the ~tmr-tabulated-view~ buffer is updated automatically
-every 5 seconds. Users can change the number of seconds by modifying
-the user option ~tmr-tabulated-refresh-interval~. A ~nil~ value means
-to never refresh that buffer automatically: users can update it
-manually by invoking the command ~revert-buffer~, which is bound to
-=g= by default.
-
-*** Specify how the tabulated view is displayed in a window
-:PROPERTIES:
-:CUSTOM_ID: h:504b8479-d4f2-49f4-aded-b109dca031e5
-:END:
-
-#+vindex: tmr-list-timers-action-alist
-The user option ~tmr-list-timers-action-alist~ controls how the
-command ~tmr-tabulated-view~ displays its buffer. Its default
-behaviour is to (i) place the buffer at the bottom of the Emacs frame,
-(ii) resize the window to match the height of the buffer, and (iii)
-select that window.
-
-The value of this user option is the same data that is passed to
-~display-buffer-alist~. It is meant to be customised by advanced
-users. Evaluate =(info "(elisp) Displaying Buffers")= to read the
-relevant entry in the manual.
-
-The ~tmr-list-timers-action-alist~ is relevant only when the command
-~tmr-tabulated-view~ is called interactively. In Lisp, the ~tmr-tabulated-view~
-requires the buffer it should use and the concomitant action alist.
-
-*** Control the visible columns of the tabulated view
-:PROPERTIES:
-:CUSTOM_ID: h:814702d3-2bda-439c-b176-d78bd96fd6b6
-:END:
-
-[ The ~tmr-tabulated-columns~ is part of {{{development-version}}}. ]
-
-#+vindex: tmr-tabulated-columns
-The user option ~tmr-tabulated-columns~ controls which columns are
-displayed by ~tmr-tabulated-view~. The default value shows all the
-available columns. The columns are specified as a list of the
-following symbols:
-
-- =start= :: the start time;
-- =end= :: the end time;
-- =duration= :: the duration of the timer;
-- =remaining= :: how much time is left in the timer;
-- =paused= :: whether the timer is paused or not;
-- =repeatable= :: whether the timer is set to repeat or not;
-- =remaining-repeats= :: the number of repeats left;
-- =total-repeats= :: the total repeats specified originally;
-- =ackonwledge= :: whether the timer should stop only after being acknowledged;
-- =description= :: the description of the timer.
-
-The order of symbols in the list is exactly how they will be displayed
-by ~tmr-tabulated-view~. Duplicates are removed.
-
-*** Faces specifically used in the tabulated view
-:PROPERTIES:
-:CUSTOM_ID: h:31e2c539-b3af-48a6-b835-b7b5204f3805
-:END:
-
-  #+vindex: tmr-tabulated-start-time
-- ~tmr-tabulated-start-time~ :: The time the timer started.
-
-  #+vindex: tmr-tabulated-end-time
-- ~tmr-tabulated-end-time~ :: The time the timer will end.
-
-  #+vindex: tmr-tabulated-remaining-time
-- ~tmr-tabulated-remaining-time~ :: The timer's remaining time.
-
-  #+vindex: tmr-tabulated-paused
-- ~tmr-tabulated-paused~ :: Whether the timer is paused or not.
-
-  #+vindex: tmr-tabulated-acknowledgement
-- ~tmr-tabulated-acknowledgement~ :: Whether the timer needs to be
-  acknowledged.
-
-  #+vindex: tmr-tabulated-description
-- ~tmr-tabulated-description~ :: The description of the timer.
-
-** Display timers on the mode line
-:PROPERTIES:
-:CUSTOM_ID: h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc
-:END:
-#+cindex: About tmr-mode-line-mode and related user options
-
-#+findex: tmr-mode-line-mode
-The ~tmr-mode-line-mode~ is a minor mode that displays running timers
-on the mode line. Specifically, the timers are shown as part of the
-~global-mode-string~. This means that they may be displayed on the
-~tab-bar-mode~ instead of the mode line if the user option
-~tab-bar-format~ is configured accordingly.
-
-#+vindex: tmr-mode-line-format
-The user option ~tmr-mode-line-format~ controls how the timers are
-rendered. This is a string that treats specially the =%r= and =%d=
-specifiers. The =%r= represents the remaining time, while =%d= is the
-description of the timer.
-
-#+vindex: tmr-mode-line-max-desc-length
-The user option ~tmr-mode-line-max-desc-length~ sets the maximum
-length of a timers description, when the ~tmr-mode-line-format~ is
-configured to show descriptions.
-
-#+vindex: tmr-mode-line-max-timers
-The user option ~tmr-mode-line-max-timers~ sets the maximum number of
-running timers that are shown on the mode line at any one time.
-
-#+vindex: tmr-mode-line-separator
-The user option ~tmr-mode-line-separator~ specifies a string that is
-inserted between timers on the mode line to visually separate them.
-
-#+vindex: tmr-mode-line-prefix
-The user option ~tmr-mode-line-prefix~ specifies a string that is
-prepended to the indicator with all the running timers.
-
-Applicable faces for this case are:
-
-  #+vindex: tmr-mode-line-active
-- ~tmr-mode-line-active~ :: Any active timer.
-
-  #+vindex: tmr-mode-line-soon
-- ~tmr-mode-line-soon~ :: A timer that expires within 2 minutes.
-
-  #+vindex: tmr-mode-line-urgent
-- ~tmr-mode-line-urgent~ :: A timer that expires within 30 seconds.
-
-** Hooks
-:PROPERTIES:
-:CUSTOM_ID: h:c908f440-da08-462e-be4e-a61fb274ecbc
-:END:
-#+cindex: Hooks triggered by timer operations
-
-TMR provides the following hooks:
-
-#+vindex: tmr-timer-created-functions
-+ ~tmr-timer-created-functions~ :: This is triggered by the ~tmr~ command.
-  By default, it prints a message in the echo area showing the newly
-  created timer's start and end time as well as its optional description
-  (if provided).
-
-#+vindex: tmr-timer-finished-functions
-+ ~tmr-timer-finished-functions~ :: This runs when a timer elapses.  By
-  default, it (i) produces a desktop notification which describes the
-  timer's start/end time and optional description (if available), (ii)
-  plays an alarm sound ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]), and (iii) prints
-  a message in the echo area which is basically the same as the desktop
-  notification.
-
-  This hook can be used as an extension point for custom notification
-  mechanisms. To replace or augment the default desktop notification,
-  remove ~tmr-notification-notify~ and add your own function:
-
-  #+begin_src emacs-lisp
-  (remove-hook 'tmr-timer-finished-functions #'tmr-notification-notify)
-  (add-hook 'tmr-timer-finished-functions #'my-custom-notify-function)
-  #+end_src
-
-  The function receives a timer.
-
-  Below is an example of how a macOS notification could be produced:
-
-  #+begin_src emacs-lisp
-  (defun my-macos-notify (timer)
-    (let* ((description (or (tmr--timer-description timer) ""))
-           (sanitized-body (substring-no-properties description))
-           (script (format "display notification %S with title %S sound name %S"
-    	  		     sanitized-body
-    	  		     (format-time-string "Emacs TMR: %R" (tmr--timer-end-date timer))
-    	  		     "Hero")))
-      (call-process "osascript" nil 0 nil "-e" script)))
-
-  (remove-hook 'tmr-timer-finished-functions #'tmr-notification-notify)
-  (add-hook 'tmr-timer-finished-functions #'my-macos-notify)
-  #+end_src
-
-#+vindex: tmr-timer-cancelled-functions
-+ ~tmr-timer-cancelled-functions~ :: This is called by ~tmr-cancel~.  By
-  default, it prints a message in the echo area describing the timer that
-  was cancelled.
-
-** The timer prompt
-:PROPERTIES:
-:CUSTOM_ID: h:12c8026d-49f0-465e-becb-f9a456f20ce0
-:END:
-
-[ The ~tmr-read-timer~ and ~tmr-completion-metadata~ are both part of
-  {{{development-version}}}. ]
-
-#+findex: tmr-read-timer
-For commands that act on timers, the function ~tmr-read-timer~ is
-involved in the minibuffer completion phase: it is how the user picks
-one among the relevant timers.
-
-#+vindex: tmr-completion-metadata
-The ~tmr-read-timer~ applies the variable ~tmr-completion-metadata~.
-Experienced users can modify this variable to affect how timers are
-sorted, how they are annotated, and, in principle, anything else
-implied by the ~completion-metadata~ function.
-
-** Sound and desktop notifications
-:PROPERTIES:
-:CUSTOM_ID: h:56bbbd6f-5b63-4375-9c86-e1eb231be356
-:END:
-#+cindex: Alarm sound and settings for desktop notifications
-
-#+vindex: tmr-sound-file
-#+vindex: tmr-notification-urgency
-Once the timer has run its course, it produces a desktop notification and
-plays an alarm sound.  The notification's message is practically the same
-as that which is sent to the echo area.
-
-The sound file for the alarm is defined in ~tmr-sound-file~, while the
-urgency of the notification can be set through the user option
-~tmr-notification-urgency~.  Note that it is up to the desktop
-environment or notification daemon to decide how to handle the urgency
-value.
-
-If the ~tmr-sound-file~ is nil, or the file is not found, no sound will
-be played.
-
-Sound playback depends on the =ffplay= executable which is part of
-=ffmpeg=.
-
-Desktop notifications work only if Emacs is built with DBus
-functionality.  This is the norm.  If such functionality is not
-available, TMR will issue a warning informing the user accordingly.
-
-** Minibuffer histories
-:PROPERTIES:
-:CUSTOM_ID: h:fbedb656-2402-46bc-9763-d5112700c954
-:END:
-
-TMR defines two variables that store user input: ~tmr-duration-history~
-and ~tmr-description-history~.  Minibuffer histories can persist between
-sessions if the user enables the built-in =savehist= library.  Sample
-configuration:
-
-#+begin_src emacs-lisp
-(require 'savehist)
-(setq savehist-file (locate-user-emacs-file "savehist"))
-(setq history-length 500)
-(setq history-delete-duplicates t)
-(setq savehist-save-minibuffer-history t)
-(add-hook 'after-init-hook #'savehist-mode)
-#+end_src
-
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: h:46378bdf-f6cc-469e-b0b0-1b90dd9aa595
@@ -539,6 +126,446 @@ Everything is in place to set up the package.
   (setq tmr-sound-file "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
         tmr-notification-urgency 'normal
         tmr-description-list 'tmr-description-history))
+#+end_src
+
+* How to specify the duration of a new timer
+:PROPERTIES:
+:CUSTOM_ID: h:7b3966d3-43c6-47f1-816a-8104f634bbd1
+:END:
+#+cindex: Overview of time input
+
+TMR is an Emacs package that provides facilities for setting timers
+using a convenient notation and then for managing them with ease.
+
+Commands that create timers prompt for a duration ([[#h:80ddd00e-0970-493b-b342-0bd065e59f56][Create a new timer]]).
+In its basic form it is represented as a number and, optionally, a
+single character suffix which specifies the unit of time. Without a
+suffix, the number is interpreted as a count in minutes. Valid input
+formats are the following:
+
+| Input | Meaning   |
+|-------+-----------|
+| 5     | 5 Minutes |
+| 5m    | 5 Minutes |
+| 5s    | 5 Seconds |
+| 5h    | 5 Hours   |
+
+The input can be a floating point:
+
+| Input | Meaning                  |
+|-------+--------------------------|
+| 1.5   | 1.5 Minutes (90 Seconds) |
+| 1.5h  | 1.5 Hours (90 Minutes)   |
+
+The input can also be an hour using the 24-hour clock notation, such
+as =16:00= or =16:00:30=. This sets a timer from the present time
+until the one specified.
+
+* Create a new timer
+:PROPERTIES:
+:CUSTOM_ID: h:80ddd00e-0970-493b-b342-0bd065e59f56
+:END:
+
+All of the commands that create a timer read time input in the same
+way ([[#h:7b3966d3-43c6-47f1-816a-8104f634bbd1][How to specify the duration of a new timer]]).
+
+#+findex: tmr
+The command ~tmr~ is the most common way to create a new timer. By
+default, it only prompts for a timer duration and creates the timer
+accordingly.
+
+If ~tmr~ is called with an optional prefix argument (=C-u= with
+default keybindings), it asks for a description to be associated with
+the given timer and whether to acknowledge the timer after it has
+elapsed (the acknowledgement is useful for those who do not want to
+miss a timer or who want to perform a follow-up action).
+
+#+findex: tmr-with-details
+An alternative to the ~tmr~ command is ~tmr-with-details~.  The
+difference between the two is that the latter always prompts for a
+description and whether the timer should be acknowledged or not.
+
+#+findex: tmr-repeat
+The ~tmr-repeat~ is like ~tmr~ though also prompts for a number of
+repetitions repeat count. This means that the specified timer will
+run that many times. [ Part of {{{development-version}}}. ] When
+called with a prefix argument (=C-u= with default keybindings) it asks
+for a description and whether timer should be acknowledged or not once
+all repetitions are done.
+
+#+findex: tmr-tabulated-view
+When the timer is set, a message is sent to the echo area recording
+the current time and the point in the future when the timer elapses.
+Echo area messages can be reviewed with the ~view-echo-area-messages~
+which is bound to =C-h e= by default. To check all timers, use the
+command ~tmr-tabulated-view~, which has more features than the generic
+=*Messages*= buffer ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid view]]).
+
+Once timers are available it is possible to act on them ([[#h:81778fa5-6359-42cc-a24a-927c3418a279][Commands that act on timers]]).
+
+#+vindex: tmr-prefix-map
+TMR does not specify global keybindings. Instead, it sets up the
+~tmr-prefix-map~, which specifies keys for the relevant commands. The
+user has the option to either bind the map to a prefix key, such as
+=C-c t= (so ~tmr~ is =C-c t t=), or bind individual commands to the
+desired keys ([[#h:69eeb3fb-f11d-431e-ae16-2d9b322871cc][Sample configuration]]).
+
+* Commands that act on timers
+:PROPERTIES:
+:CUSTOM_ID: h:81778fa5-6359-42cc-a24a-927c3418a279
+:END:
+
+All of the following commands act on existing timers ([[#h:80ddd00e-0970-493b-b342-0bd065e59f56][Create a new timer]]).
+
+#+findex: tmr-edit-description
+The command ~tmr-edit-description~ can change the description a given
+timer object.
+
+#+findex: tmr-toggle-acknowledge
+#+vindex: tmr-acknowledge-timer-text
+The command ~tmr-toggle-acknowledge~ toggles the acknowledge flag of a
+given timer object. A timer that needs to be acknowledged prompts for
+confirmation after it elapses. The user can either confirm and thus
+dismiss the timer, or set a new duration for the next reminder, using
+the familiar TMR input. The confirmation text to be provided at the
+minibuffer prompt (=ack= by default) can be configured via the user
+option ~tmr-acknowledge-timer-text~.
+
+#+findex: tmr-toggle-pause
+The command ~tmr-toggle-pause~ pauses the given timer. The tabulated
+view has a column to show when a timer is paused ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid or tabulated view]]).
+Similarly, the mode line indicator adapts the text of the timer to
+tell that it is paused ([[#h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc][Display timers on the mode line]]).
+
+#+findex: tmr-cancel
+The ~tmr-cancel~ command cancels running timers without erasing them from
+the list of created timer objects.  Timers at the completion prompt are
+described by the exact time they were set and the input that was used to
+create them, including the optional description that ~tmr~ and
+derivative commands have.
+
+#+findex: tmr-remove
+The ~tmr-remove~ command is like ~tmr-cancel~, except it is not limited
+to active timers: it can target elapsed ones as well.
+
+#+findex: tmr-clone
+The ~tmr-clone~ command directly copies the duration and optional
+description of a timer into a new one.  With an optional prefix argument
+(=C-u= by default), this command prompts for a duration.  If a double
+prefix argument is supplied (=C-u C-u=), the command asks for a duration
+and then a description.  The default values of such prompts are those of
+the original timer.
+
+#+findex: tmr-reschedule
+The command ~tmr-reschedule~ changes the duration of the given timer to
+a new one provided at the prompt.  In practice this is a shortcut to (i)
+cloning the timer, (ii) prompting for duration, and (iii) cancelling the
+original timer.
+
+#+findex: tmr-remove-finished
+The ~tmr-remove-finished~ command deletes all elapsed timers from the
+list of timers.  This means that they can no longer be cloned.
+
+Timers have hooks associated with their creation, cancellation, and
+completion ([[#h:c908f440-da08-462e-be4e-a61fb274ecbc][Hooks]]).  TMR can also integrate with the desktop environment
+to send notifications ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]).
+
+* Grid or tabulated view
+:PROPERTIES:
+:CUSTOM_ID: h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a
+:END:
+#+cindex: About tmr-tabulated and relevant commands
+
+#+findex: tmr-tabulated-view
+#+findex: tmr-list-timers
+Timers can be viewed in a grid with ~tmr-tabulated-view~ (alias
+~tmr-list-timers~). The data is placed in the =*tmr-tabulated-view*=
+buffer and looks like this ([[#h:814702d3-2bda-439c-b176-d78bd96fd6b6][Control the visible columns of the tabulated view]]):
+
+#+begin_example
+Start      End        Duration   Remaining  Paused?  Acknowledge?   Description
+
+08:49:41   09:19:46   30m        29m 17s    Yes                     Work on TMR for 30 minutes
+08:49:31   08:54:31   5m         3m 53s                             Prepare tea
+08:49:21   08:59:21   10m        8m 42s              Yes            Edit the description with this one instead
+#+end_example
+
+If a timer has elapsed, it has a check mark associated with it,
+otherwise the =Remaining= column shows the time left ([[#h:0711f3d0-323b-4d54-b856-158e73c4dc23][Control how frequently the tabulated view is refreshed for the remaining time]]).
+A =Description= is shown only if it is provided while setting the
+timer, otherwise the field is left blank.
+
+Inside this grid view, all TMR commands that operate on timer objects,
+such as for pausing or rescheduling, automatically target the one at
+point. Whereas the global behaviour is to use minibuffer completion to
+pick a timer to operate on.
+
+The ~tmr-tabulated-view~ command relies on Emacs' ~tabulated-list-mode~.
+From the =*tmr-tabulated-view*= buffer, one can invoke the command
+~describe-mode~ (=C-h m= with standard keybindings) to learn about the
+applicable functionality, such as how to expand/contract columns and
+toggle sorting.
+
+While in this grid view, one can perform all the operations on timers
+we have already covered herein (the ~describe-mode~ (=C-h m=) will
+show you their keybindings in this mode).
+
+** Control how frequently the tabulated view is refreshed for the remaining time
+:PROPERTIES:
+:CUSTOM_ID: h:0711f3d0-323b-4d54-b856-158e73c4dc23
+:END:
+
+By default, the ~tmr-tabulated-view~ buffer is updated automatically
+every 5 seconds ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid or tabulated view]]).
+
+#+vindex: tmr-tabulated-refresh-interval
+Users can change the number of seconds by modifying the user option
+~tmr-tabulated-refresh-interval~. A ~nil~ value means to never refresh
+that buffer automatically: users can update it manually by invoking
+the command ~revert-buffer~, which is bound to =g= by default.
+
+** Specify how the tabulated view is displayed in a window
+:PROPERTIES:
+:CUSTOM_ID: h:504b8479-d4f2-49f4-aded-b109dca031e5
+:END:
+
+#+vindex: tmr-list-timers-action-alist
+The user option ~tmr-list-timers-action-alist~ controls how the
+command ~tmr-tabulated-view~ displays its buffer ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid or tabulated view]]).
+Its default behaviour is to (i) place the buffer at the bottom of the
+Emacs frame, (ii) resize the window to match the height of the buffer,
+and (iii) select that window.
+
+The value of this user option is the same data that is passed to
+~display-buffer-alist~. It is meant to be customised by advanced
+users. Evaluate =(info "(elisp) Displaying Buffers")= to read the
+relevant entry in the manual.
+
+The ~tmr-list-timers-action-alist~ is relevant only when the command
+~tmr-tabulated-view~ is called interactively. In Lisp, the ~tmr-tabulated-view~
+requires the buffer it should use and the concomitant action alist.
+
+** Control the visible columns of the tabulated view
+:PROPERTIES:
+:CUSTOM_ID: h:814702d3-2bda-439c-b176-d78bd96fd6b6
+:END:
+
+[ The ~tmr-tabulated-columns~ is part of {{{development-version}}}. ]
+
+#+vindex: tmr-tabulated-columns
+The user option ~tmr-tabulated-columns~ controls which columns are
+displayed by ~tmr-tabulated-view~ ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid or tabulated view]]). The
+default value shows all the available columns. The columns are
+specified as a list of the following symbols:
+
+- =start= :: the start time;
+- =end= :: the end time;
+- =duration= :: the duration of the timer;
+- =remaining= :: how much time is left in the timer;
+- =paused= :: whether the timer is paused or not;
+- =repeatable= :: whether the timer is set to repeat or not;
+- =remaining-repeats= :: the number of repeats left;
+- =total-repeats= :: the total repeats specified originally;
+- =ackonwledge= :: whether the timer should stop only after being acknowledged;
+- =description= :: the description of the timer.
+
+The order of symbols in the list is exactly how they will be displayed
+by ~tmr-tabulated-view~. Duplicates are removed.
+
+** Faces specifically used in the tabulated view
+:PROPERTIES:
+:CUSTOM_ID: h:31e2c539-b3af-48a6-b835-b7b5204f3805
+:END:
+
+The following faces are applied in the buffer produced by the command
+~tmr-tabulated-view~ ([[#h:51fe78e0-d614-492b-b7a3-fb6d5bd52a9a][Grid or tabulated view]]).
+
+  #+vindex: tmr-tabulated-start-time
+- ~tmr-tabulated-start-time~ :: The time the timer started.
+
+  #+vindex: tmr-tabulated-end-time
+- ~tmr-tabulated-end-time~ :: The time the timer will end.
+
+  #+vindex: tmr-tabulated-remaining-time
+- ~tmr-tabulated-remaining-time~ :: The timer's remaining time.
+
+  #+vindex: tmr-tabulated-paused
+- ~tmr-tabulated-paused~ :: Whether the timer is paused or not.
+
+  #+vindex: tmr-tabulated-acknowledgement
+- ~tmr-tabulated-acknowledgement~ :: Whether the timer needs to be
+  acknowledged.
+
+  #+vindex: tmr-tabulated-description
+- ~tmr-tabulated-description~ :: The description of the timer.
+
+* Display timers on the mode line
+:PROPERTIES:
+:CUSTOM_ID: h:a1938fd5-64ef-4f4f-ade1-c7058d4062fc
+:END:
+#+cindex: About tmr-mode-line-mode and related user options
+
+#+findex: tmr-mode-line-mode
+The ~tmr-mode-line-mode~ is a minor mode that displays running timers
+on the mode line. Specifically, the timers are shown as part of the
+~global-mode-string~. This means that they may be displayed on the
+~tab-bar-mode~ instead of the mode line if the user option
+~tab-bar-format~ is configured accordingly.
+
+#+vindex: tmr-mode-line-format
+The user option ~tmr-mode-line-format~ controls how the timers are
+rendered. This is a string that treats specially the =%r= and =%d=
+specifiers. The =%r= represents the remaining time, while =%d= is the
+description of the timer.
+
+#+vindex: tmr-mode-line-max-desc-length
+The user option ~tmr-mode-line-max-desc-length~ sets the maximum
+length of a timers description, when the ~tmr-mode-line-format~ is
+configured to show descriptions.
+
+#+vindex: tmr-mode-line-max-timers
+The user option ~tmr-mode-line-max-timers~ sets the maximum number of
+running timers that are shown on the mode line at any one time.
+
+#+vindex: tmr-mode-line-separator
+The user option ~tmr-mode-line-separator~ specifies a string that is
+inserted between timers on the mode line to visually separate them.
+
+#+vindex: tmr-mode-line-prefix
+The user option ~tmr-mode-line-prefix~ specifies a string that is
+prepended to the indicator with all the running timers.
+
+Applicable faces for this case are:
+
+  #+vindex: tmr-mode-line-active
+- ~tmr-mode-line-active~ :: Any active timer.
+
+  #+vindex: tmr-mode-line-soon
+- ~tmr-mode-line-soon~ :: A timer that expires within 2 minutes.
+
+  #+vindex: tmr-mode-line-urgent
+- ~tmr-mode-line-urgent~ :: A timer that expires within 30 seconds.
+
+* Hooks
+:PROPERTIES:
+:CUSTOM_ID: h:c908f440-da08-462e-be4e-a61fb274ecbc
+:END:
+#+cindex: Hooks triggered by timer operations
+
+TMR provides the following hooks:
+
+  #+vindex: tmr-timer-created-functions
++ ~tmr-timer-created-functions~ :: This is triggered by the ~tmr~ command.
+  By default, it prints a message in the echo area showing the newly
+  created timer's start and end time as well as its optional description
+  (if provided).
+
+  #+vindex: tmr-timer-finished-functions
++ ~tmr-timer-finished-functions~ :: This runs when a timer elapses.  By
+  default, it (i) produces a desktop notification which describes the
+  timer's start/end time and optional description (if available), (ii)
+  plays an alarm sound ([[#h:56bbbd6f-5b63-4375-9c86-e1eb231be356][Sound and desktop notifications]]), and (iii) prints
+  a message in the echo area which is basically the same as the desktop
+  notification.
+
+  This hook can be used as an extension point for custom notification
+  mechanisms. To replace or augment the default desktop notification,
+  remove ~tmr-notification-notify~ and add your own function:
+
+  #+begin_src emacs-lisp
+  (remove-hook 'tmr-timer-finished-functions #'tmr-notification-notify)
+  (add-hook 'tmr-timer-finished-functions #'my-custom-notify-function)
+  #+end_src
+
+  The function receives a timer.
+
+  Below is an example of how a macOS notification could be produced:
+
+  #+begin_src emacs-lisp
+  (defun my-macos-notify (timer)
+    (let* ((description (or (tmr--timer-description timer) ""))
+           (sanitized-body (substring-no-properties description))
+           (script (format "display notification %S with title %S sound name %S"
+    	  		     sanitized-body
+    	  		     (format-time-string "Emacs TMR: %R" (tmr--timer-end-date timer))
+    	  		     "Hero")))
+      (call-process "osascript" nil 0 nil "-e" script)))
+
+  (remove-hook 'tmr-timer-finished-functions #'tmr-notification-notify)
+  (add-hook 'tmr-timer-finished-functions #'my-macos-notify)
+  #+end_src
+
+  #+vindex: tmr-timer-cancelled-functions
++ ~tmr-timer-cancelled-functions~ :: This is called by ~tmr-cancel~.  By
+  default, it prints a message in the echo area describing the timer that
+  was cancelled.
+
+* The timer prompt
+:PROPERTIES:
+:CUSTOM_ID: h:12c8026d-49f0-465e-becb-f9a456f20ce0
+:END:
+
+[ The ~tmr-read-timer~ and ~tmr-completion-metadata~ are both part of
+  {{{development-version}}}. ]
+
+#+findex: tmr-read-timer
+For commands that act on timers, the function ~tmr-read-timer~ is
+involved in the minibuffer completion phase: it is how the user picks
+one among the relevant timers.
+
+#+vindex: tmr-completion-metadata
+The ~tmr-read-timer~ applies the variable ~tmr-completion-metadata~.
+Experienced users can modify this variable to affect how timers are
+sorted, how they are annotated, and, in principle, anything else
+implied by the ~completion-metadata~ function.
+
+* Sound and desktop notifications
+:PROPERTIES:
+:CUSTOM_ID: h:56bbbd6f-5b63-4375-9c86-e1eb231be356
+:END:
+#+cindex: Alarm sound and settings for desktop notifications
+
+#+vindex: tmr-sound-file
+#+vindex: tmr-notification-urgency
+Once the timer has run its course, it produces a desktop notification and
+plays an alarm sound.  The notification's message is practically the same
+as that which is sent to the echo area.
+
+The sound file for the alarm is defined in ~tmr-sound-file~, while the
+urgency of the notification can be set through the user option
+~tmr-notification-urgency~.  Note that it is up to the desktop
+environment or notification daemon to decide how to handle the urgency
+value.
+
+If the ~tmr-sound-file~ is nil, or the file is not found, no sound will
+be played.
+
+Sound playback depends on the =ffplay= executable which is part of
+=ffmpeg=.
+
+Desktop notifications work only if Emacs is built with DBus
+functionality.  This is the norm.  If such functionality is not
+available, TMR will issue a warning informing the user accordingly.
+
+* Minibuffer histories
+:PROPERTIES:
+:CUSTOM_ID: h:fbedb656-2402-46bc-9763-d5112700c954
+:END:
+
+TMR defines two variables that store user input: ~tmr-duration-history~
+and ~tmr-description-history~.  Minibuffer histories can persist between
+sessions if the user enables the built-in =savehist= library.  Sample
+configuration:
+
+#+begin_src emacs-lisp
+(use-package savehist
+  :ensure nil
+  :config
+  (setq savehist-file (locate-user-emacs-file "savehist"))
+  (setq history-length 500)
+  (setq history-delete-duplicates t)
+  (setq savehist-save-minibuffer-history t)
+  (savehist-mode 1))
 #+end_src
 
 * Integration with Embark
