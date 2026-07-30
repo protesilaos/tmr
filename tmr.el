@@ -1060,9 +1060,10 @@ ANNOTATION is an annotation function."
 This map should be bound to a global prefix key."
   "+" #'tmr
   "*" #'tmr-with-details
+  "@" #'tmr-repeat
   "t" #'tmr
   "T" #'tmr-with-details
-  "l" #'tmr-tabulated-view
+  "n" #'tmr-repeat
   "c" #'tmr-clone
   "s" #'tmr-reschedule
   "P" #'tmr-toggle-pause
@@ -1071,7 +1072,7 @@ This map should be bound to a global prefix key."
   "r" #'tmr-remove
   "R" #'tmr-remove-finished
   "k" #'tmr-cancel
-  "n" #'tmr-repeat)
+  "l" #'tmr-tabulated-view)
 
 ;;;###autoload (autoload 'tmr-prefix-map "tmr" nil t 'keymap)
 (defalias 'tmr-prefix-map tmr-prefix-map)
