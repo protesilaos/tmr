@@ -1068,6 +1068,7 @@ they are set to reasonable default values."
     (propertize (tmr--format-duration timer) 'face 'tmr-duration)
     (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time)
     (propertize (if (tmr--timer-paused-remaining timer) "Yes" "") 'face 'tmr-tabulated-paused)
+    (propertize (number-to-string (tmr--timer-repeat-count timer)) 'face 'tmr-repeat-count)
     (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement)
     (propertize (or (tmr--timer-description timer) "") 'face 'tmr-tabulated-description))))
 
@@ -1120,6 +1121,7 @@ they are set to reasonable default values."
                ("Duration" 10 t)
                ("Remaining" 10 tmr-tabulated--compare-remaining)
                ("Paused?" 8 t)
+               ("Repeat" 8 t)
                ("Acknowledge?" 14 t)
                ("Description" 0 t)])
   (add-hook 'window-configuration-change-hook #'tmr-tabulated--window-hook nil t)
