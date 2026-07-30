@@ -1018,10 +1018,11 @@ Also see `tmr-repeat'."
   "Set timer to TIME duration and repeat it REPEAT-COUNT times.
 
 REPEAT-COUNT is an integer indicating how many times the timer shall be
-repeated.
+repeated.  In interactive use, prompt for REPEAT-COUNT.
 
 See `tmr' for a description of the arguments DESCRIPTION and
-ACKNOWLEDGEP.
+ACKNOWLEDGEP.  Here ACKNOWLEDGEP takes effect after all REPEAT-COUNT are
+done.
 
 Also see `tmr-with-details'."
   (interactive
