@@ -1063,6 +1063,7 @@ This map should be bound to a global prefix key."
   "t" #'tmr
   "T" #'tmr-with-details
   "l" #'tmr-tabulated-view
+  "c" #'tmr-clone
   "s" #'tmr-reschedule
   "P" #'tmr-toggle-pause
   "a" #'tmr-toggle-acknowledge
