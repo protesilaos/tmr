@@ -197,7 +197,7 @@ desired keys ([[#h:69eeb3fb-f11d-431e-ae16-2d9b322871cc][Sample configuration]])
 #+findex: tmr-list-timers
 Timers can be viewed in a grid with ~tmr-tabulated-view~ (alias
 ~tmr-list-timers~). The data is placed in the =*tmr-tabulated-view*=
-buffer and looks like this:
+buffer and looks like this ([[#h:814702d3-2bda-439c-b176-d78bd96fd6b6][Control the visible columns of the tabulated view]]):
 
 #+begin_example
 Start      End        Duration   Remaining  Paused?  Acknowledge?   Description
@@ -260,6 +260,33 @@ relevant entry in the manual.
 The ~tmr-list-timers-action-alist~ is relevant only when the command
 ~tmr-tabulated-view~ is called interactively. In Lisp, the ~tmr-tabulated-view~
 requires the buffer it should use and the concomitant action alist.
+
+*** Control the visible columns of the tabulated view
+:PROPERTIES:
+:CUSTOM_ID: h:814702d3-2bda-439c-b176-d78bd96fd6b6
+:END:
+
+[ The ~tmr-tabulated-columns~ is part of {{{development-version}}}. ]
+
+#+vindex: tmr-tabulated-columns
+The user option ~tmr-tabulated-columns~ controls which columns are
+displayed by ~tmr-tabulated-view~. The default value shows all the
+available columns. The columns are specified as a list of the
+following symbols:
+
+- =start= :: the start time;
+- =end= :: the end time;
+- =duration= :: the duration of the timer;
+- =remaining= :: how much time is left in the timer;
+- =paused= :: whether the timer is paused or not;
+- =repeatable= :: whether the timer is set to repeat or not;
+- =remaining-repeats= :: the number of repeats left;
+- =total-repeats= :: the total repeats specified originally;
+- =ackonwledge= :: whether the timer should stop only after being acknowledged;
+- =description= :: the description of the timer.
+
+The order of symbols in the list is exactly how they will be displayed
+by ~tmr-tabulated-view~. Duplicates are removed.
 
 *** Faces specifically used in the tabulated view
 :PROPERTIES:

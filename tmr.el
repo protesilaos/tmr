@@ -169,6 +169,40 @@ user can do that manually by invoking the command `revert-buffer'."
           (natnum :tag "Seconds to auto-refresh the `tmr-tabulated-view' buffer")
           (const :tag "Never auto-refresh the `tmr-tabulated-view' buffer" nil)))
 
+(defcustom tmr-tabulated-columns
+  '( start end duration remaining paused
+     repeatable remaining-repeats total-repeats
+     acknowledge description)
+  "List of columns used by `tmr-tabulated-view'.
+This is a list of the following symbols:
+
+- `start' for the start time;
+- `end' for the end time;
+- `duration' for the duration of the timer;
+- `remaining' for how much time is left in the timer;
+- `paused' for whether the timer is paused or not;
+- `repeatable' for whether the timer is set to repeat or not;
+- `remaining-repeats' for the number of repeats left;
+- `total-repeats' for the total repeats specified originally;
+- `ackonwledge' whether for the timer should stop only after being acknowledged;
+- `description' for the description of the timer.
+
+The order of symbols in the list is exactly how they will be displayed
+by `tmr-tabulated-view'.  Duplicates are removed."
+  :type '(repeat (choice
+                  (const :tag "Start time" start)
+                  (const :tag "End time" end)
+                  (const :tag "Duration" duration)
+                  (const :tag "Remaining time" remaining)
+                  (const :tag "Paused status" paused)
+                  (const :tag "Repeatable status" repeatable)
+                  (const :tag "Remaining repeats" remaining-repeats)
+                  (const :tag "Total repeats" total-repeats)
+                  (const :tag "Acknowledge status" acknowledge)
+                  (const :tag "Description" description)))
+  :package-version '(tmr . "1.4.0")
+  :group 'tmr)
+
 (defun tmr-select-and-resize (window)
   "Select WINDOW and fit it to its buffer."
   (select-window window)
@@ -1080,21 +1114,29 @@ they are set to reasonable default values."
   (setq-local tabulated-list-entries
               (mapcar #'tmr-tabulated--timer-to-entry tmr--timers)))
 
+(defun tmr-tabulated--get-columns ()
+  "Return `tmr-tabulated-columns' without duplicates."
+  (seq-uniq tmr-tabulated-columns))
+
 (defun tmr-tabulated--timer-to-entry (timer)
   "Convert TIMER into an entry suitable for `tabulated-list-entries'."
   (list
    timer
-   (vector
-    (propertize (tmr--format-creation-date timer) 'face 'tmr-tabulated-start-time)
-    (propertize (tmr--format-end-date timer) 'face 'tmr-tabulated-end-time)
-    (propertize (tmr--format-duration timer) 'face 'tmr-duration)
-    (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time)
-    (propertize (if (tmr--timer-paused-remaining timer) "Yes" "") 'face 'tmr-tabulated-paused)
-    (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement)
-    (propertize (if (tmr--timer-original-repeat-count timer) "Yes" "") 'face 'tmr-repeat-count)
-    (propertize (if (tmr--timer-original-repeat-count timer) (number-to-string (tmr--timer-repeat-count timer)) "") 'face 'tmr-repeat-count)
-    (propertize (if (tmr--timer-original-repeat-count timer) (number-to-string (tmr--timer-original-repeat-count timer)) "") 'face 'tmr-repeat-count)
-    (propertize (or (tmr--timer-description timer) "") 'face 'tmr-tabulated-description))))
+   (vconcat
+    (mapcar
+     (lambda (column)
+       (pcase column
+         ('start (propertize (tmr--format-creation-date timer) 'face 'tmr-tabulated-start-time))
+         ('end (propertize (tmr--format-end-date timer) 'face 'tmr-tabulated-end-time))
+         ('duration (propertize (tmr--format-duration timer) 'face 'tmr-duration))
+         ('remaining (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time))
+         ('paused (propertize (if (tmr--timer-paused-remaining timer) "Yes" "") 'face 'tmr-tabulated-paused))
+         ('repeatable (propertize (if (tmr--timer-original-repeat-count timer) "Yes" "") 'face 'tmr-repeat-count))
+         ('remaining-repeats (propertize (if (tmr--timer-original-repeat-count timer) (number-to-string (tmr--timer-repeat-count timer)) "") 'face 'tmr-repeat-count))
+         ('total-repeats (propertize (if (tmr--timer-original-repeat-count timer) (number-to-string (tmr--timer-original-repeat-count timer)) "") 'face 'tmr-repeat-count))
+         ('acknowledge (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement))
+         ('description (propertize (or (tmr--timer-description timer) "") 'face 'tmr-tabulated-description))))
+     (tmr-tabulated--get-columns)))))
 
 (defvar-local tmr-tabulated--refresh-timer nil
   "Timer used to refresh tabulated view.")
@@ -1140,16 +1182,21 @@ they are set to reasonable default values."
 (define-derived-mode tmr-tabulated-mode tabulated-list-mode "TMR"
   "Major mode to display tmr timers."
   (setq-local tabulated-list-format
-              [("Start" 10 t)
-               ("End" 10 t)
-               ("Duration" 10 t)
-               ("Remaining" 10 tmr-tabulated--compare-remaining)
-               ("Paused?" 8 t)
-               ("Acknowledge?" 14 t)
-               ("Repeatable?" 14 t)
-               ("Repeats left" 14 t)
-               ("Total repeats" 15 t)
-               ("Description" 0 t)])
+              (vconcat
+               (mapcar
+                (lambda (column)
+                  (pcase column
+                    ('start '("Start" 10 t))
+                    ('end '("End" 10 t))
+                    ('duration '("Duration" 10 t))
+                    ('remaining '("Remaining" 10 tmr-tabulated--compare-remaining))
+                    ('paused '("Paused?" 8 t))
+                    ('repeatable '("Repeatable" 12 t))
+                    ('remaining-repeats '("Remaining Repeats" 18 t))
+                    ('total-repeats '("Total repeats" 15 t))
+                    ('acknowledge '("Acknowledge?" 14 t))
+                    ('description '("Description" 0 t))))
+                (tmr-tabulated--get-columns))))
   (add-hook 'window-configuration-change-hook #'tmr-tabulated--window-hook nil t)
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)
   (tmr-tabulated--set-entries)
