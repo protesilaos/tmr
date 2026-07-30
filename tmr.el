@@ -845,13 +845,30 @@ This function is used if a timer is not acknowledged."
     (run-hooks 'tmr--update-hook)
     (run-hook-with-args 'tmr-timer-repeat-functions timer)))
 
-;; TODO 2026-04-23: How best to include the REPEAT-N in the
-;; `interactive' spec of `tmr'.  What we have now suggests we should
-;; use the double prefix arg, but I do not like that.  Maybe we can
-;; leave it as-is and not use the repeat interactively in this way:
-;; users can rely on `tmr-repeat'.
+(defun tmr--subr (time description acknowledgep repeat-count)
+  "Do the work of `tmr' and `tmr-repeat'.
+TIME, DESCRIPTION, ACKNOWLEDGEP, REPEAT-COUNT have the meaning of those
+functions."
+  (when (natnump time)
+    (setq time (number-to-string time)))
+  (let* ((creation-date (current-time))
+         (duration (tmr--parse-duration creation-date time))
+         (timer (tmr--timer-create
+                 :description description
+                 :acknowledgep acknowledgep
+                 :repeat-count (or repeat-count 0)
+                 :duration duration
+                 :creation-date creation-date
+                 :end-date (time-add creation-date duration)
+                 :input time)))
+    (setf (tmr--timer-timer-object timer)
+          (run-with-timer duration nil #'tmr--complete timer))
+    (push timer tmr--timers)
+    (run-hooks 'tmr--update-hook)
+    (run-hook-with-args 'tmr-timer-created-functions timer)))
+
 ;;;###autoload
-(defun tmr (time &optional description acknowledgep repeat-n)
+(defun tmr (time &optional description acknowledgep)
   "Set timer to TIME duration and notify after it elapses.
 
 When TIME is a number, it is interpreted as a count of minutes.
@@ -866,37 +883,20 @@ allow for any string to serve as valid input.
 With optional ACKNOWLEDGEP non-nil the timer must be acknowledged
 after it finished, such that the timer cannot be missed.
 
-Optional integer REPEAT-N indicates how many times the timer shall
-repeated.
-
 This command also plays back `tmr-sound-file' if it is available.
 
 To cancel the timer, use the `tmr-cancel' command.
 
 To always prompt for a DESCRIPTION when setting a timer, use the
-command `tmr-with-details' instead of this one."
+command `tmr-with-details' instead of this one.
+
+Also see `tmr-repeat'."
   (interactive
    (list
     (tmr--read-duration)
     (when current-prefix-arg (tmr--description-prompt))
     (when current-prefix-arg (tmr--acknowledge-prompt))))
-  (when (natnump time)
-    (setq time (number-to-string time)))
-  (let* ((creation-date (current-time))
-         (duration (tmr--parse-duration creation-date time))
-         (timer (tmr--timer-create
-                 :description description
-                 :acknowledgep acknowledgep
-                 :repeat-count (or repeat-n 0)
-                 :duration duration
-                 :creation-date creation-date
-                 :end-date (time-add creation-date duration)
-                 :input time)))
-    (setf (tmr--timer-timer-object timer)
-          (run-with-timer duration nil #'tmr--complete timer))
-    (push timer tmr--timers)
-    (run-hooks 'tmr--update-hook)
-    (run-hook-with-args 'tmr-timer-created-functions timer)))
+  (tmr--subr time description acknowledgep 0))
 
 ;;;###autoload
 (defun tmr-with-details (time &optional description acknowledgep)
@@ -914,13 +914,13 @@ Also see `tmr-repeat'."
     (tmr--read-duration)
     (tmr--description-prompt)
     (tmr--acknowledge-prompt)))
-  (tmr time description acknowledgep))
+  (tmr--subr time description acknowledgep 0))
 
 ;;;###autoload
-(defun tmr-repeat (time repeat-n &optional description acknowledgep)
-  "Set timer to TIME duration and repeat it REPEAT-N times.
+(defun tmr-repeat (time repeat-count &optional description acknowledgep)
+  "Set timer to TIME duration and repeat it REPEAT-COUNT times.
 
-REPEAT-N is an integer indicating how many times the timer shall be
+REPEAT-COUNT is an integer indicating how many times the timer shall be
 repeated.
 
 See `tmr' for a description of the arguments DESCRIPTION and
@@ -933,7 +933,7 @@ Also see `tmr-with-details'."
     (tmr-repeat-prompt)
     (when current-prefix-arg (tmr--description-prompt))
     (when current-prefix-arg (tmr--acknowledge-prompt))))
-  (tmr time description acknowledgep repeat-n))
+  (tmr--subr time description acknowledgep repeat-count))
 
 (defun tmr-clone (timer &optional prompt)
   "Create a new timer by cloning TIMER.
