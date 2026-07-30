@@ -375,6 +375,10 @@ Longer descriptions will be truncated."
    0
    :read-only nil
    :documentation "Remaining repetitions.")
+  (original-repeat-count
+   nil
+   :read-only t
+   :documentation "The original repeat count with which the timer was created, or nil.")
   (duration
    nil
    :read-only t
@@ -879,6 +883,7 @@ functions."
                  :description description
                  :acknowledgep acknowledgep
                  :repeat-count (or repeat-count 0)
+                 :original-repeat-count repeat-count
                  :duration duration
                  :creation-date creation-date
                  :end-date (time-add creation-date duration)
@@ -918,7 +923,7 @@ Also see `tmr-repeat'."
     (tmr--read-duration)
     (when current-prefix-arg (tmr--description-prompt))
     (when current-prefix-arg (tmr--acknowledge-prompt))))
-  (tmr--subr time description acknowledgep 0))
+  (tmr--subr time description acknowledgep nil))
 
 ;;;###autoload
 (defun tmr-with-details (time &optional description acknowledgep)
@@ -936,7 +941,7 @@ Also see `tmr-repeat'."
     (tmr--read-duration)
     (tmr--description-prompt)
     (tmr--acknowledge-prompt)))
-  (tmr--subr time description acknowledgep 0))
+  (tmr--subr time description acknowledgep nil))
 
 ;;;###autoload
 (defun tmr-repeat (time repeat-count &optional description acknowledgep)
@@ -1085,8 +1090,10 @@ they are set to reasonable default values."
     (propertize (tmr--format-duration timer) 'face 'tmr-duration)
     (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time)
     (propertize (if (tmr--timer-paused-remaining timer) "Yes" "") 'face 'tmr-tabulated-paused)
-    (propertize (number-to-string (tmr--timer-repeat-count timer)) 'face 'tmr-repeat-count)
     (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement)
+    (propertize (if (tmr--timer-original-repeat-count timer) "Yes" "") 'face 'tmr-repeat-count)
+    (propertize (if (tmr--timer-original-repeat-count timer) (number-to-string (tmr--timer-repeat-count timer)) "") 'face 'tmr-repeat-count)
+    (propertize (if (tmr--timer-original-repeat-count timer) (number-to-string (tmr--timer-original-repeat-count timer)) "") 'face 'tmr-repeat-count)
     (propertize (or (tmr--timer-description timer) "") 'face 'tmr-tabulated-description))))
 
 (defvar-local tmr-tabulated--refresh-timer nil
@@ -1138,8 +1145,10 @@ they are set to reasonable default values."
                ("Duration" 10 t)
                ("Remaining" 10 tmr-tabulated--compare-remaining)
                ("Paused?" 8 t)
-               ("Repeat" 8 t)
                ("Acknowledge?" 14 t)
+               ("Repeatable?" 14 t)
+               ("Repeats left" 14 t)
+               ("Total repeats" 15 t)
                ("Description" 0 t)])
   (add-hook 'window-configuration-change-hook #'tmr-tabulated--window-hook nil t)
   (add-hook 'tabulated-list-revert-hook #'tmr-tabulated--set-entries nil t)
