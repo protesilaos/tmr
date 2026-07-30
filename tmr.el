@@ -819,10 +819,9 @@ If DEFAULT is provided, use that as a default."
 If optional DEFAULT is provided use it as a default candidate."
   (completing-read
    (format-prompt "Description for this tmr" default)
-   (tmr--completion-table
-    (if (listp tmr-description-list)
-        tmr-description-list
-      (symbol-value tmr-description-list)))
+   (if (listp tmr-description-list)
+       tmr-description-list
+     (symbol-value tmr-description-list))
    nil nil nil 'tmr-description-history default))
 
 (defvar tmr-repeat-prompt-history nil
