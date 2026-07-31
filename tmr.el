@@ -739,7 +739,6 @@ cancelling the original one."
         (run-hooks 'tmr--update-hook)
         (run-hook-with-args 'tmr-timer-paused-functions timer)))))
 
-
 (defun tmr-toggle-acknowledge (timer)
   "Toggle ackowledge flag of TIMER."
   (interactive
@@ -929,27 +928,27 @@ This function is used if a timer is not acknowledged."
      ((= count 1)
       (if-let* ((description (tmr--timer-description timer))
                 (_ (not (string-blank-p description))))
-	      (message "TMR with duration `%s' and description `%s' repeats another time"
+          (message "TMR with duration `%s' and description `%s' repeats another time"
                    (propertize (tmr--format-duration timer) 'face 'tmr-duration)
                    (propertize description 'face 'tmr-description))
-	    (message "TMR with duration `%s' repeats another time"
+        (message "TMR with duration `%s' repeats another time"
                  (propertize (tmr--format-duration timer) 'face 'tmr-duration))))
-	 ((= count 0)
+     ((= count 0)
       (if-let* ((description (tmr--timer-description timer))
                 (_ (not (string-blank-p description))))
-	      (message "TMR with duration `%s' and description `%s' will not repeat again"
+          (message "TMR with duration `%s' and description `%s' will not repeat again"
                    (propertize (tmr--format-duration timer) 'face 'tmr-duration)
                    (propertize description 'face 'tmr-description))
-	    (message "TMR with duration `%s' will not repeat again"
+        (message "TMR with duration `%s' will not repeat again"
                  (propertize (tmr--format-duration timer) 'face 'tmr-duration))))
-	 (t
+     (t
       (if-let* ((description (tmr--timer-description timer))
                 (_ (not (string-blank-p description))))
           (message "TMR with duration `%s' and description `%s' repeats another `%s' times"
                    (propertize (tmr--format-duration timer) 'face 'tmr-duration)
                    (propertize description 'face 'tmr-description)
                    (propertize (number-to-string count) 'face 'tmr-repeat-count))
-	    (message "TMR with duration `%s' repeats another `%s' times"
+        (message "TMR with duration `%s' repeats another `%s' times"
                  (propertize (tmr--format-duration timer) 'face 'tmr-duration)
                  (propertize (number-to-string count) 'face 'tmr-repeat-count)))))))
 
