@@ -699,7 +699,10 @@ cancelling the original one."
   (run-hooks 'tmr--update-hook))
 
 (defun tmr-edit-repeat-count (timer repeat-count)
-  "Change TIMER repeat count to that specified by REPEAT-COUNT."
+  "Change TIMER repeat count to that specified by REPEAT-COUNT.
+Modifying a timer's repeat count does not start a new timer.  It simply
+updates the relevant data.  Use the command `tmr-clone' to start a new
+timer using the data of an existing timer."
   (interactive
    (list
     (tmr-read-timer "Edit repeat count of timer: ")
