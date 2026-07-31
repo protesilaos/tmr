@@ -1218,9 +1218,10 @@ they are set to reasonable default values."
                             (with-selected-window win
                               (let ((end (eobp)))
                                 ;; Optimized refreshing
-                                (dolist (entry tabulated-list-entries)
-                                  (setf (aref (cadr entry) 3)
-                                        (propertize (tmr--format-remaining (car entry)) 'face 'tmr-tabulated-remaining-time)))
+                                (when-let* ((remaining-index (seq-position (tmr-tabulated--get-columns) 'remaining)))
+                                  (dolist (entry tabulated-list-entries)
+                                    (setf (aref (cadr entry) remaining-index)
+                                          (propertize (tmr--format-remaining (car entry)) 'face 'tmr-tabulated-remaining-time))))
                                 (tabulated-list-print t)
                                 (when end (goto-char (point-max))))
                               ;; HACK: For some reason the hl-line highlighting gets lost here
