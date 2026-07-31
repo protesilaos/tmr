@@ -432,11 +432,12 @@ Longer descriptions will be truncated."
 
 (defun tmr--long-description-duration (timer)
   "Format the duration/until for TIMER long description."
-  (format "%s %s"
-          (if (string-search ":" (tmr--timer-input timer))
-              "until"
-            "duration")
-          (propertize (tmr--timer-input timer) 'face 'tmr-duration)))
+  (let ((input (tmr--timer-input timer)))
+    (format "%s %s"
+            (if (string-search ":" input)
+                "until"
+              "duration")
+            (propertize input 'face 'tmr-duration))))
 
 (defun tmr--long-description-status (timer)
   "Format the status for TIMER long description."
