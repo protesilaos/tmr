@@ -1059,17 +1059,16 @@ Also see `tmr-with-details'."
 
 (defun tmr-clone (timer &optional prompt)
   "Create a new timer by cloning TIMER.
-With optional PROMPT, such as a prefix argument, ask for
-confirmation about the duration.  When PROMPT is a double prefix
-argument, ask for a description as well and ask if the timer must
-be acknowledged.
+With optional PROMPT, such as a prefix argument, ask for confirmation
+about the duration.  When PROMPT is a double prefix argument, ask for a
+description and whether the timer must be acknowledged after it elapses.
 
-Without a PROMPT, clone TIMER outright."
+Without a PROMPT, clone TIMER outright, retaining all of its properties."
   (interactive
    (list
     (tmr-read-timer "Clone timer: ")
     current-prefix-arg))
-  (tmr
+  (tmr--subr
    (if prompt
        (tmr--read-duration (format "%s" (tmr--timer-input timer)))
      (format "%s" (tmr--timer-input timer)))
@@ -1078,7 +1077,8 @@ Without a PROMPT, clone TIMER outright."
      (tmr--timer-description timer))
    (if (equal prompt '(16))
        (tmr--acknowledge-prompt)
-     (tmr--timer-acknowledgep timer))))
+     (tmr--timer-acknowledgep timer))
+   (tmr--timer-original-repeat-count timer)))
 
 (defun tmr-get-completion-table (candidates &rest metadata)
   "Return completion table with CANDIDATES and METADATA.
