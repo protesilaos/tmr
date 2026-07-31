@@ -161,7 +161,7 @@ user can do that manually by invoking the command `revert-buffer'."
 
 (defcustom tmr-tabulated-columns
   '( start end duration remaining paused
-     repeatable remaining-repeats total-repeats
+     remaining-repeats total-repeats
      acknowledge description)
   "List of columns used by `tmr-tabulated-view'.
 This is a list of the following symbols:
@@ -171,7 +171,6 @@ This is a list of the following symbols:
 - `duration' for the duration of the timer;
 - `remaining' for how much time is left in the timer;
 - `paused' for whether the timer is paused or not;
-- `repeatable' for whether the timer is set to repeat or not;
 - `remaining-repeats' for the number of repeats left;
 - `total-repeats' for the total repeats specified originally;
 - `ackonwledge' whether for the timer should stop only after being acknowledged;
@@ -185,7 +184,6 @@ by `tmr-tabulated-view'.  Duplicates are removed."
                   (const :tag "Duration" duration)
                   (const :tag "Remaining time" remaining)
                   (const :tag "Paused status" paused)
-                  (const :tag "Repeatable status" repeatable)
                   (const :tag "Remaining repeats" remaining-repeats)
                   (const :tag "Total repeats" total-repeats)
                   (const :tag "Acknowledge status" acknowledge)
@@ -1194,7 +1192,6 @@ they are set to reasonable default values."
          ('duration (propertize (tmr--format-duration timer) 'face 'tmr-duration))
          ('remaining (propertize (tmr--format-remaining timer) 'face 'tmr-tabulated-remaining-time))
          ('paused (propertize (if (tmr--timer-paused-remaining timer) "Yes" "") 'face 'tmr-tabulated-paused))
-         ('repeatable (propertize (if (tmr--timer-original-repeat-count timer) "Yes" "") 'face 'tmr-repeat-count))
          ('remaining-repeats (propertize (if (tmr--timer-original-repeat-count timer) (number-to-string (tmr--timer-repeat-count timer)) "") 'face 'tmr-repeat-count))
          ('total-repeats (propertize (if (tmr--timer-original-repeat-count timer) (number-to-string (tmr--timer-original-repeat-count timer)) "") 'face 'tmr-repeat-count))
          ('acknowledge (propertize (if (tmr--timer-acknowledgep timer) "Yes" "") 'face 'tmr-tabulated-acknowledgement))
@@ -1255,7 +1252,6 @@ they are set to reasonable default values."
                     ('duration '("Duration" 10 t))
                     ('remaining '("Remaining" 10 tmr-tabulated--compare-remaining))
                     ('paused '("Paused?" 8 t))
-                    ('repeatable '("Repeatable" 12 t))
                     ('remaining-repeats '("Remaining Repeats" 18 t))
                     ('total-repeats '("Total repeats" 15 t))
                     ('acknowledge '("Acknowledge?" 14 t))
