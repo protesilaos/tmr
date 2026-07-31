@@ -705,17 +705,22 @@ cancelling the original one."
     (tmr-read-timer "Edit repeat count of timer: ")
     (tmr-repeat-prompt)))
   (let ((current (tmr--timer-repeat-count timer))
-        (original (tmr--timer-original-repeat-count timer)))
-    (setf (tmr--timer-repeat-count timer) repeat-count)
-    (cond
-     ((<= repeat-count 0)
-      (setf (tmr--timer-original-repeat-count timer) nil))
-     (original
-      (setf (tmr--timer-original-repeat-count timer)
-            (max repeat-count (+ original (- repeat-count current)))))
-     (t
-      (setf (tmr--timer-original-repeat-count timer) repeat-count))))
-  (run-hooks 'tmr--update-hook))
+        (original (tmr--timer-original-repeat-count timer))
+        (no-repeats-p (< repeat-count 1)))
+    (if (tmr--timer-finishedp timer)
+        (if no-repeats-p
+            (setf (tmr--timer-original-repeat-count timer) nil)
+          (setf (tmr--timer-original-repeat-count timer) repeat-count))
+      (setf (tmr--timer-repeat-count timer) repeat-count)
+      (cond
+       (no-repeats-p
+        (setf (tmr--timer-original-repeat-count timer) nil))
+       (original
+        (setf (tmr--timer-original-repeat-count timer)
+              (max repeat-count (+ original (- repeat-count current)))))
+       (t
+        (setf (tmr--timer-original-repeat-count timer) repeat-count))))
+    (run-hooks 'tmr--update-hook)))
 
 (defun tmr-toggle-pause (timer)
   "Toggle pause/resume state of TIMER."
