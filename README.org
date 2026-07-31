@@ -370,7 +370,6 @@ specified as a list of the following symbols:
 - =duration= :: the duration of the timer;
 - =remaining= :: how much time is left in the timer;
 - =paused= :: whether the timer is paused or not;
-- =repeatable= :: whether the timer is set to repeat or not;
 - =remaining-repeats= :: the number of repeats left;
 - =total-repeats= :: the total repeats specified originally;
 - =ackonwledge= :: whether the timer should stop only after being acknowledged;
