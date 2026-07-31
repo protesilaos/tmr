@@ -12,6 +12,127 @@ the manual: <https://protesilaos.com/emacs/tmr>.
 
 #+toc: headlines 1 insert TOC here, with one headline level
 
+* Version 1.4.0 on 2026-07-31
+:PROPERTIES:
+:CUSTOM_ID: h:66b13018-8365-4a7d-877e-bd7768265fe9
+:END:
+
+TMR is an efficient package that has been stable for years. This new
+version introduces some nice new features as well as several smaller
+internal refinements.
+
+** Create a timer that repeats
+:PROPERTIES:
+:CUSTOM_ID: h:3b3d827a-eb83-4a84-a448-d4e46f884dff
+:END:
+
+The command ~tmr-repeat~ prompts for a duration, like the standard
+~tmr~ command but also asks for a number of times to repeat the given
+timer. When called with a prefix argument (=C-u= with default
+keybindings), ~tmr-repeat~ will also ask for a description for the new
+timer and whether it should be acknowledged or not after all
+repetitions have elapsed.
+
+Thanks to Óscar Fuentes for contributing the original implementation
+of ~tmr-repeat~ (with many extra changes/features by me). This was
+done in pull request 16: <https://github.com/protesilaos/tmr/pull/16>.
+Óscar has assigned copyright to the Free Software Foundation.
+
+** Modify the repeat count of an existing timer
+:PROPERTIES:
+:CUSTOM_ID: h:c866acef-4fd9-49da-893e-c3489d264b52
+:END:
+
+The command ~tmr-edit-repeat-count~ prompts for an existing timer and
+updates its repeat count. If the repeat count is set to =0=, then the
+timer is no longer considered repeatable.
+
+As with all commands that operate on existing timers, ~tmr-edit-repeat-count~
+automatically applies to the timer at point when called from inside
+the tabulated list of timers (per ~tmr-tabulated-view~).
+
+Modifying a timer's repeat count does not start a new timer. It simply
+updates the relevant data. Use the command ~tmr-clone~ to start a new
+timer using the data of an existing timer.
+
+** The tabulated view has more columns and all of them can be adjusted
+:PROPERTIES:
+:CUSTOM_ID: h:0cdf33c6-2669-4b35-a8c3-89a7bf9f979c
+:END:
+
+The tabulated list of timers, which is typically produced by the
+command ~tmr-tabulated-view~, now has extra columns for the data that
+pertains to repeatable timers.
+
+Users who want to control which columns are displayed, and in what
+order, can modify the user option ~tmr-tabulated-columns~. Its
+documentation covers the technicalities. The default value is to
+display all columns.
+
+** Completion metadata for the prompt that selects a timer
+:PROPERTIES:
+:CUSTOM_ID: h:0d465855-5f3c-4828-b4a9-9b55a174f143
+:END:
+
+Advanced users can now modify all the ~completion-metadata~ associated
+with the prompt that reads/selects one among the existing timer
+objects (the function is ~tmr-read-timer~). The relevant variable is
+~tmr-completion-metadata~. I am not providing this as a user option,
+because regular users will anyway not be able to do much with it as it
+involves custom functions.
+
+** Timers in the completion prompt are sorted by end time
+:PROPERTIES:
+:CUSTOM_ID: h:6002d40b-c6b8-47f7-89cd-ad5724a41a0f
+:END:
+
+The prompt for selecting a timer now sorts candidates by their end
+time. The closest end time appears at the top.
+
+This affects all commands that operate on a timer, such as
+~tmr-edit-repeat-count~, ~tmr-cancel~, and more.
+
+In the past, there was no sorting whatsoever. Users who prefer that
+style can add the following to their configuration:
+
+#+begin_src emacs-lisp
+(setq tmr-completion-metadata
+      (list
+       (cons 'category 'tmr-timer)
+       (cons 'display-sort-function #'identity) ; THIS IS THE RELEVANT PART
+       (cons 'annotation-function #'tmr-completion-annotate)))
+#+end_src
+
+** Miscellaneous
+:PROPERTIES:
+:CUSTOM_ID: h:14a7d873-3069-478f-9136-f603eefb75ee
+:END:
+
+- The manual is easier to read. I have rewritten it to group commands
+  and user options under appropriate headings.
+
+- Lots of internal refinements to the code. I tweaks things to make
+  the code easier to maintain and contribute to.
+
+- Thanks to Pavlo Lysov for adding a small example to the manual about
+  using TMR hooks to send a custom notification on the macOS. This was
+  done in pull request 25: <https://github.com/protesilaos/tmr/pull/25>.
+  Pavlo does not need to assign copyright to the Free Software
+  Foundation.
+
+- Thanks to Carlos Pajuelo Rojo for refining an earlier version of the
+  function that produces a message about the repeat count of a given
+  timer (I have since made lots of changes on this and other fronts).
+  Carlos' contribution is in pull request 20: <https://github.com/protesilaos/tmr/pull/20>.
+  The change is small, meaning that Carlos does not need to assign
+  copyright to the Free Software Foundation.
+
+- Thanks to f6p for use the appropriate face for the paused indicator
+  in the tabulated view. This was done in pull request 17:
+  <https://github.com/protesilaos/tmr/pull/17>. The change is small,
+  meaning that the author does not need to assign copyright to the
+  Free Software Foundation.
+
 * Version 1.3.0 on 2026-01-25
 :PROPERTIES:
 :CUSTOM_ID: h:705987e4-60e9-4d06-bdc0-4f08347348a0
