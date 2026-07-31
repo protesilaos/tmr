@@ -401,7 +401,11 @@ Longer descriptions will be truncated."
    :documentation "Remaining repetitions.")
   (original-repeat-count
    nil
-   :read-only t
+   ;; NOTE 2026-07-31: My initial plan was to have a read-only entry
+   ;; here, but with `tmr-edit-repeat-count' it makes sense to make
+   ;; this writable.  Now the name is probably wrong, but I will leave
+   ;; it for now, as there may be a better approach
+   :read-only nil
    :documentation "The original repeat count with which the timer was created, or nil.")
   (duration
    nil
@@ -694,6 +698,25 @@ cancelling the original one."
     (tmr-read-timer "Edit description of timer: ")
     (tmr--description-prompt)))
   (setf (tmr--timer-description timer) description)
+  (run-hooks 'tmr--update-hook))
+
+(defun tmr-edit-repeat-count (timer repeat-count)
+  "Change TIMER repeat count to that specified by REPEAT-COUNT."
+  (interactive
+   (list
+    (tmr-read-timer "Edit repeat count of timer: ")
+    (tmr-repeat-prompt)))
+  (let ((current (tmr--timer-repeat-count timer))
+        (original (tmr--timer-original-repeat-count timer)))
+    (setf (tmr--timer-repeat-count timer) repeat-count)
+    (cond
+     ((<= repeat-count 0)
+      (setf (tmr--timer-original-repeat-count timer) nil))
+     (original
+      (setf (tmr--timer-original-repeat-count timer)
+            (max repeat-count (+ original (- repeat-count current)))))
+     (t
+      (setf (tmr--timer-original-repeat-count timer) repeat-count))))
   (run-hooks 'tmr--update-hook))
 
 (defun tmr-toggle-pause (timer)
@@ -1082,6 +1105,7 @@ This map should be bound to a global prefix key."
   "P" #'tmr-toggle-pause
   "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
+  "E" #'tmr-edit-repeat-count
   "r" #'tmr-remove
   "R" #'tmr-remove-finished
   "k" #'tmr-cancel
@@ -1102,6 +1126,7 @@ This map should be bound to a global prefix key."
   "P" #'tmr-toggle-pause
   "a" #'tmr-toggle-acknowledge
   "e" #'tmr-edit-description
+  "E" #'tmr-edit-repeat-count
   "R" #'tmr-remove-finished
   "r" #'tmr-remove
   "k" #'tmr-remove)
