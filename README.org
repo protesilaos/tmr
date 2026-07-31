@@ -225,8 +225,11 @@ timer object.
 #+findex: tmr-edit-repeat-count
 The command ~tmr-edit-repeat-count~ sets the repeat count of the given
 timer. When the repeat count is set to =0=, then the timer is no
-longer considered repeatable. [ The command ~tmr-edit-repeat-count~ is
-part of {{{development-version}}}. ]
+longer considered repeatable. Modifying a timer's repeat count does
+not start a new timer. It simply updates the relevant data. Use the
+command ~tmr-clone~ to start a new timer using the data of an existing
+timer. [ The command ~tmr-edit-repeat-count~ is part of
+{{{development-version}}}. ]
 
 #+findex: tmr-toggle-acknowledge
 #+vindex: tmr-acknowledge-timer-text
