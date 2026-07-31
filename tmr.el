@@ -1269,11 +1269,11 @@ they are set to reasonable default values."
 
 (defun tmr-tabulated--refresh ()
   "Refresh *tmr-tabulated-view* buffer if it exists."
-  (when-let* ((buf (get-buffer "*tmr-tabulated-view*"))
-              (tmr-tabulated-refresh-interval 1))
+  (when-let* ((buf (get-buffer "*tmr-tabulated-view*")))
     (with-current-buffer buf
       (let ((lines (line-number-at-pos)))
-        (revert-buffer)
+        (tmr-tabulated--set-entries)
+        (tabulated-list-print t)
         (when (and (bobp) (> lines 1))
           (forward-line (1- lines))
           (unless (tabulated-list-get-id)
